@@ -9,6 +9,10 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="../into-the-dream-spring.nds" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia"/>
@@ -20,7 +24,9 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI"/>
-        <PackageReference Include="Libretro.NET" />
-        <PackageReference Include="SK.Libretro" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj" />
     </ItemGroup>
 </Project>

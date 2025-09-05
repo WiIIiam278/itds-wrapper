@@ -13,11 +13,11 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <None Condition="'$(RuntimeIdentifier)'=='linux-x64' Or '$(RuntimeIdentifier)'=='linux-arm64'" Include="melondsds_libretro.so"
+        <None Condition="'$(RuntimeIdentifier)'=='linux-x64' Or '$(RuntimeIdentifier)'=='linux-arm64' Or $([System.OperatingSystem]::IsLinux())" Include="melondsds_libretro.so"
               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
-        <None Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64'" Include="melondsds_libretro.dylib"
+        <None Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())" Include="melondsds_libretro.dylib"
               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
-        <None Condition="'$(RuntimeIdentifier)'=='win-x64'" Include="melondsds_libretro.dll"
+        <None Condition="'$(RuntimeIdentifier)'=='win-x64' Or $([System.OperatingSystem]::IsWindows())" Include="melondsds_libretro.dll"
               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
     </ItemGroup>
 

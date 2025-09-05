@@ -15,8 +15,8 @@
     <PackageVersion Include="Avalonia.Browser" Version="11.3.5" />
     <PackageVersion Include="Avalonia.Android" Version="11.3.5" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.5" />
-    <PackageVersion Include="Libretro.NET" Version="0.1.0" />
-    <PackageVersion Include="SK.Libretro" Version="0.9.0" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
+    <PackageVersion Include="System.Reflection.DispatchProxy" Version="4.7.1" />
+    <PackageVersion Include="System.Reflection.Emit"  Version="4.7.0" />
   </ItemGroup>
 </Project>

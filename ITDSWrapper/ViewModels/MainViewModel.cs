@@ -8,7 +8,8 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        RetroWrapper retro = new();
-        retro.LoadCore("");
+        RetroWrapper wrapper = new();
+        wrapper.LoadCore();
+        wrapper.LoadGame("into-the-dream-spring.nds");
     }
 }

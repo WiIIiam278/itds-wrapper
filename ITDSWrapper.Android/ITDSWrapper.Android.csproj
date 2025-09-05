@@ -18,7 +18,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Include="melondsds_libretro_android.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
+        <None Include="libs/armeabi-v7a/melondsds_libretro.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
     </ItemGroup>
 
     <ItemGroup>
