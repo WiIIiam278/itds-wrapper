@@ -7,31 +7,37 @@ public class RetroInterop
 {
     public void set_environment(retro_environment_t param0)
     {
+        GCHandle.Alloc(param0);
         RetroBindings.set_environment(param0);
     }
 
     public void set_video_refresh(retro_video_refresh_t param0)
     {
+        GCHandle.Alloc(param0);
         RetroBindings.set_video_refresh(param0);
     }
 
     public void set_input_poll(retro_input_poll_t param0)
     {
+        GCHandle.Alloc(param0);
         RetroBindings.set_input_poll(param0);
     }
 
     public void set_input_state(retro_input_state_t param0)
     {
+        GCHandle.Alloc(param0);
         RetroBindings.set_input_state(param0);
     }
 
     public void set_audio_sample(retro_audio_sample_t param0)
     {
+        GCHandle.Alloc(param0);
         RetroBindings.set_audio_sample(param0);
     }
 
     public void set_audio_sample_batch(retro_audio_sample_batch_t param0)
     {
+        GCHandle.Alloc(param0);
         RetroBindings.set_audio_sample_batch(param0);
     }
 

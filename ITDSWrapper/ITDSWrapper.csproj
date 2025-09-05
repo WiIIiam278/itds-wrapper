@@ -9,9 +9,8 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
-    
     <ItemGroup>
-        <None Include="../into-the-dream-spring.nds" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+        <EmbeddedResource Include="..\itds.nds"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -24,9 +23,18 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI"/>
+        <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Avalonia.Skia">
+        <HintPath>..\..\..\.nuget\packages\avalonia.skia\11.3.5\lib\net8.0\Avalonia.Skia.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>

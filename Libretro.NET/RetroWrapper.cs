@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using Libretro.NET.Bindings;
 
@@ -17,7 +16,7 @@ namespace Libretro.NET
         public uint Height { get; private set; }
         public double FPS { get; private set; }
         public double SampleRate { get; private set; }
-        public retro_pixel_format PixelFormat { get; private set; }
+        public retro_pixel_format PixelFormat { get; private set; } = retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565;
 
         public delegate void OnFrameDelegate(byte[] frame, uint width, uint height);
         public OnFrameDelegate OnFrame { get; set; }
@@ -41,21 +40,22 @@ namespace Libretro.NET
             _interop.init();
         }
 
-        public bool LoadGame(string gamePath)
+        public bool LoadGame(byte[] gameData)
         {
-            var game = new retro_game_info
-            {
-                path = (sbyte*)Marshal.StringToHGlobalAuto(gamePath),
-                size = (UIntPtr)new FileInfo(gamePath).Length,
-            };
-
             var system = new retro_system_info();
             _interop.get_system_info(ref system);
+
+            string fakePath = "itds.nds";
+            retro_game_info game = new()
+            {
+                path = (sbyte*)Marshal.StringToHGlobalAuto(fakePath),
+                size = (UIntPtr)gameData.Length,
+            };
 
             if (!system.need_fullpath)
             {
                 game.data = (void*)Marshal.AllocHGlobal((int)game.size);
-                Marshal.Copy(File.ReadAllBytes(gamePath), 0, (IntPtr)game.data, (int)game.size);
+                Marshal.Copy(gameData, 0, (IntPtr)game.data, (int)game.size);
             }
 
             byte result = _interop.load_game(ref game);
@@ -117,12 +117,12 @@ namespace Libretro.NET
             byte[] raw = new byte[(uint)pitch * height];
             Marshal.Copy((IntPtr)data, raw, 0, (int)pitch * (int)height);
 
-            byte[] result = new byte[width * 2 * height];
+            byte[] result = new byte[width * 4 * height];
             var destinationIndex = 0;
             for (var sourceIndex = 0; sourceIndex < (uint)pitch * height; sourceIndex += (int)pitch)
             {
-                Array.Copy(raw, sourceIndex, result, destinationIndex, width * 2);
-                destinationIndex += (int)width * 2;
+                Array.Copy(raw, sourceIndex, result, destinationIndex, width * 4);
+                destinationIndex += (int)width * 4;
             }
 
             OnFrame?.Invoke(result, width, height);
