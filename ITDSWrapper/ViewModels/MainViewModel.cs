@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Timers;
 using ITDSWrapper.Controls;
 using Libretro.NET;
@@ -27,12 +29,20 @@ public class MainViewModel : ViewModelBase
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
-        Timer timer = new(TimeSpan.FromMilliseconds(1000.0 / 10));
-        timer.Elapsed += (_, _) =>
+        Task.Run((async Task () =>
         {
-            Wrapper.Run();
-        };
-        timer.Start();
+            Stopwatch stopwatch = new();
+            while (true)
+            {
+                stopwatch.Start();
+                Wrapper.Run();
+                stopwatch.Stop();
+                if (1000 / Wrapper.FPS > stopwatch.ElapsedMilliseconds)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(1000 / Wrapper.FPS - stopwatch.ElapsedMilliseconds));
+                }
+            }
+        })!);
     }
 
     private void DisplayFrame(byte[] frame, uint width, uint height)

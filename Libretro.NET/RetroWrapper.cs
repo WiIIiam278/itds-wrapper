@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using Libretro.NET.Bindings;
 
 namespace Libretro.NET
@@ -16,15 +19,19 @@ namespace Libretro.NET
         public uint Height { get; private set; }
         public double FPS { get; private set; }
         public double SampleRate { get; private set; }
-        public retro_pixel_format PixelFormat { get; private set; } = retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565;
+        public retro_pixel_format PixelFormat { get; private set; }
+        public retro_core_option_definition[] Options { get; private set; }
 
         public delegate void OnFrameDelegate(byte[] frame, uint width, uint height);
+
         public OnFrameDelegate OnFrame { get; set; }
 
         public delegate void OnSampleDelegate(byte[] sample);
+
         public OnSampleDelegate OnSample { get; set; }
 
         public delegate bool OnCheckInputDelegate(uint port, uint device, uint index, uint id);
+
         public OnCheckInputDelegate OnCheckInput { get; set; }
 
         public void LoadCore()
@@ -81,34 +88,80 @@ namespace Libretro.NET
             switch (cmd)
             {
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
-                    {
-                        char** cb = (char**)data;
-                        *cb = (char*)Marshal.StringToHGlobalAuto(".");
-                        return true;
-                    }
+                {
+                    char** cb = (char**)data;
+                    *cb = (char*)Marshal.StringToHGlobalAuto(".");
+                    return true;
+                }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
+                {
+                    PixelFormat = (retro_pixel_format)(*(byte*)data);
+                    return true;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_GET_VARIABLE:
+                {
+                    string key = Marshal.PtrToStringAnsi((IntPtr)(*(char **)data));
+                    retro_variable* cb = (retro_variable*)data;
+                    // char** cb = (char**)data;
+                    switch (key)
                     {
-                        PixelFormat = (retro_pixel_format)(*(byte*)data);
-                        return true;
+                        case "melonds_homebrew_sdcard":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAuto(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAuto("enabled"),
+                            };
+                            // *cb = (char*)Marshal.StringToHGlobalAuto("enabled");
+                            break;
+                        case "melonds_jit_enable":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAuto(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAuto("disabled"),
+                            };
+                            break;
                     }
-                case RetroBindings.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
-                    {
-                        retro_log_callback* cb = (retro_log_callback*)data;
-                        return true;
-                    }
+                    return true;
+                }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CAN_DUPE:
-                    {
-                        return *(bool*)data = true;
-                    }
+                {
+                    return *(bool*)data = true;
+                }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:
-                    {
-                        retro_frame_time_callback* cb = (retro_frame_time_callback*)data;
-                        return true;
-                    }
+                {
+                    retro_frame_time_callback* cb = (retro_frame_time_callback*)data;
+                    return true;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
+                {
+                    retro_log_callback* cb = (retro_log_callback*)data;
+                    return true;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
+                {
+                    char** cb = (char**)data;
+                    *cb = (char*)Marshal.StringToHGlobalAuto(".");
+                    return true;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
+                {
+                    *(uint*)data = 1;
+                    return true;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_SET_CORE_OPTIONS:
+                {
+                    return true;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
+                {
+                    retro_core_option_display s = Marshal.PtrToStructure<retro_core_option_display>((IntPtr)data);
+                    string value = Marshal.PtrToStringAnsi((IntPtr)((char *)s.key));
+                    return true;
+                }
                 default:
-                    {
-                        return false;
-                    }
+                {
+                    return false;
+                }
             }
         }
 
