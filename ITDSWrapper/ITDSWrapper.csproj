@@ -23,9 +23,11 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI"/>
+        <PackageReference Condition="$([System.OperatingSystem]::IsWindows())" Include="NAudio" />
         <PackageReference Include="NAudio.Sdl2" />
         <PackageReference Include="NAudio.Sdl2.Library" />
         <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="Silk.NET.OpenAL" />
         <PackageReference Include="SkiaSharp" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
     </ItemGroup>

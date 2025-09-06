@@ -6,6 +6,7 @@
 # melonDS-DS
 melondsds_libretro.*
 melondsds_libretro_*
+libbass.*
 *.nds
 
 # User-specific files

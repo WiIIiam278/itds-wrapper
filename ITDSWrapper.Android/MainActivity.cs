@@ -1,11 +1,8 @@
 ﻿using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Avalonia;
 using Avalonia.Android;
 using Avalonia.ReactiveUI;
-using NAudio.Sdl2;
-using NAudio.Sdl2.Structures;
 using Org.Libsdl.App;
 
 namespace ITDSWrapper.Android;

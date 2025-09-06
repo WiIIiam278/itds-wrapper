@@ -1,7 +1,7 @@
 using System;
 using NAudio.Wave;
 
-namespace ITDSWrapper.Models;
+namespace ITDSWrapper.Audio;
 
 public class StreamingWaveProvider : IWaveProvider
 {

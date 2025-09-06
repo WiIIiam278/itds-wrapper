@@ -18,7 +18,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Include="libs/arm64-v8a/melondsds_libretro.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
+        <AndroidNativeLibrary Include="libs/arm64-v8a/melondsds_libretro.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
     </ItemGroup>
 
     <ItemGroup>

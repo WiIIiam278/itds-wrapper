@@ -3,12 +3,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using ITDSWrapper.Audio;
 using ITDSWrapper.Controls;
-using ITDSWrapper.Models;
 using Libretro.NET;
-using NAudio.Sdl2;
-using NAudio.Sdl2.Structures;
-using NAudio.Wave;
 using ReactiveUI.Fody.Helpers;
 
 namespace ITDSWrapper.ViewModels;
@@ -20,9 +17,8 @@ public class MainViewModel : ViewModelBase
     public EmuImage? CurrentFrame { get; set; }
 
     private readonly byte[] _frameData = new byte[256 * 384 * 4];
-
-    private readonly StreamingWaveProvider _waveProvider;
-    private readonly WaveOutSdl _waveOut;
+    
+    private readonly IAudioBackend _audioBackend;
     
     public MainViewModel()
     {
@@ -33,9 +29,14 @@ public class MainViewModel : ViewModelBase
         ndsStream.ReadExactly(data);
         Wrapper.LoadGame(data);
 
-        _waveProvider = new(new((int)Wrapper.SampleRate, 2));
-        _waveOut = new();
-        _waveOut.Init(_waveProvider);
+        if (OperatingSystem.IsWindows())
+        {
+            _audioBackend = new NAudioWinBackend(Wrapper.SampleRate);
+        }
+        else
+        {
+            
+        }
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
@@ -63,10 +64,10 @@ public class MainViewModel : ViewModelBase
     
     private void PlaySample(byte[] sample)
     {
-        _waveProvider.AddSamples(sample);
-        if (_waveOut.PlaybackState != PlaybackState.Playing)
+        _audioBackend.AddSamples(sample);
+        if (_audioBackend.ShouldPlay())
         {
-            _waveOut.Play();
+            _audioBackend.Play();
         }
     }
 }
