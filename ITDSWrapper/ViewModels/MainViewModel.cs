@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using ITDSWrapper.Controls;
+using ITDSWrapper.Models;
 using Libretro.NET;
 using NAudio.Sdl2;
 using NAudio.Wave;
@@ -20,10 +18,10 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public EmuImage? CurrentFrame { get; set; }
 
-    private byte[] _frameData = new byte[256 * 384 * 4];
+    private readonly byte[] _frameData = new byte[256 * 384 * 4];
 
-    private BufferedWaveProvider _waveProvider;
-    private WaveOutSdl _waveOut;
+    private readonly StreamingWaveProvider _waveProvider;
+    private readonly WaveOutSdl _waveOut;
     
     public MainViewModel()
     {
@@ -34,33 +32,26 @@ public class MainViewModel : ViewModelBase
         ndsStream.ReadExactly(data);
         Wrapper.LoadGame(data);
 
-        _waveProvider = new(new((int)Wrapper.SampleRate, 2))
-        {
-            BufferLength = 65536,
-        };
-        _waveOut = new()
-        {
-            DesiredLatency = 100,
-        };
+        _waveProvider = new(new((int)Wrapper.SampleRate, 2));
+        _waveOut = new();
         _waveOut.Init(_waveProvider);
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
-        Task.Run((async Task () =>
+        TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.FPS);
+        DateTime nextTick = DateTime.Now + interval;
+        Task.Run(() =>
         {
-            Stopwatch stopwatch = new();
-            _waveOut.Play();
             while (true)
             {
-                stopwatch.Start();
                 Wrapper.Run();
-                stopwatch.Stop();
-                if (1000 / Wrapper.FPS > stopwatch.ElapsedMilliseconds)
+                while (DateTime.Now < nextTick)
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(1000 / Wrapper.FPS - stopwatch.ElapsedMilliseconds));
+                    Thread.Sleep(nextTick - DateTime.Now);
                 }
+                nextTick += interval;
             }
-        })!);
+        });
     }
 
     private void DisplayFrame(byte[] frame, uint width, uint height)
@@ -71,9 +62,10 @@ public class MainViewModel : ViewModelBase
     
     private void PlaySample(byte[] sample)
     {
-        _waveProvider.AddSamples(sample, 0, sample.Length);
-        // if (_waveProvider.BufferedBytes > 10000 && _waveOut.PlaybackState != PlaybackState.Playing)
-        // {
-        // }
+        _waveProvider.AddSamples(sample);
+        if (_waveOut.PlaybackState != PlaybackState.Playing)
+        {
+            _waveOut.Play();
+        }
     }
 }
