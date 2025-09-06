@@ -7,6 +7,7 @@ using ITDSWrapper.Controls;
 using ITDSWrapper.Models;
 using Libretro.NET;
 using NAudio.Sdl2;
+using NAudio.Sdl2.Structures;
 using NAudio.Wave;
 using ReactiveUI.Fody.Helpers;
 
