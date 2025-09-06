@@ -90,7 +90,7 @@ namespace Libretro.NET
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                 {
                     char** cb = (char**)data;
-                    *cb = (char*)Marshal.StringToHGlobalAuto(".");
+                    *cb = (char*)Marshal.StringToHGlobalAuto(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -140,7 +140,7 @@ namespace Libretro.NET
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
                     char** cb = (char**)data;
-                    *cb = (char*)Marshal.StringToHGlobalAuto(".");
+                    *cb = (char*)Marshal.StringToHGlobalAuto(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
@@ -209,6 +209,7 @@ namespace Libretro.NET
             var audio = new byte[count * 2];
 
             Marshal.Copy((IntPtr)data, audio, 0, count * 2);
+            // new Random().NextBytes(audio);
 
             OnSample?.Invoke(audio);
 
