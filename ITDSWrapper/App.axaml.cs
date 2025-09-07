@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using ITDSWrapper.Audio;
 using ITDSWrapper.ViewModels;
 using ITDSWrapper.Views;
 
@@ -8,6 +9,8 @@ namespace ITDSWrapper;
 
 public partial class App : Application
 {
+    public IAudioBackend? AudioBackend { get; set; }
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

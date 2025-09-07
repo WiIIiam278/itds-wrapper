@@ -4,6 +4,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,10 +25,11 @@
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI"/>
         <PackageReference Condition="$([System.OperatingSystem]::IsWindows())" Include="NAudio" />
-        <PackageReference Include="NAudio.Sdl2" />
-        <PackageReference Include="NAudio.Sdl2.Library" />
+        <PackageReference Include="NAudio.Core" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Silk.NET.OpenAL" />
+        <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />
+        <PackageReference Include="Silk.NET.OpenAL.Soft.Native" />
         <PackageReference Include="SkiaSharp" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
     </ItemGroup>

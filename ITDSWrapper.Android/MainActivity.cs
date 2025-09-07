@@ -3,7 +3,6 @@ using Android.Content.PM;
 using Avalonia;
 using Avalonia.Android;
 using Avalonia.ReactiveUI;
-using Org.Libsdl.App;
 
 namespace ITDSWrapper.Android;
 
@@ -17,13 +16,10 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
-        SDL.LoadLibrary("SDL2");
-        SDL.SetupJNI();
-        SDL.Initialize();
-        SDL.Context = this;
-        
-        return base.CustomizeAppBuilder(builder)
+        return base
+            .CustomizeAppBuilder(builder)
             .WithInterFont()
-            .UseReactiveUI();
+            .UseReactiveUI()
+            .AfterSetup(b => ((App)b.Instance!).AudioBackend = new AndroidAudioBackend());
     }
 }

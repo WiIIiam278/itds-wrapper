@@ -14,6 +14,10 @@ public class NAudioWinBackend : IAudioBackend
         _waveOut = new();
 #endif
     }
+
+    public void Initialize(double sampleRate)
+    {
+    }
     
     public bool ShouldPlay()
     {

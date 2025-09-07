@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Controls;
 using Libretro.NET;
@@ -29,13 +30,18 @@ public class MainViewModel : ViewModelBase
         ndsStream.ReadExactly(data);
         Wrapper.LoadGame(data);
 
-        if (OperatingSystem.IsWindows())
+        if (((App)Application.Current!).AudioBackend is not null)
+        {
+            _audioBackend = ((App)Application.Current).AudioBackend!;
+            _audioBackend.Initialize(Wrapper.SampleRate);
+        }
+        else if (OperatingSystem.IsWindows())
         {
             _audioBackend = new NAudioWinBackend(Wrapper.SampleRate);
         }
         else
         {
-            
+            _audioBackend = new NAudioSilkNetOpenALBackend(Wrapper.SampleRate);
         }
         
         Wrapper.OnFrame = DisplayFrame;

@@ -4,9 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # melonDS-DS
-melondsds_libretro.*
-melondsds_libretro_*
-libbass.*
+*.so
+*.dylib
+*.dll
 *.nds
 
 # User-specific files
