@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using Libretro.NET.Bindings;
 
 namespace Libretro.NET
@@ -132,6 +133,9 @@ namespace Libretro.NET
                 case RetroBindings.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                 {
                     retro_log_callback* cb = (retro_log_callback*)data;
+                    retro_log_printf_t logDelegate = Log;
+                    GCHandle.Alloc(logDelegate);
+                    cb->log = Marshal.GetFunctionPointerForDelegate(logDelegate);
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
@@ -215,6 +219,7 @@ namespace Libretro.NET
 
         private void Log(retro_log_level level, sbyte* fmt)
         {
+            Console.Write(Marshal.PtrToStringAnsi((IntPtr)(char*)fmt));
             //Hard to log anything relevant without varargs support.
         }
 

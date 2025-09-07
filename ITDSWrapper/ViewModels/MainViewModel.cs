@@ -48,7 +48,7 @@ public class MainViewModel : ViewModelBase
         Wrapper.OnSample = PlaySample;
         TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.FPS);
         DateTime nextTick = DateTime.Now + interval;
-        Task.Run(() =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             while (true)
             {
