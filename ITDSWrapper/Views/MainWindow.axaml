@@ -7,6 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ITDSWrapper.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="ITDSWrapper">
-        <views:MainView />
+        WindowState="FullScreen"
+        Title="Into the Dream Spring">
+        <views:MainView Name="View" />
 </Window>

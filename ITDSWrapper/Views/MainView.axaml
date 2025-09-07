@@ -12,7 +12,11 @@
         <vm:MainViewModel />
     </Design.DataContext>
     
-    <Image Source="{Binding CurrentFrame}"
+    <Image Name="Screen"
+           Source="{Binding CurrentFrame}"
            Width="{Binding Wrapper.Width}"
-           Height="{Binding Wrapper.Height}"/>
+           Height="{Binding Wrapper.Height}"
+           PointerPressed="Screen_OnPointerPressed"
+           PointerReleased="Screen_OnPointerReleased"
+           PointerMoved="Screen_OnPointerMoved"/>
 </UserControl>

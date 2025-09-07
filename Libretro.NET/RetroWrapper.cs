@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using Libretro.NET.Bindings;
 
 namespace Libretro.NET
@@ -28,7 +27,7 @@ namespace Libretro.NET
 
         public OnSampleDelegate OnSample { get; set; }
 
-        public delegate bool OnCheckInputDelegate(uint port, uint device, uint index, uint id);
+        public delegate short OnCheckInputDelegate(uint port, uint device, uint index, uint id);
 
         public OnCheckInputDelegate OnCheckInput { get; set; }
 
@@ -118,6 +117,13 @@ namespace Libretro.NET
                                 value = (sbyte*)Marshal.StringToHGlobalAuto("disabled"),
                             };
                             break;
+                        case "melonds_show_cursor":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAuto(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAuto("disabled"),
+                            };
+                            break;
                     }
                     return true;
                 }
@@ -189,7 +195,7 @@ namespace Libretro.NET
 
         private short InputState(uint port, uint device, uint index, uint id)
         {
-            return OnCheckInput?.Invoke(port, device, index, id) ?? false ? (short)1 : (short)0;
+            return OnCheckInput?.Invoke(port, device, index, id) ?? 0;
         }
 
         private void AudioSample(short left, short right)
