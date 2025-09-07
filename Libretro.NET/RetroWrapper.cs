@@ -6,7 +6,7 @@ namespace Libretro.NET
 {
     /// <summary>
     /// Wraps all (most? (necessary?)) libretro mechanisms used to run a core and a game.
-    /// After creation, <see cref="LoadCore()"/> and then <see cref="LoadGame(string)"/> must be called before anything else.
+    /// After creation, <see cref="LoadCore()"/> and then <see cref="LoadGame(byte[])"/> must be called before anything else.
     /// </summary>
     public unsafe class RetroWrapper
     {
@@ -108,7 +108,6 @@ namespace Libretro.NET
                                 key = (sbyte*)Marshal.StringToHGlobalAuto(key),
                                 value = (sbyte*)Marshal.StringToHGlobalAuto("enabled"),
                             };
-                            // *cb = (char*)Marshal.StringToHGlobalAuto("enabled");
                             break;
                         case "melonds_jit_enable":
                             *cb = new()
@@ -216,7 +215,6 @@ namespace Libretro.NET
             var audio = new byte[count * 2];
 
             Marshal.Copy((IntPtr)data, audio, 0, count * 2);
-            // new Random().NextBytes(audio);
 
             OnSample?.Invoke(audio);
 

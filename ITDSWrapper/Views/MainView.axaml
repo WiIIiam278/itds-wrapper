@@ -12,11 +12,25 @@
         <vm:MainViewModel />
     </Design.DataContext>
     
-    <Image Name="Screen"
-           Source="{Binding CurrentFrame}"
-           Width="{Binding Wrapper.Width}"
-           Height="{Binding Wrapper.Height}"
-           PointerPressed="Screen_OnPointerPressed"
-           PointerReleased="Screen_OnPointerReleased"
-           PointerMoved="Screen_OnPointerMoved"/>
+    <Grid>
+        <Image Name="DsScreen"
+               Source="{Binding CurrentFrame}"
+               Width="{Binding Wrapper.Width}"
+               Height="{Binding Wrapper.Height}"
+               PointerPressed="DsScreen_OnPointerPressed"
+               PointerReleased="DsScreen_OnPointerReleased"
+               PointerMoved="DsScreen_OnPointerMoved"
+               Effect="{Binding ScreenEffect}"/>
+        
+        <Grid Name="OnScreenControls">
+            
+        </Grid>
+        
+        <Grid Name="InputOverlay" IsVisible="{Binding DisplayInputOverlay}">
+            
+        </Grid>
+        <Grid Name="SettingsOverlay" IsVisible="{Binding DisplaySettingsOverlay}">
+            <TextBlock>Settings!</TextBlock>
+        </Grid>
+    </Grid>
 </UserControl>

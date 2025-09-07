@@ -166,10 +166,10 @@ public class SilkNetOpenALWavePlayer : IWavePlayer
         if (PlaybackState == PlaybackState.Stopped)
             throw new InvalidOperationException("Stopped");
 
-        PlaybackState = PlaybackState.Paused;
+        PlaybackState = PlaybackState == PlaybackState.Playing ? PlaybackState.Paused : PlaybackState.Playing;
 
         //Context.Al.SourcePause(1, Source);
-        Al!.SourcePause(_alSource);
+        // Al!.SourcePause(_alSource);
     }
 
     public void Play()

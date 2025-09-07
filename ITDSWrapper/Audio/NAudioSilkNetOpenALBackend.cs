@@ -28,6 +28,11 @@ public class NAudioSilkNetOpenALBackend : IAudioBackend
         _wavePlayer.Play();
     }
 
+    public void TogglePause()
+    {
+        _wavePlayer.Pause();
+    }
+
     public void AddSamples(byte[] samples)
     {
         _waveProvider.AddSamples(samples);

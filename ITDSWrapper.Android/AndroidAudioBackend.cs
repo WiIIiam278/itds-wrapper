@@ -26,6 +26,18 @@ public class AndroidAudioBackend : IAudioBackend
         _audioPlayer.Play();
     }
 
+    public void TogglePause()
+    {
+        if (_audioPlayer.PlaybackState == PlaybackState.Playing)
+        {
+            _audioPlayer.Pause();
+        }
+        else
+        {
+            _audioPlayer.Play();
+        }
+    }
+
     public void AddSamples(byte[] samples)
     {
         _waveProvider?.AddSamples(samples);

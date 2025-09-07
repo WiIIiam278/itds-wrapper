@@ -31,6 +31,7 @@ public class InputBindings
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, new(PhysicalKey.ArrowLeft) },
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, new(PhysicalKey.Enter) },
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, new(PhysicalKey.ShiftRight) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3, new(PhysicalKey.Escape) },
             };
         }
     }
@@ -70,9 +71,22 @@ public class PhysicalInput
         _physicalKey = physicalKey;
     }
 
+    public void SetPhysicalKey(PhysicalKey? physicalKey)
+    {
+        if (physicalKey is not null)
+        {
+            _inputType |= InputType.PHYSICAL_KEY;
+            _physicalKey = (PhysicalKey)physicalKey;
+        }
+        else
+        {
+            _inputType &= ~InputType.PHYSICAL_KEY;
+        }
+    }
+
     public void PressPhysicalKey(PhysicalKey key)
     {
-        if (_inputType == InputType.PHYSICAL_KEY && key == _physicalKey)
+        if (_inputType.HasFlag(InputType.PHYSICAL_KEY) && key == _physicalKey)
         {
             IsSet = true;
         }
@@ -80,7 +94,7 @@ public class PhysicalInput
 
     public void ReleasePhysicalKey(PhysicalKey key)
     {
-        if (_inputType == InputType.PHYSICAL_KEY && key == _physicalKey)
+        if (_inputType.HasFlag(InputType.PHYSICAL_KEY) && key == _physicalKey)
         {
             IsSet = false;
         }
@@ -88,7 +102,7 @@ public class PhysicalInput
 
     public void PressVirtualButton()
     {
-        if (_inputType == InputType.VIRTUAL_BUTTON)
+        if (_inputType.HasFlag(InputType.VIRTUAL_BUTTON))
         {
             IsSet = true;
         }
@@ -96,13 +110,14 @@ public class PhysicalInput
 
     public void ReleaseVirtualButton()
     {
-        if (_inputType == InputType.VIRTUAL_BUTTON)
+        if (_inputType.HasFlag(InputType.VIRTUAL_BUTTON))
         {
             IsSet = false;
         }
     }
 }
 
+[Flags]
 public enum InputType
 {
     PHYSICAL_KEY,

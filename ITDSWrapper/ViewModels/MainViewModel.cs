@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using Avalonia;
 using Avalonia.Input;
+using Avalonia.Media;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Controls;
 using ITDSWrapper.Input;
@@ -27,6 +28,14 @@ public class MainViewModel : ViewModelBase
     
     private readonly InputBindings _inputBindings;
     private readonly PointerState _pointerState;
+    
+    public bool DisplaySettingsOverlay { get; set; }
+    [Reactive]
+    public IEffect? ScreenEffect { get; set; }
+
+    public bool Paused => DisplaySettingsOverlay;
+
+    public bool DisplayInputOverlay { get; set; }
     
     public MainViewModel()
     {
@@ -65,6 +74,13 @@ public class MainViewModel : ViewModelBase
         if (pressed)
         {
             _inputBindings.PushKey(key);
+            
+            if (_inputBindings.QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
+            {
+                DisplaySettingsOverlay = !DisplaySettingsOverlay;
+                ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
+                _audioBackend.TogglePause();
+            }
         }
         else
         {
@@ -100,12 +116,15 @@ public class MainViewModel : ViewModelBase
         
         while (!Closing)
         {
-            Wrapper.Run();
-            while (DateTime.Now < nextTick)
+            if (!Paused)
             {
-                Thread.Sleep(nextTick - DateTime.Now);
+                Wrapper.Run();
+                while (DateTime.Now < nextTick)
+                {
+                    Thread.Sleep(nextTick - DateTime.Now);
+                }
+                nextTick += interval;
             }
-            nextTick += interval;
         }
     }
 
@@ -126,7 +145,7 @@ public class MainViewModel : ViewModelBase
 
     private short HandleInput(uint port, uint device, uint index, uint id)
     {
-        if (device is RetroBindings.RETRO_DEVICE_KEYBOARD or RetroBindings.RETRO_DEVICE_JOYPAD)
+        if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
         {
             return _inputBindings.QueryInput(id) ? (short)1 : (short)0;
         }

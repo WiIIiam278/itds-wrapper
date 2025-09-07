@@ -11,18 +11,18 @@ public partial class MainView : UserControl
         InitializeComponent();
     }
 
-    private void Screen_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void DsScreen_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        ((MainViewModel)DataContext!).HandlePointer(Screen, pressedArgs: e);
+        ((MainViewModel)DataContext!).HandlePointer(DsScreen, pressedArgs: e);
     }
 
-    private void Screen_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    private void DsScreen_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        ((MainViewModel)DataContext!).HandlePointer(Screen, releasedArgs: e);
+        ((MainViewModel)DataContext!).HandlePointer(DsScreen, releasedArgs: e);
     }
 
-    private void Screen_OnPointerMoved(object? sender, PointerEventArgs e)
+    private void DsScreen_OnPointerMoved(object? sender, PointerEventArgs e)
     {
-        ((MainViewModel)DataContext!).HandlePointer(Screen, movedArgs: e);
+        ((MainViewModel)DataContext!).HandlePointer(DsScreen, movedArgs: e);
     }
 }

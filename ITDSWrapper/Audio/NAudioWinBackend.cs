@@ -35,6 +35,20 @@ public class NAudioWinBackend : IAudioBackend
 #endif
     }
 
+    public void TogglePause()
+    {
+#if WINDOWS
+        if (_waveOut.PlaybackState == PlaybackState.Playing)
+        {
+            _waveOut.Pause();
+        }
+        else
+        {
+            _waveOut.Play();
+        }
+#endif
+    }
+
     public void AddSamples(byte[] samples)
     {
         _waveProvider.AddSamples(samples);
