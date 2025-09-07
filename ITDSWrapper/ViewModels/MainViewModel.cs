@@ -125,6 +125,10 @@ public class MainViewModel : ViewModelBase
                 }
                 nextTick += interval;
             }
+            else
+            {
+                nextTick = DateTime.Now + interval;
+            }
         }
     }
 
