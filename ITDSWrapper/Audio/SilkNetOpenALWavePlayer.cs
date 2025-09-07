@@ -25,12 +25,8 @@
  */
 
 using System;
-using System.IO;
 using System.Threading;
-using Avalonia;
 using NAudio.Wave;
-using Silk.NET.Core.Contexts;
-using Silk.NET.Core.Loader;
 using Silk.NET.OpenAL;
 
 namespace ITDSWrapper.Audio;
