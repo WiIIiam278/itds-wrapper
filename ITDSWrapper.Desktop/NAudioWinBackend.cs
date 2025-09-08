@@ -1,15 +1,18 @@
-namespace ITDSWrapper.Audio;
+﻿using ITDSWrapper.Audio;
+#if WINDOWS
+using NAudio.Wave;
+#endif
 
+namespace ITDSWrapper.Desktop;
 public class NAudioWinBackend : IAudioBackend
 {
-    private readonly StreamingWaveProvider _waveProvider;
+    private StreamingWaveProvider _waveProvider;
 #if WINDOWS
     private readonly WaveOut _waveOut;
 #endif
 
-    public NAudioWinBackend(double sampleRate)
+    public NAudioWinBackend()
     {
-        _waveProvider = new(new((int)sampleRate, 2));
 #if WINDOWS
         _waveOut = new();
 #endif
@@ -17,6 +20,10 @@ public class NAudioWinBackend : IAudioBackend
 
     public void Initialize(double sampleRate)
     {
+#if WINDOWS
+        _waveProvider = new(new((int)sampleRate, 2));
+        _waveOut.Init(_waveProvider);
+#endif
     }
     
     public bool ShouldPlay()
@@ -31,7 +38,7 @@ public class NAudioWinBackend : IAudioBackend
     public void Play()
     {
 #if WINDOWS
-        _waveOut.Play()
+        _waveOut.Play();
 #endif
     }
 

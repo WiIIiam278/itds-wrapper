@@ -51,10 +51,6 @@ public class MainViewModel : ViewModelBase
             _audioBackend = ((App)Application.Current).AudioBackend!;
             _audioBackend.Initialize(Wrapper.SampleRate);
         }
-        else if (OperatingSystem.IsWindows())
-        {
-            _audioBackend = new NAudioWinBackend(Wrapper.SampleRate);
-        }
         else
         {
             _audioBackend = new NAudioSilkNetOpenALBackend(Wrapper.SampleRate);

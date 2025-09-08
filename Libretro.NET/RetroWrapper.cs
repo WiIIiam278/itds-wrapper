@@ -52,7 +52,7 @@ namespace Libretro.NET
             string fakePath = "itds.nds";
             retro_game_info game = new()
             {
-                path = (sbyte*)Marshal.StringToHGlobalAuto(fakePath),
+                path = (sbyte*)Marshal.StringToHGlobalAnsi(fakePath),
                 size = (UIntPtr)gameData.Length,
             };
 
@@ -87,7 +87,7 @@ namespace Libretro.NET
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                 {
                     char** cb = (char**)data;
-                    *cb = (char*)Marshal.StringToHGlobalAuto(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
+                    *cb = (char*)Marshal.StringToHGlobalAnsi(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -105,22 +105,22 @@ namespace Libretro.NET
                         case "melonds_homebrew_sdcard":
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAuto(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAuto("enabled"),
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("enabled"),
                             };
                             break;
                         case "melonds_jit_enable":
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAuto(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAuto("disabled"),
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
                             };
                             break;
                         case "melonds_show_cursor":
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAuto(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAuto("disabled"),
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
                             };
                             break;
                     }
@@ -146,7 +146,7 @@ namespace Libretro.NET
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
                     char** cb = (char**)data;
-                    *cb = (char*)Marshal.StringToHGlobalAuto(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
+                    *cb = (char*)Marshal.StringToHGlobalAnsi(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
