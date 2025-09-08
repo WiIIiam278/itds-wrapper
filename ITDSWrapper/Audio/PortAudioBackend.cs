@@ -1,23 +1,25 @@
 using NAudio.Wave;
+using PortAudioSharp;
 
 namespace ITDSWrapper.Audio;
 
-public class NAudioSilkNetOpenALBackend : IAudioBackend
+public class PortAudioBackend : IAudioBackend
 {
-    private readonly StreamingWaveProvider _waveProvider;
-    private readonly SilkNetOpenALWavePlayer _wavePlayer;
+    private StreamingWaveProvider _waveProvider;
+    private PortAudioWavePlayer _wavePlayer;
     
-    public NAudioSilkNetOpenALBackend(double sampleRate)
+    public PortAudioBackend(double sampleRate)
     {
         _waveProvider = new(new((int)sampleRate, 2));
-        _wavePlayer = new() { DesiredLatency = 30, NumberOfBuffers = 4};
+        _wavePlayer = new(150);
         _wavePlayer.Init(_waveProvider);
     }
+
 
     public void Initialize(double sampleRate)
     {
     }
-    
+
     public bool ShouldPlay()
     {
         return _wavePlayer.PlaybackState != PlaybackState.Playing;

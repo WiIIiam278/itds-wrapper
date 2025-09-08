@@ -26,6 +26,10 @@
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI"/>
         <PackageReference Include="NAudio.Core" />
+        <PackageReference Include="NAudio.Sdl2" />
+        <PackageReference Include="NAudio.Sdl2.Library" />
+        <PackageReference Include="Nito.AsyncEx.Coordination" />
+        <PackageReference Include="PortAudioSharp2" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Silk.NET.OpenAL" />
         <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />

@@ -1,36 +1,37 @@
+using NAudio.Sdl2;
 using NAudio.Wave;
 
 namespace ITDSWrapper.Audio;
 
-public class NAudioSilkNetOpenALBackend : IAudioBackend
+public class NAudioSdl2Backend : IAudioBackend
 {
     private readonly StreamingWaveProvider _waveProvider;
-    private readonly SilkNetOpenALWavePlayer _wavePlayer;
-    
-    public NAudioSilkNetOpenALBackend(double sampleRate)
+    private readonly WaveOutSdl _waveOut;
+
+    public NAudioSdl2Backend(double sampleRate)
     {
         _waveProvider = new(new((int)sampleRate, 2));
-        _wavePlayer = new() { DesiredLatency = 30, NumberOfBuffers = 4};
-        _wavePlayer.Init(_waveProvider);
+        _waveOut = new();
+        _waveOut.Init(_waveProvider);
     }
-
+    
     public void Initialize(double sampleRate)
     {
     }
-    
+
     public bool ShouldPlay()
     {
-        return _wavePlayer.PlaybackState != PlaybackState.Playing;
+        return _waveOut.PlaybackState != PlaybackState.Playing;
     }
 
     public void Play()
     {
-        _wavePlayer.Play();
+        _waveOut.Play();
     }
 
     public void TogglePause()
     {
-        _wavePlayer.Pause();
+        _waveOut.Pause();
     }
 
     public void AddSamples(byte[] samples)

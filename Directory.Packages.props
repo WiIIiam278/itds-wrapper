@@ -18,7 +18,11 @@
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.5" />
     <PackageVersion Include="NAudio" Version="2.2.1" />
     <PackageVersion Include="NAudio.Core" Version="2.2.1" />
+    <PackageVersion Include="NAudio.Sdl2" Version="2.2.6" />
+    <PackageVersion Include="NAudio.Sdl2.Library" Version="2.30.3" />
     <PackageVersion Include="NAudio.Sdl2.Library.Android" Version="2.30.3" />
+    <PackageVersion Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
+    <PackageVersion Include="PortAudioSharp2" Version="1.0.4" />
     <PackageVersion Include="ReactiveUI.Fody" Version="19.5.41" />
     <PackageVersion Include="Silk.NET.OpenAL" Version="2.22.0" />
     <PackageVersion Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.22.0" />

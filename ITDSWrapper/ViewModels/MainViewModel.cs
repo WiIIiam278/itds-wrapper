@@ -53,7 +53,7 @@ public class MainViewModel : ViewModelBase
         }
         else
         {
-            _audioBackend = new NAudioSilkNetOpenALBackend(Wrapper.SampleRate);
+            _audioBackend = new NAudioSdl2Backend(Wrapper.SampleRate);
         }
 
         _inputBindings = new();
