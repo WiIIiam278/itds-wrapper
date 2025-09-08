@@ -105,14 +105,14 @@ namespace Libretro.NET
                             *cb = new()
                             {
                                 key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("enabled"),
                             };
                             break;
                         case "melonds_jit_enable":
                             *cb = new()
                             {
                                 key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("enabled"),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
                             };
                             break;
                         case "melonds_show_cursor":
