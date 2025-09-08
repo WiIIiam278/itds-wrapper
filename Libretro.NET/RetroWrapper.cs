@@ -99,21 +99,20 @@ namespace Libretro.NET
                 {
                     string key = Marshal.PtrToStringAnsi((IntPtr)(*(char **)data));
                     retro_variable* cb = (retro_variable*)data;
-                    // char** cb = (char**)data;
                     switch (key)
                     {
                         case "melonds_homebrew_sdcard":
                             *cb = new()
                             {
                                 key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("enabled"),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
                             };
                             break;
                         case "melonds_jit_enable":
                             *cb = new()
                             {
                                 key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("enabled"),
                             };
                             break;
                         case "melonds_show_cursor":
@@ -223,7 +222,8 @@ namespace Libretro.NET
 
         private void Log(retro_log_level level, sbyte* fmt)
         {
-            Console.Write(Marshal.PtrToStringAnsi((IntPtr)(char*)fmt));
+            string str = Marshal.PtrToStringAnsi((IntPtr)(char*)fmt);
+            Console.Write(str);
             //Hard to log anything relevant without varargs support.
         }
 
