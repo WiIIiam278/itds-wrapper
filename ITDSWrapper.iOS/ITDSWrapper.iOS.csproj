@@ -5,6 +5,9 @@
         <SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <CodesignKey>iPhone Developer</CodesignKey>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia.iOS"/>
