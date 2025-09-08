@@ -34,7 +34,7 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public IEffect? ScreenEffect { get; set; }
 
-    public EmulationDriver Driver { get; }
+    public PauseDriver Driver { get; }
 
     public bool DisplayInputOverlay { get; set; }
     

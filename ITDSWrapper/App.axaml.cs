@@ -11,7 +11,7 @@ namespace ITDSWrapper;
 public partial class App : Application
 {
     public IAudioBackend? AudioBackend { get; set; }
-    public EmulationDriver? Driver { get; set; }
+    public PauseDriver? Driver { get; set; }
 
     public override void Initialize()
     {

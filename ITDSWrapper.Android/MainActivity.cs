@@ -15,7 +15,7 @@ namespace ITDSWrapper.Android;
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
 public class MainActivity : AvaloniaMainActivity<App>
 {
-    private EmulationDriver? _driver;
+    private PauseDriver? _driver;
     
     public override void OnWindowFocusChanged(bool hasFocus)
     {

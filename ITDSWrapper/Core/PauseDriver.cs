@@ -3,7 +3,7 @@ using ITDSWrapper.Audio;
 
 namespace ITDSWrapper.Core;
 
-public class EmulationDriver
+public class PauseDriver
 {
     private readonly Stack<bool> _pauseStack = [];
     
