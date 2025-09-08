@@ -6,7 +6,8 @@ using Avalonia;
 using Avalonia.Input;
 using Avalonia.Media;
 using ITDSWrapper.Audio;
-using ITDSWrapper.Controls;
+using ITDSWrapper.Core;
+using ITDSWrapper.Graphics;
 using ITDSWrapper.Input;
 using Libretro.NET;
 using Libretro.NET.Bindings;
@@ -33,7 +34,7 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public IEffect? ScreenEffect { get; set; }
 
-    public bool Paused => DisplaySettingsOverlay;
+    public EmulationDriver Driver { get; }
 
     public bool DisplayInputOverlay { get; set; }
     
@@ -55,6 +56,9 @@ public class MainViewModel : ViewModelBase
         {
             _audioBackend = new NAudioSdl2Backend(Wrapper.SampleRate);
         }
+        
+        Driver = ((App)Application.Current!).Driver ?? new();
+        Driver.AudioBackend = _audioBackend;
 
         _inputBindings = new();
         _pointerState = new();
@@ -74,8 +78,8 @@ public class MainViewModel : ViewModelBase
             if (_inputBindings.QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
             {
                 DisplaySettingsOverlay = !DisplaySettingsOverlay;
+                Driver.PushPauseState(DisplaySettingsOverlay);
                 ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
-                _audioBackend.TogglePause();
             }
         }
         else
@@ -112,7 +116,7 @@ public class MainViewModel : ViewModelBase
         
         while (!Closing)
         {
-            if (!Paused)
+            if (!Driver.IsPaused())
             {
                 Wrapper.Run();
                 while (DateTime.Now < nextTick)

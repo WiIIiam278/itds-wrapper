@@ -161,6 +161,7 @@ public class AndroidAudioPlayer : IWavePlayer
         //Pause the wave player
         PlaybackState = PlaybackState.Paused;
         _audioTrack.Pause();
+        _audioTrack.Flush();
     }
 
     public void Stop()

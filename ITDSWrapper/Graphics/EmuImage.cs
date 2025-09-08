@@ -7,7 +7,7 @@ using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
 using SkiaSharp;
 
-namespace ITDSWrapper.Controls;
+namespace ITDSWrapper.Graphics;
 
 public class EmuImage : IImage, IDisposable
 {

@@ -9,6 +9,7 @@ public class AndroidAudioBackend : IAudioBackend
 {
     private StreamingWaveProvider? _waveProvider;
     private readonly AndroidAudioPlayer _audioPlayer = new() { DesiredLatency = 30, NumberOfBuffers = 4 };
+    private bool _started;
 
     public void Initialize(double sampleRate)
     {
@@ -18,11 +19,12 @@ public class AndroidAudioBackend : IAudioBackend
     
     public bool ShouldPlay()
     {
-        return _audioPlayer.PlaybackState != PlaybackState.Playing;
+        return !_started;
     }
 
     public void Play()
     {
+        _started = true;
         _audioPlayer.Play();
     }
 
