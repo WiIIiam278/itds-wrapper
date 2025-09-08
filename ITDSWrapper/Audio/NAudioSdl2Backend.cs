@@ -1,3 +1,4 @@
+using System;
 using NAudio.Sdl2;
 using NAudio.Wave;
 
@@ -19,9 +20,17 @@ public class NAudioSdl2Backend : IAudioBackend
     {
     }
 
-    public bool ShouldPlay()
+    public bool ShouldStart()
     {
         return _waveOut.PlaybackState != PlaybackState.Playing;
+    }
+
+    public bool ShouldHoldEmulation()
+    {
+        int distance = _waveProvider.Distance < 0
+            ? _waveProvider.Distance + _waveProvider.BufferLength
+            : _waveProvider.Distance;
+        return distance > _waveOut.OutputWaveFormat.SampleRate * _waveOut.DesiredLatency / 300;
     }
 
     public void Play()
@@ -34,7 +43,7 @@ public class NAudioSdl2Backend : IAudioBackend
         _waveOut.Pause();
     }
 
-    public void AddSamples(byte[] samples)
+    public void PlaySamples(byte[] samples)
     {
         _waveProvider.AddSamples(samples);
     }

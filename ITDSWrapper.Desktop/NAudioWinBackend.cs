@@ -26,13 +26,18 @@ public class NAudioWinBackend : IAudioBackend
 #endif
     }
     
-    public bool ShouldPlay()
+    public bool ShouldStart()
     {
 #if WINDOWS
         return _waveOut.PlaybackState != PlaybackState.Playing;
 #else
         return false;
 #endif
+    }
+
+    public bool ShouldHoldEmulation()
+    {
+        return false;
     }
 
     public void Play()
@@ -56,7 +61,7 @@ public class NAudioWinBackend : IAudioBackend
 #endif
     }
 
-    public void AddSamples(byte[] samples)
+    public void PlaySamples(byte[] samples)
     {
         _waveProvider.AddSamples(samples);
     }

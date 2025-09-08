@@ -25,6 +25,8 @@ public class MainViewModel : ViewModelBase
 
     private readonly byte[] _frameData = new byte[256 * 384 * 4];
     
+    private readonly PauseDriver _pauseDriver;
+    
     private readonly IAudioBackend _audioBackend;
     
     private readonly InputBindings _inputBindings;
@@ -33,8 +35,6 @@ public class MainViewModel : ViewModelBase
     public bool DisplaySettingsOverlay { get; set; }
     [Reactive]
     public IEffect? ScreenEffect { get; set; }
-
-    public PauseDriver Driver { get; }
 
     public bool DisplayInputOverlay { get; set; }
     
@@ -54,11 +54,11 @@ public class MainViewModel : ViewModelBase
         }
         else
         {
-            _audioBackend = new NAudioSdl2Backend(Wrapper.SampleRate);
+            _audioBackend = new NAudioSilkNetOpenALBackend(Wrapper.SampleRate, 32);
         }
         
-        Driver = ((App)Application.Current!).Driver ?? new();
-        Driver.AudioBackend = _audioBackend;
+        _pauseDriver = ((App)Application.Current!).Driver ?? new();
+        _pauseDriver.AudioBackend = _audioBackend;
 
         _inputBindings = new();
         _pointerState = new();
@@ -78,7 +78,7 @@ public class MainViewModel : ViewModelBase
             if (_inputBindings.QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
             {
                 DisplaySettingsOverlay = !DisplaySettingsOverlay;
-                Driver.PushPauseState(DisplaySettingsOverlay);
+                _pauseDriver.PushPauseState(DisplaySettingsOverlay);
                 ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
             }
         }
@@ -116,12 +116,13 @@ public class MainViewModel : ViewModelBase
         
         while (!Closing)
         {
-            if (!Driver.IsPaused())
+            if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
                 while (DateTime.Now < nextTick)
                 {
-                    Thread.Sleep(nextTick - DateTime.Now);
+                    TimeSpan sleep = nextTick - DateTime.Now;
+                    Thread.Sleep(sleep > TimeSpan.Zero ? sleep : TimeSpan.Zero);
                 }
                 nextTick += interval;
             }
@@ -140,11 +141,7 @@ public class MainViewModel : ViewModelBase
     
     private void PlaySample(byte[] sample)
     {
-        _audioBackend.AddSamples(sample);
-        if (_audioBackend.ShouldPlay())
-        {
-            _audioBackend.Play();
-        }
+        _audioBackend.PlaySamples(sample);
     }
 
     private short HandleInput(uint port, uint device, uint index, uint id)

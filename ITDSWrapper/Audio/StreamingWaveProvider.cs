@@ -10,6 +10,9 @@ public class StreamingWaveProvider : IWaveProvider
     private int _samplePosition;
 
     public WaveFormat WaveFormat { get; }
+    
+    public int Distance => _samplePosition - _bufferedPosition;
+    public int BufferLength => _buffer.Length;
 
     public StreamingWaveProvider(WaveFormat waveFormat)
     {

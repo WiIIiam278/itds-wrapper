@@ -17,9 +17,14 @@ public class AndroidAudioBackend : IAudioBackend
         _audioPlayer.Init(_waveProvider);
     }
     
-    public bool ShouldPlay()
+    public bool ShouldStart()
     {
         return !_started;
+    }
+
+    public bool ShouldHoldEmulation()
+    {
+        return false;
     }
 
     public void Play()
@@ -40,7 +45,7 @@ public class AndroidAudioBackend : IAudioBackend
         }
     }
 
-    public void AddSamples(byte[] samples)
+    public void PlaySamples(byte[] samples)
     {
         _waveProvider?.AddSamples(samples);
     }
