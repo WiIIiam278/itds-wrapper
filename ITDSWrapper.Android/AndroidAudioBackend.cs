@@ -4,7 +4,6 @@ using System;
 using System.Threading;
 using Android.Media;
 using ITDSWrapper.Audio;
-using NAudio.Wave;
 
 namespace ITDSWrapper.Android;
 
@@ -95,24 +94,20 @@ public class AndroidAudioBackend : IAudioBackend
         int waveBufferSize = (_audioTrack!.BufferSizeInFrames + NumberOfBuffers - 1) / NumberOfBuffers * 2;
         waveBufferSize = (waveBufferSize + 3) & ~3;
         waveBufferSize = waveBufferSize > samples.Length ? samples.Length : waveBufferSize;
-        WaveBuffer waveBuffer = new(waveBufferSize)
-        {
-            ByteBufferCount = waveBufferSize,
-        };
+        byte[] waveBuffer = new byte[waveBufferSize];
 
         //Fill the wave buffer with new samples
-        Array.Copy(samples, waveBuffer.ByteBuffer, waveBuffer.ByteBufferCount);
+        Array.Copy(samples, waveBuffer, waveBuffer.Length);
         if (samples.Length > 0)
         {
             //Clear the unused space in the wave buffer if necessary
-            if (samples.Length < waveBuffer.ByteBufferCount)
+            if (samples.Length < waveBuffer.Length)
             {
-                waveBuffer.ByteBufferCount = (samples.Length + 3) & ~3;
-                Array.Clear(waveBuffer.ByteBuffer, samples.Length, waveBuffer.ByteBufferCount - samples.Length);
+                Array.Clear(waveBuffer, samples.Length, waveBuffer.Length - samples.Length);
             }
 
             //Write the specified wave buffer to the audio track
-            _audioTrack.Write(waveBuffer.ByteBuffer, 0, waveBuffer.ByteBufferCount);
+            _audioTrack.Write(waveBuffer, 0, waveBuffer.Length);
         }
     }
 }
