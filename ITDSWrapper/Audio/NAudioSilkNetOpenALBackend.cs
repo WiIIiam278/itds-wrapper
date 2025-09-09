@@ -35,7 +35,7 @@ public class NAudioSilkNetOpenALBackend : IAudioBackend
     //private int[] alBuffers;
     private uint[]? _alBuffers;
 
-    // private byte[]? _sourceBuffer;
+    private bool _paused;
     
     public unsafe NAudioSilkNetOpenALBackend(double sampleRate, int numBuffers)
     {
@@ -77,17 +77,27 @@ public class NAudioSilkNetOpenALBackend : IAudioBackend
 
     public void TogglePause()
     {
+        if (_paused)
+        {
+            _paused = false;
+        }
+        else
+        {
+            _paused = true;
+            Al!.SourcePause(_alSource);
+            Al.SourceUnqueueBuffers(_alSource, _alBuffers);
+        }
     }
 
     public void PlaySamples(byte[] samples)
     {
         ReadAndQueueBuffers(_alBuffers!, samples);
         
-        Al!.GetSourceProperty(_alSource, GetSourceInteger.BuffersProcessed, out var processed);
+        Al!.GetSourceProperty(_alSource, GetSourceInteger.BuffersProcessed, out int processed);
 
 
         //AL.GetSource(_alSource, ALGetSourcei.SourceState, out state);
-        Al!.GetSourceProperty(_alSource, GetSourceInteger.SourceState, out var state);
+        Al!.GetSourceProperty(_alSource, GetSourceInteger.SourceState, out int state);
 
 
         if (processed > 0) //there are processed buffers
@@ -95,7 +105,7 @@ public class NAudioSilkNetOpenALBackend : IAudioBackend
             //unqueue
             //int[] unqueueBuffers = AL.SourceUnqueueBuffers(_alSource, processed);
 
-            var unqueueBuffers = new uint[processed];
+            uint[] unqueueBuffers = [(uint)processed];
             Al.SourceUnqueueBuffers(_alSource, unqueueBuffers);
         }
 
