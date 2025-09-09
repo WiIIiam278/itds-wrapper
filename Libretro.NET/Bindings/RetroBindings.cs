@@ -3,7 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace Libretro.NET.Bindings
 {
-    public enum retro_language
+    [NativeTypeName("unsigned int")]
+    public enum retro_language : uint
     {
         RETRO_LANGUAGE_ENGLISH = 0,
         RETRO_LANGUAGE_JAPANESE = 1,
@@ -29,11 +30,24 @@ namespace Libretro.NET.Bindings
         RETRO_LANGUAGE_HEBREW = 21,
         RETRO_LANGUAGE_ASTURIAN = 22,
         RETRO_LANGUAGE_FINNISH = 23,
+        RETRO_LANGUAGE_INDONESIAN = 24,
+        RETRO_LANGUAGE_SWEDISH = 25,
+        RETRO_LANGUAGE_UKRAINIAN = 26,
+        RETRO_LANGUAGE_CZECH = 27,
+        RETRO_LANGUAGE_CATALAN_VALENCIA = 28,
+        RETRO_LANGUAGE_CATALAN = 29,
+        RETRO_LANGUAGE_BRITISH_ENGLISH = 30,
+        RETRO_LANGUAGE_HUNGARIAN = 31,
+        RETRO_LANGUAGE_BELARUSIAN = 32,
+        RETRO_LANGUAGE_GALICIAN = 33,
+        RETRO_LANGUAGE_NORWEGIAN = 34,
+        RETRO_LANGUAGE_IRISH = 35,
         RETRO_LANGUAGE_LAST,
         RETRO_LANGUAGE_DUMMY = 2147483647,
     }
 
-    public enum retro_key
+    [NativeTypeName("unsigned int")]
+    public enum retro_key : uint
     {
         RETROK_UNKNOWN = 0,
         RETROK_FIRST = 0,
@@ -177,11 +191,30 @@ namespace Libretro.NET.Bindings
         RETROK_EURO = 321,
         RETROK_UNDO = 322,
         RETROK_OEM_102 = 323,
+        RETROK_BROWSER_BACK = 324,
+        RETROK_BROWSER_FORWARD = 325,
+        RETROK_BROWSER_REFRESH = 326,
+        RETROK_BROWSER_STOP = 327,
+        RETROK_BROWSER_SEARCH = 328,
+        RETROK_BROWSER_FAVORITES = 329,
+        RETROK_BROWSER_HOME = 330,
+        RETROK_VOLUME_MUTE = 331,
+        RETROK_VOLUME_DOWN = 332,
+        RETROK_VOLUME_UP = 333,
+        RETROK_MEDIA_NEXT = 334,
+        RETROK_MEDIA_PREV = 335,
+        RETROK_MEDIA_STOP = 336,
+        RETROK_MEDIA_PLAY_PAUSE = 337,
+        RETROK_LAUNCH_MAIL = 338,
+        RETROK_LAUNCH_MEDIA = 339,
+        RETROK_LAUNCH_APP1 = 340,
+        RETROK_LAUNCH_APP2 = 341,
         RETROK_LAST,
         RETROK_DUMMY = 2147483647,
     }
 
-    public enum retro_mod
+    [NativeTypeName("unsigned int")]
+    public enum retro_mod : uint
     {
         RETROKMOD_NONE = 0x0000,
         RETROKMOD_SHIFT = 0x01,
@@ -231,7 +264,7 @@ namespace Libretro.NET.Bindings
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     [return: NativeTypeName("int64_t")]
-    public unsafe delegate long retro_vfs_read_t([NativeTypeName("struct retro_vfs_file_handle *")] retro_vfs_file_handle* stream, [NativeTypeName("void *")] void* s, [NativeTypeName("uint64_t")] ulong len);
+    public unsafe delegate long retro_vfs_read_t([NativeTypeName("struct retro_vfs_file_handle *")] retro_vfs_file_handle* stream, void* s, [NativeTypeName("uint64_t")] ulong len);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     [return: NativeTypeName("int64_t")]
@@ -338,7 +371,8 @@ namespace Libretro.NET.Bindings
         public retro_vfs_interface* iface;
     }
 
-    public enum retro_hw_render_interface_type
+    [NativeTypeName("unsigned int")]
+    public enum retro_hw_render_interface_type : uint
     {
         RETRO_HW_RENDER_INTERFACE_VULKAN = 0,
         RETRO_HW_RENDER_INTERFACE_D3D9 = 1,
@@ -365,6 +399,16 @@ namespace Libretro.NET.Bindings
     {
         [NativeTypeName("retro_set_led_state_t")]
         public IntPtr set_led_state;
+    }
+
+    [NativeTypeName("unsigned int")]
+    public enum retro_av_enable_flags : uint
+    {
+        RETRO_AV_ENABLE_VIDEO = (1 << 0),
+        RETRO_AV_ENABLE_AUDIO = (1 << 1),
+        RETRO_AV_ENABLE_FAST_SAVESTATES = (1 << 2),
+        RETRO_AV_ENABLE_HARD_DISABLE_AUDIO = (1 << 3),
+        RETRO_AV_ENABLE_DUMMY = 2147483647,
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -400,7 +444,8 @@ namespace Libretro.NET.Bindings
         public IntPtr flush;
     }
 
-    public enum retro_hw_render_context_negotiation_interface_type
+    [NativeTypeName("unsigned int")]
+    public enum retro_hw_render_context_negotiation_interface_type : uint
     {
         RETRO_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE_VULKAN = 0,
         RETRO_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE_DUMMY = 2147483647,
@@ -420,7 +465,6 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("uint64_t")]
         public ulong flags;
 
-        [NativeTypeName("void *")]
         public void* ptr;
 
         [NativeTypeName("size_t")]
@@ -486,11 +530,14 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("const char *")]
         public sbyte* valid_extensions;
 
-        public bool need_fullpath;
+        [NativeTypeName("bool")]
+        public byte need_fullpath;
 
-        public bool block_extract;
+        [NativeTypeName("bool")]
+        public byte block_extract;
 
-        public bool required;
+        [NativeTypeName("bool")]
+        public byte required;
 
         [NativeTypeName("const struct retro_subsystem_memory_info *")]
         public retro_subsystem_memory_info* memory;
@@ -530,7 +577,8 @@ namespace Libretro.NET.Bindings
         public IntPtr get_proc_address;
     }
 
-    public enum retro_log_level
+    [NativeTypeName("unsigned int")]
+    public enum retro_log_level : uint
     {
         RETRO_LOG_DEBUG = 0,
         RETRO_LOG_INFO,
@@ -562,7 +610,8 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("retro_perf_tick_t")]
         public ulong call_cnt;
 
-        public bool registered;
+        [NativeTypeName("bool")]
+        public byte registered;
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -613,7 +662,8 @@ namespace Libretro.NET.Bindings
         public IntPtr perf_log;
     }
 
-    public enum retro_sensor_action
+    [NativeTypeName("unsigned int")]
+    public enum retro_sensor_action : uint
     {
         RETRO_SENSOR_ACCELEROMETER_ENABLE = 0,
         RETRO_SENSOR_ACCELEROMETER_DISABLE,
@@ -639,7 +689,8 @@ namespace Libretro.NET.Bindings
         public IntPtr get_sensor_input;
     }
 
-    public enum retro_camera_buffer
+    [NativeTypeName("unsigned int")]
+    public enum retro_camera_buffer : uint
     {
         RETRO_CAMERA_BUFFER_OPENGL_TEXTURE = 0,
         RETRO_CAMERA_BUFFER_RAW_FRAMEBUFFER,
@@ -701,7 +752,7 @@ namespace Libretro.NET.Bindings
     public delegate void retro_location_stop_t();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate bool retro_location_get_position_t([NativeTypeName("double *")] double* lat, [NativeTypeName("double *")] double* lon, [NativeTypeName("double *")] double* horiz_accuracy, [NativeTypeName("double *")] double* vert_accuracy);
+    public unsafe delegate bool retro_location_get_position_t(double* lat, double* lon, double* horiz_accuracy, double* vert_accuracy);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void retro_location_lifetime_status_t();
@@ -727,7 +778,8 @@ namespace Libretro.NET.Bindings
         public IntPtr deinitialized;
     }
 
-    public enum retro_rumble_effect
+    [NativeTypeName("unsigned int")]
+    public enum retro_rumble_effect : uint
     {
         RETRO_RUMBLE_STRONG = 0,
         RETRO_RUMBLE_WEAK = 1,
@@ -790,7 +842,8 @@ namespace Libretro.NET.Bindings
     [return: NativeTypeName("retro_proc_address_t")]
     public unsafe delegate IntPtr retro_hw_get_proc_address_t([NativeTypeName("const char *")] sbyte* sym);
 
-    public enum retro_hw_context_type
+    [NativeTypeName("unsigned int")]
+    public enum retro_hw_context_type : uint
     {
         RETRO_HW_CONTEXT_NONE = 0,
         RETRO_HW_CONTEXT_OPENGL = 1,
@@ -799,7 +852,10 @@ namespace Libretro.NET.Bindings
         RETRO_HW_CONTEXT_OPENGLES3 = 4,
         RETRO_HW_CONTEXT_OPENGLES_VERSION = 5,
         RETRO_HW_CONTEXT_VULKAN = 6,
-        RETRO_HW_CONTEXT_DIRECT3D = 7,
+        RETRO_HW_CONTEXT_D3D11 = 7,
+        RETRO_HW_CONTEXT_D3D10 = 8,
+        RETRO_HW_CONTEXT_D3D12 = 9,
+        RETRO_HW_CONTEXT_D3D9 = 10,
         RETRO_HW_CONTEXT_DUMMY = 2147483647,
     }
 
@@ -817,11 +873,14 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("retro_hw_get_proc_address_t")]
         public IntPtr get_proc_address;
 
-        public bool depth;
+        [NativeTypeName("bool")]
+        public byte depth;
 
-        public bool stencil;
+        [NativeTypeName("bool")]
+        public byte stencil;
 
-        public bool bottom_left_origin;
+        [NativeTypeName("bool")]
+        public byte bottom_left_origin;
 
         [NativeTypeName("unsigned int")]
         public uint version_major;
@@ -829,12 +888,14 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("unsigned int")]
         public uint version_minor;
 
-        public bool cache_context;
+        [NativeTypeName("bool")]
+        public byte cache_context;
 
         [NativeTypeName("retro_hw_context_reset_t")]
         public IntPtr context_destroy;
 
-        public bool debug_context;
+        [NativeTypeName("bool")]
+        public byte debug_context;
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -873,10 +934,10 @@ namespace Libretro.NET.Bindings
     public unsafe delegate bool retro_set_initial_image_t([NativeTypeName("unsigned int")] uint index, [NativeTypeName("const char *")] sbyte* path);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate bool retro_get_image_path_t([NativeTypeName("unsigned int")] uint index, [NativeTypeName("char *")] sbyte* path, [NativeTypeName("size_t")] UIntPtr len);
+    public unsafe delegate bool retro_get_image_path_t([NativeTypeName("unsigned int")] uint index, [NativeTypeName("char *")] sbyte* s, [NativeTypeName("size_t")] UIntPtr len);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate bool retro_get_image_label_t([NativeTypeName("unsigned int")] uint index, [NativeTypeName("char *")] sbyte* label, [NativeTypeName("size_t")] UIntPtr len);
+    public unsafe delegate bool retro_get_image_label_t([NativeTypeName("unsigned int")] uint index, [NativeTypeName("char *")] sbyte* s, [NativeTypeName("size_t")] UIntPtr len);
 
     public partial struct retro_disk_control_callback
     {
@@ -935,12 +996,71 @@ namespace Libretro.NET.Bindings
         public IntPtr get_image_label;
     }
 
-    public enum retro_pixel_format
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate void retro_netpacket_send_t(int flags, [NativeTypeName("const void *")] void* buf, [NativeTypeName("size_t")] UIntPtr len, [NativeTypeName("uint16_t")] ushort client_id);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void retro_netpacket_poll_receive_t();
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void retro_netpacket_start_t([NativeTypeName("uint16_t")] ushort client_id, [NativeTypeName("retro_netpacket_send_t")] IntPtr send_fn, [NativeTypeName("retro_netpacket_poll_receive_t")] IntPtr poll_receive_fn);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate void retro_netpacket_receive_t([NativeTypeName("const void *")] void* buf, [NativeTypeName("size_t")] UIntPtr len, [NativeTypeName("uint16_t")] ushort client_id);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void retro_netpacket_stop_t();
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void retro_netpacket_poll_t();
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate bool retro_netpacket_connected_t([NativeTypeName("uint16_t")] ushort client_id);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void retro_netpacket_disconnected_t([NativeTypeName("uint16_t")] ushort client_id);
+
+    public unsafe partial struct retro_netpacket_callback
+    {
+        [NativeTypeName("retro_netpacket_start_t")]
+        public IntPtr start;
+
+        [NativeTypeName("retro_netpacket_receive_t")]
+        public IntPtr receive;
+
+        [NativeTypeName("retro_netpacket_stop_t")]
+        public IntPtr stop;
+
+        [NativeTypeName("retro_netpacket_poll_t")]
+        public IntPtr poll;
+
+        [NativeTypeName("retro_netpacket_connected_t")]
+        public IntPtr connected;
+
+        [NativeTypeName("retro_netpacket_disconnected_t")]
+        public IntPtr disconnected;
+
+        [NativeTypeName("const char *")]
+        public sbyte* protocol_version;
+    }
+
+    [NativeTypeName("unsigned int")]
+    public enum retro_pixel_format : uint
     {
         RETRO_PIXEL_FORMAT_0RGB1555 = 0,
         RETRO_PIXEL_FORMAT_XRGB8888 = 1,
         RETRO_PIXEL_FORMAT_RGB565 = 2,
         RETRO_PIXEL_FORMAT_UNKNOWN = 2147483647,
+    }
+
+    [NativeTypeName("unsigned int")]
+    public enum retro_savestate_context : uint
+    {
+        RETRO_SAVESTATE_CONTEXT_NORMAL = 0,
+        RETRO_SAVESTATE_CONTEXT_RUNAHEAD_SAME_INSTANCE = 1,
+        RETRO_SAVESTATE_CONTEXT_RUNAHEAD_SAME_BINARY = 2,
+        RETRO_SAVESTATE_CONTEXT_ROLLBACK_NETPLAY = 3,
+        RETRO_SAVESTATE_CONTEXT_UNKNOWN = 2147483647,
     }
 
     public unsafe partial struct retro_message
@@ -952,14 +1072,16 @@ namespace Libretro.NET.Bindings
         public uint frames;
     }
 
-    public enum retro_message_target
+    [NativeTypeName("unsigned int")]
+    public enum retro_message_target : uint
     {
         RETRO_MESSAGE_TARGET_ALL = 0,
         RETRO_MESSAGE_TARGET_OSD,
         RETRO_MESSAGE_TARGET_LOG,
     }
 
-    public enum retro_message_type
+    [NativeTypeName("unsigned int")]
+    public enum retro_message_type : uint
     {
         RETRO_MESSAGE_TYPE_NOTIFICATION = 0,
         RETRO_MESSAGE_TYPE_NOTIFICATION_ALT,
@@ -1020,9 +1142,59 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("const char *")]
         public sbyte* valid_extensions;
 
-        public bool need_fullpath;
+        [NativeTypeName("bool")]
+        public byte need_fullpath;
 
-        public bool block_extract;
+        [NativeTypeName("bool")]
+        public byte block_extract;
+    }
+
+    public unsafe partial struct retro_system_content_info_override
+    {
+        [NativeTypeName("const char *")]
+        public sbyte* extensions;
+
+        [NativeTypeName("bool")]
+        public byte need_fullpath;
+
+        [NativeTypeName("bool")]
+        public byte persistent_data;
+    }
+
+    public unsafe partial struct retro_game_info_ext
+    {
+        [NativeTypeName("const char *")]
+        public sbyte* full_path;
+
+        [NativeTypeName("const char *")]
+        public sbyte* archive_path;
+
+        [NativeTypeName("const char *")]
+        public sbyte* archive_file;
+
+        [NativeTypeName("const char *")]
+        public sbyte* dir;
+
+        [NativeTypeName("const char *")]
+        public sbyte* name;
+
+        [NativeTypeName("const char *")]
+        public sbyte* ext;
+
+        [NativeTypeName("const char *")]
+        public sbyte* meta;
+
+        [NativeTypeName("const void *")]
+        public void* data;
+
+        [NativeTypeName("size_t")]
+        public UIntPtr size;
+
+        [NativeTypeName("bool")]
+        public byte file_in_archive;
+
+        [NativeTypeName("bool")]
+        public byte persistent_data;
     }
 
     public partial struct retro_game_geometry
@@ -1072,7 +1244,8 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("const char *")]
         public sbyte* key;
 
-        public bool visible;
+        [NativeTypeName("bool")]
+        public byte visible;
     }
 
     public unsafe partial struct retro_core_option_value
@@ -1095,7 +1268,7 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("const char *")]
         public sbyte* info;
 
-        [NativeTypeName("struct retro_core_option_value [128]")]
+        [NativeTypeName("struct retro_core_option_value[128]")]
         public _values_e__FixedBuffer values;
 
         [NativeTypeName("const char *")]
@@ -1254,6 +1427,215 @@ namespace Libretro.NET.Bindings
         public retro_core_option_definition* local;
     }
 
+    public unsafe partial struct retro_core_option_v2_category
+    {
+        [NativeTypeName("const char *")]
+        public sbyte* key;
+
+        [NativeTypeName("const char *")]
+        public sbyte* desc;
+
+        [NativeTypeName("const char *")]
+        public sbyte* info;
+    }
+
+    public unsafe partial struct retro_core_option_v2_definition
+    {
+        [NativeTypeName("const char *")]
+        public sbyte* key;
+
+        [NativeTypeName("const char *")]
+        public sbyte* desc;
+
+        [NativeTypeName("const char *")]
+        public sbyte* desc_categorized;
+
+        [NativeTypeName("const char *")]
+        public sbyte* info;
+
+        [NativeTypeName("const char *")]
+        public sbyte* info_categorized;
+
+        [NativeTypeName("const char *")]
+        public sbyte* category_key;
+
+        [NativeTypeName("struct retro_core_option_value[128]")]
+        public _values_e__FixedBuffer values;
+
+        [NativeTypeName("const char *")]
+        public sbyte* default_value;
+
+        public partial struct _values_e__FixedBuffer
+        {
+            public retro_core_option_value e0;
+            public retro_core_option_value e1;
+            public retro_core_option_value e2;
+            public retro_core_option_value e3;
+            public retro_core_option_value e4;
+            public retro_core_option_value e5;
+            public retro_core_option_value e6;
+            public retro_core_option_value e7;
+            public retro_core_option_value e8;
+            public retro_core_option_value e9;
+            public retro_core_option_value e10;
+            public retro_core_option_value e11;
+            public retro_core_option_value e12;
+            public retro_core_option_value e13;
+            public retro_core_option_value e14;
+            public retro_core_option_value e15;
+            public retro_core_option_value e16;
+            public retro_core_option_value e17;
+            public retro_core_option_value e18;
+            public retro_core_option_value e19;
+            public retro_core_option_value e20;
+            public retro_core_option_value e21;
+            public retro_core_option_value e22;
+            public retro_core_option_value e23;
+            public retro_core_option_value e24;
+            public retro_core_option_value e25;
+            public retro_core_option_value e26;
+            public retro_core_option_value e27;
+            public retro_core_option_value e28;
+            public retro_core_option_value e29;
+            public retro_core_option_value e30;
+            public retro_core_option_value e31;
+            public retro_core_option_value e32;
+            public retro_core_option_value e33;
+            public retro_core_option_value e34;
+            public retro_core_option_value e35;
+            public retro_core_option_value e36;
+            public retro_core_option_value e37;
+            public retro_core_option_value e38;
+            public retro_core_option_value e39;
+            public retro_core_option_value e40;
+            public retro_core_option_value e41;
+            public retro_core_option_value e42;
+            public retro_core_option_value e43;
+            public retro_core_option_value e44;
+            public retro_core_option_value e45;
+            public retro_core_option_value e46;
+            public retro_core_option_value e47;
+            public retro_core_option_value e48;
+            public retro_core_option_value e49;
+            public retro_core_option_value e50;
+            public retro_core_option_value e51;
+            public retro_core_option_value e52;
+            public retro_core_option_value e53;
+            public retro_core_option_value e54;
+            public retro_core_option_value e55;
+            public retro_core_option_value e56;
+            public retro_core_option_value e57;
+            public retro_core_option_value e58;
+            public retro_core_option_value e59;
+            public retro_core_option_value e60;
+            public retro_core_option_value e61;
+            public retro_core_option_value e62;
+            public retro_core_option_value e63;
+            public retro_core_option_value e64;
+            public retro_core_option_value e65;
+            public retro_core_option_value e66;
+            public retro_core_option_value e67;
+            public retro_core_option_value e68;
+            public retro_core_option_value e69;
+            public retro_core_option_value e70;
+            public retro_core_option_value e71;
+            public retro_core_option_value e72;
+            public retro_core_option_value e73;
+            public retro_core_option_value e74;
+            public retro_core_option_value e75;
+            public retro_core_option_value e76;
+            public retro_core_option_value e77;
+            public retro_core_option_value e78;
+            public retro_core_option_value e79;
+            public retro_core_option_value e80;
+            public retro_core_option_value e81;
+            public retro_core_option_value e82;
+            public retro_core_option_value e83;
+            public retro_core_option_value e84;
+            public retro_core_option_value e85;
+            public retro_core_option_value e86;
+            public retro_core_option_value e87;
+            public retro_core_option_value e88;
+            public retro_core_option_value e89;
+            public retro_core_option_value e90;
+            public retro_core_option_value e91;
+            public retro_core_option_value e92;
+            public retro_core_option_value e93;
+            public retro_core_option_value e94;
+            public retro_core_option_value e95;
+            public retro_core_option_value e96;
+            public retro_core_option_value e97;
+            public retro_core_option_value e98;
+            public retro_core_option_value e99;
+            public retro_core_option_value e100;
+            public retro_core_option_value e101;
+            public retro_core_option_value e102;
+            public retro_core_option_value e103;
+            public retro_core_option_value e104;
+            public retro_core_option_value e105;
+            public retro_core_option_value e106;
+            public retro_core_option_value e107;
+            public retro_core_option_value e108;
+            public retro_core_option_value e109;
+            public retro_core_option_value e110;
+            public retro_core_option_value e111;
+            public retro_core_option_value e112;
+            public retro_core_option_value e113;
+            public retro_core_option_value e114;
+            public retro_core_option_value e115;
+            public retro_core_option_value e116;
+            public retro_core_option_value e117;
+            public retro_core_option_value e118;
+            public retro_core_option_value e119;
+            public retro_core_option_value e120;
+            public retro_core_option_value e121;
+            public retro_core_option_value e122;
+            public retro_core_option_value e123;
+            public retro_core_option_value e124;
+            public retro_core_option_value e125;
+            public retro_core_option_value e126;
+            public retro_core_option_value e127;
+
+            public unsafe ref retro_core_option_value this[int index]
+            {
+                get
+                {
+                    fixed (retro_core_option_value* pThis = &e0)
+                    {
+                        return ref pThis[index];
+                    }
+                }
+            }
+        }
+    }
+
+    public unsafe partial struct retro_core_options_v2
+    {
+        [NativeTypeName("struct retro_core_option_v2_category *")]
+        public retro_core_option_v2_category* categories;
+
+        [NativeTypeName("struct retro_core_option_v2_definition *")]
+        public retro_core_option_v2_definition* definitions;
+    }
+
+    public unsafe partial struct retro_core_options_v2_intl
+    {
+        [NativeTypeName("struct retro_core_options_v2 *")]
+        public retro_core_options_v2* us;
+
+        [NativeTypeName("struct retro_core_options_v2 *")]
+        public retro_core_options_v2* local;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate bool retro_core_options_update_display_callback_t();
+
+    public partial struct retro_core_options_update_display_callback
+    {
+        [NativeTypeName("retro_core_options_update_display_callback_t")]
+        public IntPtr callback;
+    }
+
     public unsafe partial struct retro_game_info
     {
         [NativeTypeName("const char *")]
@@ -1271,7 +1653,6 @@ namespace Libretro.NET.Bindings
 
     public unsafe partial struct retro_framebuffer
     {
-        [NativeTypeName("void *")]
         public void* data;
 
         [NativeTypeName("unsigned int")]
@@ -1293,8 +1674,104 @@ namespace Libretro.NET.Bindings
         public uint memory_flags;
     }
 
+    public partial struct retro_fastforwarding_override
+    {
+        public float ratio;
+
+        [NativeTypeName("bool")]
+        public byte fastforward;
+
+        [NativeTypeName("bool")]
+        public byte notification;
+
+        [NativeTypeName("bool")]
+        public byte inhibit_toggle;
+    }
+
+    public partial struct retro_throttle_state
+    {
+        [NativeTypeName("unsigned int")]
+        public uint mode;
+
+        public float rate;
+    }
+
+    public partial struct retro_microphone
+    {
+    }
+
+    public partial struct retro_microphone_params
+    {
+        [NativeTypeName("unsigned int")]
+        public uint rate;
+    }
+
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate byte retro_environment_t([NativeTypeName("unsigned int")] uint cmd, [NativeTypeName("void *")] void* data);
+    [return: NativeTypeName("retro_microphone_t *")]
+    public unsafe delegate retro_microphone* retro_open_mic_t([NativeTypeName("const retro_microphone_params_t *")] retro_microphone_params* @params);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate void retro_close_mic_t([NativeTypeName("retro_microphone_t *")] retro_microphone* microphone);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate bool retro_get_mic_params_t([NativeTypeName("const retro_microphone_t *")] retro_microphone* microphone, [NativeTypeName("retro_microphone_params_t *")] retro_microphone_params* @params);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate bool retro_set_mic_state_t([NativeTypeName("retro_microphone_t *")] retro_microphone* microphone, bool state);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate bool retro_get_mic_state_t([NativeTypeName("const retro_microphone_t *")] retro_microphone* microphone);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate int retro_read_mic_t([NativeTypeName("retro_microphone_t *")] retro_microphone* microphone, [NativeTypeName("int16_t *")] short* samples, [NativeTypeName("size_t")] UIntPtr num_samples);
+
+    public partial struct retro_microphone_interface
+    {
+        [NativeTypeName("unsigned int")]
+        public uint interface_version;
+
+        [NativeTypeName("retro_open_mic_t")]
+        public IntPtr open_mic;
+
+        [NativeTypeName("retro_close_mic_t")]
+        public IntPtr close_mic;
+
+        [NativeTypeName("retro_get_mic_params_t")]
+        public IntPtr get_params;
+
+        [NativeTypeName("retro_set_mic_state_t")]
+        public IntPtr set_mic_state;
+
+        [NativeTypeName("retro_get_mic_state_t")]
+        public IntPtr get_mic_state;
+
+        [NativeTypeName("retro_read_mic_t")]
+        public IntPtr read_mic;
+    }
+
+    [NativeTypeName("unsigned int")]
+    public enum retro_power_state : uint
+    {
+        RETRO_POWERSTATE_UNKNOWN = 0,
+        RETRO_POWERSTATE_DISCHARGING,
+        RETRO_POWERSTATE_CHARGING,
+        RETRO_POWERSTATE_CHARGED,
+        RETRO_POWERSTATE_PLUGGED_IN,
+    }
+
+    public partial struct retro_device_power
+    {
+        [NativeTypeName("enum retro_power_state")]
+        public retro_power_state state;
+
+        public int seconds;
+
+        [NativeTypeName("int8_t")]
+        public sbyte percent;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public unsafe delegate byte retro_environment_t([NativeTypeName("unsigned int")] uint cmd, void* data);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public unsafe delegate void retro_video_refresh_t([NativeTypeName("const void *")] void* data, [NativeTypeName("unsigned int")] uint width, [NativeTypeName("unsigned int")] uint height, [NativeTypeName("size_t")] UIntPtr pitch);
@@ -1316,22 +1793,22 @@ namespace Libretro.NET.Bindings
     public static unsafe partial class RetroBindings
     {
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_set_environment", ExactSpelling = true)]
-        public static extern void set_environment([NativeTypeName("retro_environment_t")] retro_environment_t param0);
+        public static extern void set_environment([NativeTypeName("retro_environment_t")] IntPtr cb);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_set_video_refresh", ExactSpelling = true)]
-        public static extern void set_video_refresh([NativeTypeName("retro_video_refresh_t")] retro_video_refresh_t param0);
+        public static extern void set_video_refresh([NativeTypeName("retro_video_refresh_t")] IntPtr cb);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_set_audio_sample", ExactSpelling = true)]
-        public static extern void set_audio_sample([NativeTypeName("retro_audio_sample_t")] retro_audio_sample_t param0);
+        public static extern void set_audio_sample([NativeTypeName("retro_audio_sample_t")] IntPtr cb);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_set_audio_sample_batch", ExactSpelling = true)]
-        public static extern void set_audio_sample_batch([NativeTypeName("retro_audio_sample_batch_t")] retro_audio_sample_batch_t param0);
+        public static extern void set_audio_sample_batch([NativeTypeName("retro_audio_sample_batch_t")] IntPtr cb);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_set_input_poll", ExactSpelling = true)]
-        public static extern void set_input_poll([NativeTypeName("retro_input_poll_t")] retro_input_poll_t param0);
+        public static extern void set_input_poll([NativeTypeName("retro_input_poll_t")] IntPtr cb);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_set_input_state", ExactSpelling = true)]
-        public static extern void set_input_state([NativeTypeName("retro_input_state_t")] retro_input_state_t param0);
+        public static extern void set_input_state([NativeTypeName("retro_input_state_t")] IntPtr cb);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_init", ExactSpelling = true)]
         public static extern void init();
@@ -1364,11 +1841,11 @@ namespace Libretro.NET.Bindings
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_serialize", ExactSpelling = true)]
         [return: NativeTypeName("bool")]
-        public static extern byte serialize([NativeTypeName("void *")] void* data, [NativeTypeName("size_t")] UIntPtr size);
+        public static extern byte serialize(void* data, [NativeTypeName("size_t")] UIntPtr len);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_unserialize", ExactSpelling = true)]
         [return: NativeTypeName("bool")]
-        public static extern byte unserialize([NativeTypeName("const void *")] void* data, [NativeTypeName("size_t")] UIntPtr size);
+        public static extern byte unserialize([NativeTypeName("const void *")] void* data, [NativeTypeName("size_t")] UIntPtr len);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_cheat_reset", ExactSpelling = true)]
         public static extern void cheat_reset();
@@ -1392,7 +1869,6 @@ namespace Libretro.NET.Bindings
         public static extern uint get_region();
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_get_memory_data", ExactSpelling = true)]
-        [return: NativeTypeName("void *")]
         public static extern void* get_memory_data([NativeTypeName("unsigned int")] uint id);
 
         [DllImport("melondsds_libretro", CallingConvention = CallingConvention.Cdecl, EntryPoint = "retro_get_memory_size", ExactSpelling = true)]
@@ -1596,6 +2072,9 @@ namespace Libretro.NET.Bindings
 
         [NativeTypeName("#define RETRO_DEVICE_ID_POINTER_COUNT 3")]
         public const int RETRO_DEVICE_ID_POINTER_COUNT = 3;
+
+        [NativeTypeName("#define RETRO_DEVICE_ID_POINTER_IS_OFFSCREEN 15")]
+        public const int RETRO_DEVICE_ID_POINTER_IS_OFFSCREEN = 15;
 
         [NativeTypeName("#define RETRO_REGION_NTSC 0")]
         public const int RETRO_REGION_NTSC = 0;
@@ -1810,8 +2289,53 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("#define RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY 63")]
         public const int RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY = 63;
 
-        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_DEVICE_POWER 77 | RETRO_ENVIRONMENT_EXPERIMENTAL")]
-        public const int RETRO_ENVIRONMENT_GET_DEVICE_POWER = 77 | 0x10000;
+        [NativeTypeName("#define RETRO_ENVIRONMENT_SET_FASTFORWARDING_OVERRIDE 64")]
+        public const int RETRO_ENVIRONMENT_SET_FASTFORWARDING_OVERRIDE = 64;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE 65")]
+        public const int RETRO_ENVIRONMENT_SET_CONTENT_INFO_OVERRIDE = 65;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_GAME_INFO_EXT 66")]
+        public const int RETRO_ENVIRONMENT_GET_GAME_INFO_EXT = 66;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2 67")]
+        public const int RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2 = 67;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL 68")]
+        public const int RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL = 68;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_SET_CORE_OPTIONS_UPDATE_DISPLAY_CALLBACK 69")]
+        public const int RETRO_ENVIRONMENT_SET_CORE_OPTIONS_UPDATE_DISPLAY_CALLBACK = 69;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_SET_VARIABLE 70")]
+        public const int RETRO_ENVIRONMENT_SET_VARIABLE = 70;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_THROTTLE_STATE (71 | RETRO_ENVIRONMENT_EXPERIMENTAL)")]
+        public const int RETRO_ENVIRONMENT_GET_THROTTLE_STATE = (71 | 0x10000);
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_SAVESTATE_CONTEXT (72 | RETRO_ENVIRONMENT_EXPERIMENTAL)")]
+        public const int RETRO_ENVIRONMENT_GET_SAVESTATE_CONTEXT = (72 | 0x10000);
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE_SUPPORT (73 | RETRO_ENVIRONMENT_EXPERIMENTAL)")]
+        public const int RETRO_ENVIRONMENT_GET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE_SUPPORT = (73 | 0x10000);
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_JIT_CAPABLE 74")]
+        public const int RETRO_ENVIRONMENT_GET_JIT_CAPABLE = 74;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_MICROPHONE_INTERFACE (75 | RETRO_ENVIRONMENT_EXPERIMENTAL)")]
+        public const int RETRO_ENVIRONMENT_GET_MICROPHONE_INTERFACE = (75 | 0x10000);
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_DEVICE_POWER (77 | RETRO_ENVIRONMENT_EXPERIMENTAL)")]
+        public const int RETRO_ENVIRONMENT_GET_DEVICE_POWER = (77 | 0x10000);
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_SET_NETPACKET_INTERFACE 78")]
+        public const int RETRO_ENVIRONMENT_SET_NETPACKET_INTERFACE = 78;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_PLAYLIST_DIRECTORY 79")]
+        public const int RETRO_ENVIRONMENT_GET_PLAYLIST_DIRECTORY = 79;
+
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_FILE_BROWSER_START_DIRECTORY 80")]
+        public const int RETRO_ENVIRONMENT_GET_FILE_BROWSER_START_DIRECTORY = 80;
 
         [NativeTypeName("#define RETRO_VFS_FILE_ACCESS_READ (1 << 0)")]
         public const int RETRO_VFS_FILE_ACCESS_READ = (1 << 0);
@@ -1993,6 +2517,21 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("#define RETRO_HW_FRAME_BUFFER_VALID ((void*)-1)")]
         public static readonly void* RETRO_HW_FRAME_BUFFER_VALID = unchecked((void*)(-1));
 
+        [NativeTypeName("#define RETRO_NETPACKET_UNRELIABLE 0")]
+        public const int RETRO_NETPACKET_UNRELIABLE = 0;
+
+        [NativeTypeName("#define RETRO_NETPACKET_RELIABLE (1 << 0)")]
+        public const int RETRO_NETPACKET_RELIABLE = (1 << 0);
+
+        [NativeTypeName("#define RETRO_NETPACKET_UNSEQUENCED (1 << 1)")]
+        public const int RETRO_NETPACKET_UNSEQUENCED = (1 << 1);
+
+        [NativeTypeName("#define RETRO_NETPACKET_FLUSH_HINT (1 << 2)")]
+        public const int RETRO_NETPACKET_FLUSH_HINT = (1 << 2);
+
+        [NativeTypeName("#define RETRO_NETPACKET_BROADCAST 0xFFFF")]
+        public const int RETRO_NETPACKET_BROADCAST = 0xFFFF;
+
         [NativeTypeName("#define RETRO_NUM_CORE_OPTION_VALUES_MAX 128")]
         public const int RETRO_NUM_CORE_OPTION_VALUES_MAX = 128;
 
@@ -2004,5 +2543,32 @@ namespace Libretro.NET.Bindings
 
         [NativeTypeName("#define RETRO_MEMORY_TYPE_CACHED (1 << 0)")]
         public const int RETRO_MEMORY_TYPE_CACHED = (1 << 0);
+
+        [NativeTypeName("#define RETRO_THROTTLE_NONE 0")]
+        public const int RETRO_THROTTLE_NONE = 0;
+
+        [NativeTypeName("#define RETRO_THROTTLE_FRAME_STEPPING 1")]
+        public const int RETRO_THROTTLE_FRAME_STEPPING = 1;
+
+        [NativeTypeName("#define RETRO_THROTTLE_FAST_FORWARD 2")]
+        public const int RETRO_THROTTLE_FAST_FORWARD = 2;
+
+        [NativeTypeName("#define RETRO_THROTTLE_SLOW_MOTION 3")]
+        public const int RETRO_THROTTLE_SLOW_MOTION = 3;
+
+        [NativeTypeName("#define RETRO_THROTTLE_REWINDING 4")]
+        public const int RETRO_THROTTLE_REWINDING = 4;
+
+        [NativeTypeName("#define RETRO_THROTTLE_VSYNC 5")]
+        public const int RETRO_THROTTLE_VSYNC = 5;
+
+        [NativeTypeName("#define RETRO_THROTTLE_UNBLOCKED 6")]
+        public const int RETRO_THROTTLE_UNBLOCKED = 6;
+
+        [NativeTypeName("#define RETRO_MICROPHONE_INTERFACE_VERSION 1")]
+        public const int RETRO_MICROPHONE_INTERFACE_VERSION = 1;
+
+        [NativeTypeName("#define RETRO_POWERSTATE_NO_ESTIMATE (-1)")]
+        public const int RETRO_POWERSTATE_NO_ESTIMATE = (-1);
     }
 }

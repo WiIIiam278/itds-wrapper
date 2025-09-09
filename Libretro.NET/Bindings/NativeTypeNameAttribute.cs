@@ -10,7 +10,7 @@ namespace Libretro.NET.Bindings
     /// </code> 
     /// </summary>
     [Conditional("DEBUG")]
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.ReturnValue, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.ReturnValue | AttributeTargets.Enum, AllowMultiple = false, Inherited = true)]
     internal sealed class NativeTypeNameAttribute : Attribute
     {
         public string Name { get; }

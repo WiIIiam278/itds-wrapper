@@ -18,7 +18,7 @@ namespace Libretro.NET
         public uint Height { get; private set; }
         public double FPS { get; private set; }
         public double SampleRate { get; private set; }
-        public retro_pixel_format PixelFormat { get; private set; }
+        public static retro_pixel_format PixelFormat { get; private set; }
         public retro_core_option_definition[] Options { get; private set; }
 
         public delegate void OnFrameDelegate(byte[] frame, uint width, uint height);
@@ -58,11 +58,8 @@ namespace Libretro.NET
                 size = (UIntPtr)gameData.Length,
             };
 
-            if (!system.need_fullpath)
-            {
-                game.data = (void*)Marshal.AllocHGlobal((int)game.size);
-                Marshal.Copy(gameData, 0, (IntPtr)game.data, (int)game.size);
-            }
+            game.data = (void*)Marshal.AllocHGlobal((int)game.size);
+            Marshal.Copy(gameData, 0, (IntPtr)game.data, (int)game.size);
 
             byte result = _interop.load_game(ref game);
 
@@ -82,7 +79,7 @@ namespace Libretro.NET
             _interop.run();
         }
 
-        private byte Environment(uint cmd, void* data)
+        private static byte Environment(uint cmd, void* data)
         {
             switch (cmd)
             {
@@ -156,8 +153,7 @@ namespace Libretro.NET
                     }
 
                     retro_log_callback* cb = (retro_log_callback*)data;
-                    _log = Log;
-                    cb->log = Marshal.GetFunctionPointerForDelegate(_log);
+                    cb->log = Marshal.GetFunctionPointerForDelegate(Log);
                     return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
@@ -248,7 +244,7 @@ namespace Libretro.NET
             return frames;
         }
 
-        private void Log(retro_log_level level, sbyte* fmt)
+        private static void Log(retro_log_level level, sbyte* fmt)
         {
             string str = Marshal.PtrToStringAnsi((IntPtr)(char*)fmt);
             Console.Write(str);
