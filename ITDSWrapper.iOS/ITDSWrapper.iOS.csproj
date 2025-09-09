@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="melondsds_libretro.dylib" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
+        <None Include="melondsds_libretro.dylib" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
     </ItemGroup>
     
     <ItemGroup>

@@ -39,7 +39,7 @@
 
     <ItemGroup>
       <Reference Include="Avalonia.Skia">
-        <HintPath>..\..\..\.nuget\packages\avalonia.skia\11.3.5\lib\net8.0\Avalonia.Skia.dll</HintPath>
+        <HintPath>..\..\..\.nuget\packages\avalonia.skia\11.3.999-cibuild0058780-alpha\lib\net8.0\Avalonia.Skia.dll</HintPath>
       </Reference>
     </ItemGroup>
 </Project>
