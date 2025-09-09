@@ -19,12 +19,5 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .UseReactiveUI()
-            .LogToTrace()
-            .AfterSetup(b =>
-            {
-                if (OperatingSystem.IsWindows())
-                {
-                    ((App)b.Instance!).AudioBackend = new NAudioWinBackend();
-                }
-            });
+            .LogToTrace();
 }
