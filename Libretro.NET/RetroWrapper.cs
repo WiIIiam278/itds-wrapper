@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Runtime;
 using System.Runtime.InteropServices;
 using Libretro.NET.Bindings;
 
@@ -11,6 +13,7 @@ namespace Libretro.NET
     public unsafe class RetroWrapper
     {
         private RetroInterop _interop;
+        private retro_log_printf_t _log;
 
         public uint Width { get; private set; }
         public uint Height { get; private set; }
@@ -86,8 +89,13 @@ namespace Libretro.NET
             {
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                 {
+                    string sysDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", "sys");
+                    if (!Directory.Exists(sysDir))
+                    {
+                        Directory.CreateDirectory(sysDir);
+                    }
                     char** cb = (char**)data;
-                    *cb = (char*)Marshal.StringToHGlobalAnsi(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
+                    *cb = (char*)Marshal.StringToHGlobalAnsi(sysDir);
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -122,6 +130,13 @@ namespace Libretro.NET
                                 value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
                             };
                             break;
+                        case "melonds_slot2_device":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("rumble-pak"),
+                            };
+                            break;
                     }
                     return true;
                 }
@@ -136,16 +151,25 @@ namespace Libretro.NET
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                 {
+                    if (OperatingSystem.IsMacOS())
+                    {
+                        return false;
+                    }
+
                     retro_log_callback* cb = (retro_log_callback*)data;
-                    retro_log_printf_t logDelegate = Log;
-                    GCHandle.Alloc(logDelegate);
-                    cb->log = Marshal.GetFunctionPointerForDelegate(logDelegate);
+                    _log = Log;
+                    cb->log = Marshal.GetFunctionPointerForDelegate(_log);
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
+                    string saveDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", "saves");
+                    if (!Directory.Exists(saveDir))
+                    {
+                        Directory.CreateDirectory(saveDir);
+                    }
                     char** cb = (char**)data;
-                    *cb = (char*)Marshal.StringToHGlobalAnsi(OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) : ".");
+                    *cb = (char*)Marshal.StringToHGlobalAnsi(saveDir);
                     return true;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
@@ -163,6 +187,11 @@ namespace Libretro.NET
                     string value = Marshal.PtrToStringAnsi((IntPtr)((char *)s.key));
                     return true;
                 }
+                // case RetroBindings.RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION:
+                // {
+                //     *(uint*)data = 1;
+                //     return true;
+                // }
                 default:
                 {
                     return false;

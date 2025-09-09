@@ -1810,6 +1810,9 @@ namespace Libretro.NET.Bindings
         [NativeTypeName("#define RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY 63")]
         public const int RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY = 63;
 
+        [NativeTypeName("#define RETRO_ENVIRONMENT_GET_DEVICE_POWER 77 | RETRO_ENVIRONMENT_EXPERIMENTAL")]
+        public const int RETRO_ENVIRONMENT_GET_DEVICE_POWER = 77 | 0x10000;
+
         [NativeTypeName("#define RETRO_VFS_FILE_ACCESS_READ (1 << 0)")]
         public const int RETRO_VFS_FILE_ACCESS_READ = (1 << 0);
 
