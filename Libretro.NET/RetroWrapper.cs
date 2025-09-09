@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime;
 using System.Runtime.InteropServices;
 using Libretro.NET.Bindings;
 
@@ -10,7 +9,7 @@ namespace Libretro.NET
     /// Wraps all (most? (necessary?)) libretro mechanisms used to run a core and a game.
     /// After creation, <see cref="LoadCore()"/> and then <see cref="LoadGame(byte[])"/> must be called before anything else.
     /// </summary>
-    public unsafe class RetroWrapper
+    public unsafe class RetroWrapper : IDisposable
     {
         private RetroInterop _interop;
         private retro_log_printf_t _log;
@@ -37,7 +36,7 @@ namespace Libretro.NET
         public void LoadCore()
         {
             _interop = new();
-
+            
             _interop.set_environment(Environment);
             _interop.set_video_refresh(VideoRefresh);
             _interop.set_input_poll(InputPoll);
@@ -83,7 +82,7 @@ namespace Libretro.NET
             _interop.run();
         }
 
-        private bool Environment(uint cmd, void* data)
+        private byte Environment(uint cmd, void* data)
         {
             switch (cmd)
             {
@@ -96,12 +95,12 @@ namespace Libretro.NET
                     }
                     char** cb = (char**)data;
                     *cb = (char*)Marshal.StringToHGlobalAnsi(sysDir);
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
                 {
                     PixelFormat = (retro_pixel_format)(*(byte*)data);
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_VARIABLE:
                 {
@@ -138,28 +137,28 @@ namespace Libretro.NET
                             };
                             break;
                     }
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CAN_DUPE:
                 {
-                    return *(bool*)data = true;
+                    return *(byte*)data = 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:
                 {
                     retro_frame_time_callback* cb = (retro_frame_time_callback*)data;
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                 {
                     if (OperatingSystem.IsMacOS())
                     {
-                        return false;
+                        return 0;
                     }
 
                     retro_log_callback* cb = (retro_log_callback*)data;
                     _log = Log;
                     cb->log = Marshal.GetFunctionPointerForDelegate(_log);
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
@@ -170,31 +169,31 @@ namespace Libretro.NET
                     }
                     char** cb = (char**)data;
                     *cb = (char*)Marshal.StringToHGlobalAnsi(saveDir);
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
                 {
                     *(uint*)data = 1;
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_CORE_OPTIONS:
                 {
-                    return true;
+                    return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
                 {
                     retro_core_option_display s = Marshal.PtrToStructure<retro_core_option_display>((IntPtr)data);
                     string value = Marshal.PtrToStringAnsi((IntPtr)((char *)s.key));
-                    return true;
+                    return 1;
                 }
                 // case RetroBindings.RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION:
                 // {
                 //     *(uint*)data = 1;
-                //     return true;
+                //     return 1;
                 // }
                 default:
                 {
-                    return false;
+                    return 0;
                 }
             }
         }
@@ -259,6 +258,11 @@ namespace Libretro.NET
         private void Time(long usec)
         {
             //Nothing relevant to do yet...
+        }
+
+        public void Dispose()
+        {
+            _interop?.Dispose();
         }
     }
 }

@@ -131,6 +131,8 @@ public class MainViewModel : ViewModelBase
                 nextTick = DateTime.Now + interval;
             }
         }
+        
+        Wrapper.Dispose();
     }
 
     private void DisplayFrame(byte[] frame, uint width, uint height)

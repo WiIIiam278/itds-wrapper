@@ -4,53 +4,66 @@ using Libretro.NET.Bindings;
 
 namespace Libretro.NET;
 
-public class RetroInterop
+public class RetroInterop : IDisposable
 {
-    public GCHandle EnvironmentHandle { get; set; }
-    public retro_video_refresh_t VideoRefresh { get; set; }
-    public retro_input_poll_t InputPoll { get; set; }
-    public retro_input_state_t InputState { get; set; }
-    public retro_audio_sample_t AudioSample { get; set; }
-    public retro_audio_sample_batch_t AudioSampleBatch { get; set; }
+    private retro_environment_t _environment;
+    private retro_video_refresh_t _videoRefresh;
+    private retro_input_poll_t _inputPoll;
+    private retro_input_state_t _inputState;
+    private retro_audio_sample_t _audioSample;
+    private retro_audio_sample_batch_t _audioSampleBatch;
 
-    public retro_system_info RetroSystemInfo { get; set; }
-    public retro_game_info RetroGameInfo { get; set; }
-    public retro_system_av_info RetroSystemAvInfo { get; set; }
+    public retro_system_info retroSystemInfo;
+    public retro_game_info retroGameInfo;
+    public retro_system_av_info retroSystemAvInfo;
+
+    private GCHandle? _environmentHandle;
+    private GCHandle? _videoRefreshHandle;
+    private GCHandle? _inputPollHandle;
+    private GCHandle? _inputStateHandle;
+    private GCHandle? _audioSampleHandle;
+    private GCHandle? _audioSampleBatchHandle;
 
     public void set_environment(retro_environment_t param0)
     {
-        EnvironmentHandle = GCHandle.Alloc(param0);
-        RetroBindings.set_environment(param0);
+        _environment = param0;
+        _environmentHandle = GCHandle.Alloc(_environment);
+        RetroBindings.set_environment(_environment);
     }
 
     public void set_video_refresh(retro_video_refresh_t param0)
     {
-        VideoRefresh = param0;
-        RetroBindings.set_video_refresh(VideoRefresh);
+        _videoRefresh = param0;
+        _videoRefreshHandle = GCHandle.Alloc(_videoRefresh);
+        RetroBindings.set_video_refresh(_videoRefresh);
     }
 
     public void set_input_poll(retro_input_poll_t param0)
     {
-        InputPoll = param0;
-        RetroBindings.set_input_poll(InputPoll);
+        _inputPoll = param0;
+        _inputPollHandle = GCHandle.Alloc(_inputPoll);
+        RetroBindings.set_input_poll(_inputPoll);
     }
 
     public void set_input_state(retro_input_state_t param0)
     {
-        InputState = param0;
-        RetroBindings.set_input_state(InputState);
+        _inputState = param0;
+        _inputStateHandle = GCHandle.Alloc(_inputState);
+        RetroBindings.set_input_state(_inputState);
     }
 
     public void set_audio_sample(retro_audio_sample_t param0)
     {
-        AudioSample = param0;
-        RetroBindings.set_audio_sample(AudioSample);
+        _audioSample = param0;
+        _audioSampleHandle = GCHandle.Alloc(_audioSample);
+        RetroBindings.set_audio_sample(_audioSample);
     }
 
     public void set_audio_sample_batch(retro_audio_sample_batch_t param0)
     {
-        AudioSampleBatch = param0;
-        RetroBindings.set_audio_sample_batch(AudioSampleBatch);
+        _audioSampleBatch = param0;
+        _audioSampleBatchHandle = GCHandle.Alloc(_audioSampleBatch);
+        RetroBindings.set_audio_sample_batch(_audioSampleBatch);
     }
 
     public void init()
@@ -60,7 +73,7 @@ public class RetroInterop
 
     public unsafe void get_system_info(ref retro_system_info param0)
     {
-        RetroSystemInfo = param0;
+        retroSystemInfo = param0;
 
         fixed (retro_system_info* ptr = &param0)
         {
@@ -70,7 +83,7 @@ public class RetroInterop
 
     public unsafe byte load_game(ref retro_game_info param0)
     {
-        RetroGameInfo = param0;
+        retroGameInfo = param0;
 
         fixed (retro_game_info* ptr = &param0)
         {
@@ -80,7 +93,7 @@ public class RetroInterop
 
     public unsafe void get_system_av_info(ref retro_system_av_info param0)
     {
-        RetroSystemAvInfo = param0;
+        retroSystemAvInfo = param0;
 
         fixed (retro_system_av_info* ptr = &param0)
         {
@@ -91,5 +104,15 @@ public class RetroInterop
     public void run()
     {
         RetroBindings.run();
+    }
+
+    public void Dispose()
+    {
+        _environmentHandle?.Free();
+        _videoRefreshHandle?.Free();
+        _inputPollHandle?.Free();
+        _inputStateHandle?.Free();
+        _audioSampleHandle?.Free();
+        _audioSampleBatchHandle?.Free();
     }
 }

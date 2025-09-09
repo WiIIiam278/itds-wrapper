@@ -1294,7 +1294,7 @@ namespace Libretro.NET.Bindings
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate bool retro_environment_t([NativeTypeName("unsigned int")] uint cmd, [NativeTypeName("void *")] void* data);
+    public unsafe delegate byte retro_environment_t([NativeTypeName("unsigned int")] uint cmd, [NativeTypeName("void *")] void* data);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public unsafe delegate void retro_video_refresh_t([NativeTypeName("const void *")] void* data, [NativeTypeName("unsigned int")] uint width, [NativeTypeName("unsigned int")] uint height, [NativeTypeName("size_t")] UIntPtr pitch);
