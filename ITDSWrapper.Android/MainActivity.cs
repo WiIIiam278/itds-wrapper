@@ -15,17 +15,17 @@ namespace ITDSWrapper.Android;
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
 public class MainActivity : AvaloniaMainActivity<App>
 {
-    private PauseDriver? _driver;
+    private PauseDriver? _pauseDriver;
     
     public override void OnWindowFocusChanged(bool hasFocus)
     {
-        _driver?.PushPauseState(!hasFocus);
+        _pauseDriver?.PushPauseState(!hasFocus);
         base.OnWindowFocusChanged(hasFocus);
     }
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
-        _driver = new();
+        _pauseDriver = new();
         
         return base
             .CustomizeAppBuilder(builder)
@@ -34,7 +34,7 @@ public class MainActivity : AvaloniaMainActivity<App>
             .AfterSetup(b =>
             {
                 ((App)b.Instance!).AudioBackend = new AndroidAudioBackend();
-                ((App)b.Instance!).Driver = _driver;
+                ((App)b.Instance!).PauseDriver = _pauseDriver;
             });
     }
 }

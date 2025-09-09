@@ -57,7 +57,7 @@ public class MainViewModel : ViewModelBase
             _audioBackend = new SilkNetOpenALBackend(Wrapper.SampleRate, 32);
         }
         
-        _pauseDriver = ((App)Application.Current!).Driver ?? new();
+        _pauseDriver = ((App)Application.Current!).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
 
         _inputBindings = new();
