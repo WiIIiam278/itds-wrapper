@@ -1,13 +1,12 @@
 using System;
-using NAudio.Wave;
 using Silk.NET.OpenAL;
 
 namespace ITDSWrapper.Audio;
 
-public class NAudioSilkNetOpenALBackend : IAudioBackend
+public class SilkNetOpenALBackend : IAudioBackend
 {
-    private readonly WaveFormat _waveFormat;
     private readonly BufferFormat _sourceALFormat;        // 8 or 16 bit buffer
+    private readonly int _sampleRate;
 
     private int _currentBuffer;
 
@@ -37,12 +36,12 @@ public class NAudioSilkNetOpenALBackend : IAudioBackend
 
     private bool _paused;
     
-    public unsafe NAudioSilkNetOpenALBackend(double sampleRate, int numBuffers)
+    public unsafe SilkNetOpenALBackend(double sampleRate, int numBuffers)
     {
         NumberOfBuffers = numBuffers;
+        _sampleRate = (int)sampleRate;
         
-        _waveFormat = new((int)sampleRate, 2);
-        _sourceALFormat = GetBufferFormat(_waveFormat);
+        _sourceALFormat = GetBufferFormat(2);
         
         Alc = ALContext.GetApi(soft: true);
         Al = AL.GetApi(soft: true);
@@ -116,13 +115,13 @@ public class NAudioSilkNetOpenALBackend : IAudioBackend
         }
     }
 
-    private BufferFormat GetBufferFormat(WaveFormat format)
+    private BufferFormat GetBufferFormat(int numChannels)
     {
-        if (format.Channels == 2)
+        if (numChannels == 2)
         {
             return BufferFormat.Stereo16;
         }
-        else if (format.Channels == 1)
+        else if (numChannels == 1)
         {
             return BufferFormat.Mono16;
         }
@@ -131,7 +130,7 @@ public class NAudioSilkNetOpenALBackend : IAudioBackend
     
     private void ReadAndQueueBuffers(uint[] alBuffers, byte[] samples)
     {
-        Al!.BufferData(alBuffers[_currentBuffer], _sourceALFormat, samples, _waveFormat.SampleRate);
+        Al!.BufferData(alBuffers[_currentBuffer], _sourceALFormat, samples, _sampleRate);
 
         // AL.SourceQueueBuffer(_alSource, alBuffers[i]);
         uint[] buffersToQueue = [alBuffers[_currentBuffer]];

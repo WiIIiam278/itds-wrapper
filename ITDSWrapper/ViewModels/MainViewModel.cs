@@ -54,7 +54,7 @@ public class MainViewModel : ViewModelBase
         }
         else
         {
-            _audioBackend = new NAudioSilkNetOpenALBackend(Wrapper.SampleRate, 32);
+            _audioBackend = new SilkNetOpenALBackend(Wrapper.SampleRate, 32);
         }
         
         _pauseDriver = ((App)Application.Current!).Driver ?? new();
