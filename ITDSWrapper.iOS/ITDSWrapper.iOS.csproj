@@ -4,6 +4,7 @@
         <TargetFramework>net9.0-ios</TargetFramework>
         <SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
+        <UseInterpreter>true</UseInterpreter>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <CodesignKey>iPhone Developer</CodesignKey>
