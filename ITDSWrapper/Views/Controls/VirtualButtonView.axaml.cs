@@ -17,13 +17,13 @@ public partial class VirtualButtonView : UserControl
 
     private void Button_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        ((VirtualButtonViewModel)DataContext!).Haptics.Fire();
+        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire();
         ((VirtualButtonViewModel)DataContext!).AssociatedInput?.Press((VirtualButtonViewModel)DataContext!);
     }
 
     private void Button_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        ((VirtualButtonViewModel)DataContext!).Haptics.Fire();
+        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire();
         ((VirtualButtonViewModel)DataContext!).AssociatedInput?.Release((VirtualButtonViewModel)DataContext!);
     }
 }

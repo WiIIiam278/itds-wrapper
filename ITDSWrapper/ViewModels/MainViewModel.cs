@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -33,7 +32,7 @@ public class MainViewModel : ViewModelBase
     private readonly PauseDriver _pauseDriver;
     
     private readonly IAudioBackend _audioBackend;
-    private readonly IHapticsBackend _hapticsBackend;
+    private readonly IHapticsBackend? _hapticsBackend;
     
     private readonly InputBindings _inputBindings;
     private readonly PointerState _pointerState;
@@ -80,10 +79,6 @@ public class MainViewModel : ViewModelBase
         {
             _hapticsBackend = ((App)Application.Current).HapticsBackend!;
             _hapticsBackend.Initialize();
-        }
-        else
-        {
-            _hapticsBackend = new DummyHapticsBackend();
         }
         
         _pauseDriver = ((App)Application.Current!).PauseDriver ?? new();

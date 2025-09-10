@@ -3,7 +3,7 @@ using ITDSWrapper.Input;
 
 namespace ITDSWrapper.ViewModels.Controls;
 
-public class VirtualButtonViewModel(string? label, VirtualButtonInput? associatedInput, double width, double height, IHapticsBackend haptics) : ViewModelBase
+public class VirtualButtonViewModel(string? label, VirtualButtonInput? associatedInput, double width, double height, IHapticsBackend? haptics) : ViewModelBase
 {
     public string? Label { get; set; } = label;
     public VirtualButtonInput? AssociatedInput { get; set; } = associatedInput;
@@ -11,5 +11,5 @@ public class VirtualButtonViewModel(string? label, VirtualButtonInput? associate
     public double Width { get; set; } = width;
     public double Height { get; set; } = height;
 
-    public IHapticsBackend Haptics { get; set; } = haptics;
+    public IHapticsBackend? Haptics { get; set; } = haptics;
 }
