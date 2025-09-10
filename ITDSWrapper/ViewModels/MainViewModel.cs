@@ -93,7 +93,7 @@ public class MainViewModel : ViewModelBase
     {
         if (pressed)
         {
-            _inputBindings.PushKey(key);
+            _inputBindings.Push(key);
             
             if (_inputBindings.QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
             {
@@ -104,7 +104,7 @@ public class MainViewModel : ViewModelBase
         }
         else
         {
-            _inputBindings.ReleaseKey(key);
+            _inputBindings.Release(key);
         }
     }
 
@@ -195,7 +195,7 @@ public class MainViewModel : ViewModelBase
     {
         foreach (uint inputKey in _inputBindings.GetInputKeys())
         {
-            GameInput? button = new();
+            VirtualButtonInput? button = new();
             switch (inputKey)
             {
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_A:

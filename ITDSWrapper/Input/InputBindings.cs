@@ -8,7 +8,7 @@ namespace ITDSWrapper.Input;
 
 public class InputBindings
 {
-    private readonly Dictionary<uint, GameInput?> _bindings;
+    private readonly Dictionary<uint, object?> _bindings;
 
     public InputBindings(bool isMobile)
     {
@@ -35,19 +35,19 @@ public class InputBindings
         {
             _bindings = new()
             {
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_A, new(PhysicalKey.X) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_B, new(PhysicalKey.Z) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_X, new(PhysicalKey.S) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y, new(PhysicalKey.A) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R, new(PhysicalKey.W) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_L, new(PhysicalKey.Q) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP, new(PhysicalKey.ArrowUp) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, new(PhysicalKey.ArrowRight) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, new(PhysicalKey.ArrowDown) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, new(PhysicalKey.ArrowLeft) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, new(PhysicalKey.Enter) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, new(PhysicalKey.ShiftRight) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3, new(PhysicalKey.Escape) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_A, new PhysicalKeyInput(PhysicalKey.X) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_B, new PhysicalKeyInput(PhysicalKey.Z) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_X, new PhysicalKeyInput(PhysicalKey.S) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y, new PhysicalKeyInput(PhysicalKey.A) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R, new PhysicalKeyInput(PhysicalKey.W) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_L, new PhysicalKeyInput(PhysicalKey.Q) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP, new PhysicalKeyInput(PhysicalKey.ArrowUp) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, new PhysicalKeyInput(PhysicalKey.ArrowRight) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, new PhysicalKeyInput(PhysicalKey.ArrowDown) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, new PhysicalKeyInput(PhysicalKey.ArrowLeft) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, new PhysicalKeyInput(PhysicalKey.Enter) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, new PhysicalKeyInput(PhysicalKey.ShiftRight) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3, new PhysicalKeyInput(PhysicalKey.Escape) },
             };
         }
     }
@@ -57,7 +57,7 @@ public class InputBindings
         return _bindings.Keys.ToArray();
     }
 
-    public void SetBinding(uint input, GameInput? binding)
+    public void SetBinding<T>(uint input, IGameInput<T>? binding)
     {
         if (!_bindings.TryAdd(input, binding))
         {
@@ -67,22 +67,22 @@ public class InputBindings
 
     public bool QueryInput(uint id)
     {
-        return _bindings.ContainsKey(id) && (_bindings[id]?.IsSet ?? false);
+        return _bindings.ContainsKey(id) && _bindings[id] is IGameInputSettable { IsSet: true };
     }
 
-    public void PushKey(PhysicalKey key)
+    public void Push<T>(T binding)
     {
-        foreach (GameInput? input in _bindings.Values)
+        foreach (IGameInput<T>? input in _bindings.Values.Where(i => i is IGameInput<T>))
         {
-            input?.PressPhysicalKey(key);
+            input?.Press(binding);
         }
     }
 
-    public void ReleaseKey(PhysicalKey key)
+    public void Release<T>(T binding)
     {
-        foreach (GameInput? input in _bindings.Values)
+        foreach (IGameInput<T>? input in _bindings.Values.Where(i => i is IGameInput<T>))
         {
-            input?.ReleasePhysicalKey(key);
+            input?.Release(binding);
         }
     }
     
