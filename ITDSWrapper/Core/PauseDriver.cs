@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using ITDSWrapper.Audio;
 

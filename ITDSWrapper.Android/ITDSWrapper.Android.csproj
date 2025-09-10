@@ -4,7 +4,7 @@
         <TargetFramework>net9.0-android</TargetFramework>
         <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
-        <ApplicationId>com.dreamspring.itdswrapper</ApplicationId>
+        <ApplicationId>com.intothedreamspring.itdswrapper</ApplicationId>
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
@@ -18,7 +18,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <AndroidNativeLibrary Include="libs/arm64-v8a/melondsds_libretro.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
+        <AndroidNativeLibrary Include="libs/arm64-v8a/libmelondsds_libretro.so" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
     </ItemGroup>
 
     <ItemGroup>
