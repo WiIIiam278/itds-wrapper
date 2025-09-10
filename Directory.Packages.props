@@ -16,6 +16,7 @@
     <PackageVersion Include="Avalonia.Browser" Version="11.3.999-cibuild0058780-alpha" />
     <PackageVersion Include="Avalonia.Android" Version="11.3.999-cibuild0058780-alpha" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.999-cibuild0058780-alpha" />
+    <PackageVersion Include="Facepunch.Steamworks.Package" Version="1.0.0" />
     <PackageVersion Include="NAudio" Version="2.2.1" />
     <PackageVersion Include="NAudio.Sdl2.Library.Android" Version="2.30.3" />
     <PackageVersion Include="PortAudioSharp2" Version="1.0.4" />
