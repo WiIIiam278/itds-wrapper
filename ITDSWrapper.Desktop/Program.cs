@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using ITDSWrapper.Desktop.Steam;
 
 namespace ITDSWrapper.Desktop;
 
@@ -19,5 +20,9 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .UseReactiveUI()
-            .LogToTrace();
+            .LogToTrace()
+            .AfterSetup(b =>
+            {
+                ((App)b.Instance!).Updater = new SteamUpdater();
+            });
 }

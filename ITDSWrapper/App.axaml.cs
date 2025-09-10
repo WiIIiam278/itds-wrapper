@@ -10,6 +10,7 @@ namespace ITDSWrapper;
 
 public partial class App : Application
 {
+    public IUpdater? Updater { get; set; }
     public IAudioBackend? AudioBackend { get; set; }
     public PauseDriver? PauseDriver { get; set; }
 

@@ -1,0 +1,92 @@
+"In Game Actions"
+{
+	"actions"
+	{
+		"OverworldControls"
+		{
+			"title"					"#Set_Overworld"
+			"StickPadGyro"
+			{
+				"Move"
+				{
+					"title"			"#Action_Move"
+					"input_mode"	"joystick_move"
+				}
+			}
+            "AnalogTrigger"
+            {}
+			"Button"
+			{
+				"interact"			"#Action_Interact"
+				"cancel"			"#Action_Cancel"
+                "pause_menu"		"#Action_Pause"
+                "debug_menu"		"#Action_Debug"
+			}
+		}
+        "BattleControls"
+        {
+            "title"                 "#Set_Battle"
+            "StickPadGyro"
+            {
+                
+            }
+        }
+        "ScriptControls"
+        {
+            
+        }
+		"MenuControls"
+		{
+			"title"		"#Set_Menu"
+			"StickPadGyro"
+			{
+			}
+			"AnalogTrigger"
+			{
+			}
+			"Button"
+			{
+				"menu_up"		"#Menu_Up"
+				"menu_down"		"#Menu_Down"
+				"menu_left"		"#Menu_Left"
+				"menu_right"	"#Menu_Right"
+				"menu_select"	"#Menu_Select"
+				"menu_cancel"	"#Menu_Cancel"
+				"pause_menu"	"#Action_ReturnToGame"
+			}
+		}
+        "DebugCameraControls"
+        {
+            "title"     "#Set_DebugCam"
+            "StickPadGyro"
+            {}
+            "AnalogTrigger"
+            {}
+            "Button"
+            {
+                
+            }
+        }
+	}
+	"localization"
+	{
+		"english"
+		{
+			"Set_Overworld"			"Overworld Controls"
+			"Set_Menu"				"Menu Controls"
+			"Action_Move"			"Movement"
+			"Action_Camera"			"Camera"
+			"Action_Throttle"		"Throttle"
+			"Action_Fire"			"Fire Weapon"
+			"Action_Jump"			"Jump"
+			"Action_Menu"			"Pause Menu"
+			"Action_ReturnToGame"	"Return To Game"
+			"Menu_Up"				"Up"
+			"Menu_Down"				"Down"
+			"Menu_Left"				"Left"
+			"Menu_Right"			"Right"
+			"Menu_Select"			"Select"
+			"Menu_Cancel"			"Cancel"
+		}
+	}
+}

@@ -133,12 +133,14 @@ public class MainViewModel : ViewModelBase
     {
         TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.FPS);
         DateTime nextTick = DateTime.Now + interval;
+        IUpdater? updater = ((App)Application.Current!).Updater;
         
         while (!Closing)
         {
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
+                updater?.Update();
                 while (DateTime.Now < nextTick)
                 {
                     TimeSpan sleep = nextTick - DateTime.Now;
