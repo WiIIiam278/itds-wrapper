@@ -9,6 +9,7 @@ using Avalonia.Media;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
 using ITDSWrapper.Graphics;
+using ITDSWrapper.Haptics;
 using ITDSWrapper.Input;
 using ITDSWrapper.ViewModels.Controls;
 using Libretro.NET;
@@ -32,6 +33,7 @@ public class MainViewModel : ViewModelBase
     private readonly PauseDriver _pauseDriver;
     
     private readonly IAudioBackend _audioBackend;
+    private readonly IHapticsBackend _hapticsBackend;
     
     private readonly InputBindings _inputBindings;
     private readonly PointerState _pointerState;
@@ -71,6 +73,17 @@ public class MainViewModel : ViewModelBase
         else
         {
             _audioBackend = new SilkNetOpenALBackend(Wrapper.SampleRate, 32);
+        }
+        
+        
+        if (((App)Application.Current!).HapticsBackend is not null)
+        {
+            _hapticsBackend = ((App)Application.Current).HapticsBackend!;
+            _hapticsBackend.Initialize();
+        }
+        else
+        {
+            _hapticsBackend = new DummyHapticsBackend();
         }
         
         _pauseDriver = ((App)Application.Current!).PauseDriver ?? new();
@@ -199,43 +212,43 @@ public class MainViewModel : ViewModelBase
             switch (inputKey)
             {
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_A:
-                    AButton = new("A", button, 50, 50);
+                    AButton = new("A", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_B:
-                    BButton = new("B", button, 50, 50);
+                    BButton = new("B", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_X:
-                    XButton = new("X", button, 50, 50);
+                    XButton = new("X", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y:
-                    YButton = new("Y", button, 50, 50);
+                    YButton = new("Y", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_L:
-                    LButton = new("L", button, 75, 40);
+                    LButton = new("L", button, 75, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R:
-                    RButton = new("R", button, 75, 40);
+                    RButton = new("R", button, 75, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
-                    UpButton = new("・", button, 25, 50);
+                    UpButton = new("・", button, 25, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
-                    RightButton = new("・", button, 50, 25);
+                    RightButton = new("・", button, 50, 25, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
-                    DownButton = new("・", button, 25, 50);
+                    DownButton = new("・", button, 25, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT:
-                    LeftButton = new("・", button, 50, 25);
+                    LeftButton = new("・", button, 50, 25, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_START:
-                    StartButton = new("START", button, 50, 25);
+                    StartButton = new("START", button, 50, 25, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT:
-                    SelectButton = new("SELECT", button, 50, 25);
+                    SelectButton = new("SELECT", button, 50, 25, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3:
-                    SettingsButton = new("*", button, 25, 25);
+                    SettingsButton = new("*", button, 25, 25, _hapticsBackend);
                     break;
                 default:
                     button = null;
