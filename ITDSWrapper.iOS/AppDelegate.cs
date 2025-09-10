@@ -18,6 +18,10 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         return base.CustomizeAppBuilder(builder)
             .WithInterFont()
             .UseReactiveUI()
-            .AfterSetup(a => ((App)a.Instance!).PauseDriver = new(useActivatableLifetime: true));
+            .AfterSetup(a =>
+            {
+                ((App)a.Instance!).PauseDriver = new(useActivatableLifetime: true);
+                ((App)a.Instance!).HapticsBackend = new iOSHapticsBackend();
+            });
     }
 }
