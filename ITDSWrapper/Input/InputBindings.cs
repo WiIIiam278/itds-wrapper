@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia.Input;
 using Libretro.NET.Bindings;
 
@@ -7,13 +8,28 @@ namespace ITDSWrapper.Input;
 
 public class InputBindings
 {
-    private Dictionary<uint, PhysicalInput> _bindings;
+    private readonly Dictionary<uint, GameInput?> _bindings;
 
-    public InputBindings()
+    public InputBindings(bool isMobile)
     {
-        if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+        if (isMobile)
         {
-            _bindings = [];
+            _bindings = new()
+            {
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_A, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_B, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_X, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_L, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3, null },
+            };
         }
         else
         {
@@ -36,91 +52,38 @@ public class InputBindings
         }
     }
 
+    public uint[] GetInputKeys()
+    {
+        return _bindings.Keys.ToArray();
+    }
+
+    public void SetBinding(uint input, GameInput? binding)
+    {
+        if (!_bindings.TryAdd(input, binding))
+        {
+            _bindings[input] = binding;
+        }
+    }
+
     public bool QueryInput(uint id)
     {
-        return _bindings.ContainsKey(id) && _bindings[id].IsSet;
+        return _bindings.ContainsKey(id) && (_bindings[id]?.IsSet ?? false);
     }
 
     public void PushKey(PhysicalKey key)
     {
-        foreach (PhysicalInput input in _bindings.Values)
+        foreach (GameInput? input in _bindings.Values)
         {
-            input.PressPhysicalKey(key);
+            input?.PressPhysicalKey(key);
         }
     }
 
     public void ReleaseKey(PhysicalKey key)
     {
-        foreach (PhysicalInput input in _bindings.Values)
+        foreach (GameInput? input in _bindings.Values)
         {
-            input.ReleasePhysicalKey(key);
+            input?.ReleasePhysicalKey(key);
         }
     }
-}
-
-public class PhysicalInput
-{
-    private InputType _inputType;
-    private PhysicalKey _physicalKey;
     
-    public bool IsSet { get; private set; }
-
-    public PhysicalInput(PhysicalKey physicalKey)
-    {
-        _inputType = InputType.PHYSICAL_KEY;
-        _physicalKey = physicalKey;
-    }
-
-    public void SetPhysicalKey(PhysicalKey? physicalKey)
-    {
-        if (physicalKey is not null)
-        {
-            _inputType |= InputType.PHYSICAL_KEY;
-            _physicalKey = (PhysicalKey)physicalKey;
-        }
-        else
-        {
-            _inputType &= ~InputType.PHYSICAL_KEY;
-        }
-    }
-
-    public void PressPhysicalKey(PhysicalKey key)
-    {
-        if (_inputType.HasFlag(InputType.PHYSICAL_KEY) && key == _physicalKey)
-        {
-            IsSet = true;
-        }
-    }
-
-    public void ReleasePhysicalKey(PhysicalKey key)
-    {
-        if (_inputType.HasFlag(InputType.PHYSICAL_KEY) && key == _physicalKey)
-        {
-            IsSet = false;
-        }
-    }
-
-    public void PressVirtualButton()
-    {
-        if (_inputType.HasFlag(InputType.VIRTUAL_BUTTON))
-        {
-            IsSet = true;
-        }
-    }
-
-    public void ReleaseVirtualButton()
-    {
-        if (_inputType.HasFlag(InputType.VIRTUAL_BUTTON))
-        {
-            IsSet = false;
-        }
-    }
-}
-
-[Flags]
-public enum InputType
-{
-    PHYSICAL_KEY,
-    STEAM_INPUT,
-    VIRTUAL_BUTTON,
 }

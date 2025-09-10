@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -9,6 +10,7 @@ using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
 using ITDSWrapper.Graphics;
 using ITDSWrapper.Input;
+using ITDSWrapper.ViewModels.Controls;
 using Libretro.NET;
 using Libretro.NET.Bindings;
 using ReactiveUI.Fody.Helpers;
@@ -17,6 +19,8 @@ namespace ITDSWrapper.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    public static bool IsMobile => OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
+    
     public RetroWrapper Wrapper { get; }
     [Reactive]
     public EmuImage? CurrentFrame { get; set; }
@@ -31,12 +35,24 @@ public class MainViewModel : ViewModelBase
     
     private readonly InputBindings _inputBindings;
     private readonly PointerState _pointerState;
-    
+
+    public VirtualButtonViewModel? AButton { get; set; }
+    public VirtualButtonViewModel? BButton { get; set; }
+    public VirtualButtonViewModel? XButton { get; set; }
+    public VirtualButtonViewModel? YButton { get; set; }
+    public VirtualButtonViewModel? LButton { get; set; }
+    public VirtualButtonViewModel? RButton { get; set; }
+    public VirtualButtonViewModel? UpButton { get; set; }
+    public VirtualButtonViewModel? RightButton { get; set; }
+    public VirtualButtonViewModel? DownButton { get; set; }
+    public VirtualButtonViewModel? LeftButton { get; set; }
+    public VirtualButtonViewModel? StartButton { get; set; }
+    public VirtualButtonViewModel? SelectButton { get; set; }
+    public VirtualButtonViewModel? SettingsButton { get; set; }
+
     public bool DisplaySettingsOverlay { get; set; }
     [Reactive]
     public IEffect? ScreenEffect { get; set; }
-
-    public bool DisplayInputOverlay { get; set; }
     
     public MainViewModel()
     {
@@ -60,8 +76,12 @@ public class MainViewModel : ViewModelBase
         _pauseDriver = ((App)Application.Current!).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
 
-        _inputBindings = new();
+        _inputBindings = new(IsMobile);
         _pointerState = new();
+        if (IsMobile)
+        {
+            AssignVirtualBindings();
+        }
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
@@ -169,5 +189,59 @@ public class MainViewModel : ViewModelBase
         }
 
         return 0;
+    }
+
+    private void AssignVirtualBindings()
+    {
+        foreach (uint inputKey in _inputBindings.GetInputKeys())
+        {
+            GameInput? button = new();
+            switch (inputKey)
+            {
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_A:
+                    AButton = new("A", button, 50, 50);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_B:
+                    BButton = new("B", button, 50, 50);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_X:
+                    XButton = new("X", button, 50, 50);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y:
+                    YButton = new("Y", button, 50, 50);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_L:
+                    LButton = new("L", button, 75, 40);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R:
+                    RButton = new("R", button, 75, 40);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
+                    UpButton = new("・", button, 25, 50);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
+                    RightButton = new("・", button, 50, 25);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
+                    DownButton = new("・", button, 25, 50);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT:
+                    LeftButton = new("・", button, 50, 25);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_START:
+                    StartButton = new("START", button, 50, 25);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT:
+                    SelectButton = new("SELECT", button, 50, 25);
+                    break;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3:
+                    SettingsButton = new("*", button, 25, 25);
+                    break;
+                default:
+                    button = null;
+                    break;
+            }
+            _inputBindings.SetBinding(inputKey, button);
+        }
     }
 }

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ITDSWrapper.ViewModels"
+             xmlns:c="using:ITDSWrapper.Views.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ITDSWrapper.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -12,8 +13,8 @@
         <vm:MainViewModel />
     </Design.DataContext>
     
-    <Grid>
-        <Image Name="DsScreen"
+    <Grid RowDefinitions="*,Auto">
+        <Image Name="DsScreen" Grid.Row="0"
                Source="{Binding CurrentFrame}"
                Width="{Binding Wrapper.Width}"
                Height="{Binding Wrapper.Height}"
@@ -22,14 +23,32 @@
                PointerMoved="DsScreen_OnPointerMoved"
                Effect="{Binding ScreenEffect}"/>
         
-        <Grid Name="OnScreenControls">
-            
+        <Grid Grid.Row="1" Name="OnScreenControls" IsVisible="{Binding IsMobile}"
+              RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10">
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*" Height="50" HorizontalAlignment="Center">
+                <c:VirtualButtonView Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding LButton}" />
+                <c:VirtualButtonView Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding RButton}" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
+                <c:VirtualButtonView Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding UpButton}" />
+                <c:VirtualButtonView Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding LeftButton}" />
+                <c:VirtualButtonView Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding RightButton}" />
+                <c:VirtualButtonView Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding DownButton}" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
+                <c:VirtualButtonView Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding XButton}" />
+                <c:VirtualButtonView Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding YButton}" />
+                <c:VirtualButtonView Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding AButton}" />
+                <c:VirtualButtonView Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding BButton}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="Auto,Auto" HorizontalAlignment="Center">
+                <c:VirtualButtonView Grid.Row="0" VerticalAlignment="Center" DataContext="{Binding StartButton}" />
+                <c:VirtualButtonView Grid.Row="1" VerticalAlignment="Center" DataContext="{Binding SelectButton}" />
+            </Grid>
+            <c:VirtualButtonView Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding SettingsButton}" HorizontalAlignment="Center"/>
         </Grid>
         
-        <Grid Name="InputOverlay" IsVisible="{Binding DisplayInputOverlay}">
-            
-        </Grid>
-        <Grid Name="SettingsOverlay" IsVisible="{Binding DisplaySettingsOverlay}">
+        <Grid Grid.Row="0" Grid.RowSpan="2" Name="SettingsOverlay" IsVisible="{Binding DisplaySettingsOverlay}">
             <TextBlock>Settings!</TextBlock>
         </Grid>
     </Grid>
