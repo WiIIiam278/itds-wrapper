@@ -12,7 +12,7 @@ public class iOSHapticsBackend : IHapticsBackend
         _generator = new UIImpactFeedbackGenerator(UIImpactFeedbackStyle.Medium);
     }
 
-    public void Fire()
+    public void Fire(bool press)
     {
         _generator.Prepare();
         _generator.ImpactOccurred();

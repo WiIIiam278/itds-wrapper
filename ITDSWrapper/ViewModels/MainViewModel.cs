@@ -25,16 +25,17 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public EmuImage? CurrentFrame { get; set; }
 
-    public bool Closing { get; set; } = false;
+    public bool Closing { get; set; }
 
     private readonly byte[] _frameData = new byte[256 * 384 * 4];
     
     private readonly PauseDriver _pauseDriver;
+    private readonly LogInterpreter _logInterpreter;
     
     private readonly IAudioBackend _audioBackend;
     private readonly IHapticsBackend? _hapticsBackend;
     
-    private readonly InputBindings _inputBindings;
+    private readonly IInputDriver _inputDriver;
     private readonly PointerState _pointerState;
 
     public VirtualButtonViewModel? AButton { get; set; }
@@ -83,8 +84,9 @@ public class MainViewModel : ViewModelBase
         
         _pauseDriver = ((App)Application.Current!).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
+        _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
 
-        _inputBindings = new(IsMobile);
+        _inputDriver = ((App)Application.Current!).InputDriver ?? new DefaultInputDriver(IsMobile);
         _pointerState = new();
         if (IsMobile)
         {
@@ -94,25 +96,25 @@ public class MainViewModel : ViewModelBase
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
         Wrapper.OnCheckInput = HandleInput;
+        Wrapper.OnRumble = DoRumble;
+        Wrapper.OnReceiveLog = HandleLog;
         ThreadPool.QueueUserWorkItem(_ => Run());
     }
 
-    public void HandleKey(PhysicalKey key, bool pressed)
+    public void HandleKey<T>(T input, bool pressed)
     {
         if (pressed)
         {
-            _inputBindings.Push(key);
+            _inputDriver.Push(input);
             
-            if (_inputBindings.QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
+            if (_inputDriver.QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
             {
-                DisplaySettingsOverlay = !DisplaySettingsOverlay;
-                _pauseDriver.PushPauseState(DisplaySettingsOverlay);
-                ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
+                OpenSettings();
             }
         }
         else
         {
-            _inputBindings.Release(key);
+            _inputDriver.Release(input);
         }
     }
 
@@ -141,9 +143,11 @@ public class MainViewModel : ViewModelBase
     {
         TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.FPS);
         DateTime nextTick = DateTime.Now + interval;
+        IUpdater? updater = ((App)Application.Current!).Updater;
         
         while (!Closing)
         {
+            updater?.Update();
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
@@ -160,6 +164,7 @@ public class MainViewModel : ViewModelBase
             }
         }
         
+        _inputDriver.Shutdown();
         Wrapper.Dispose();
     }
 
@@ -178,7 +183,7 @@ public class MainViewModel : ViewModelBase
     {
         if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
         {
-            return _inputBindings.QueryInput(id) ? (short)1 : (short)0;
+            return _inputDriver.QueryInput(id) ? (short)1 : (short)0;
         }
 
         if (device == RetroBindings.RETRO_DEVICE_POINTER)
@@ -199,9 +204,27 @@ public class MainViewModel : ViewModelBase
         return 0;
     }
 
+    private bool DoRumble(uint port, uint type, ushort strength)
+    {
+        _inputDriver.DoRumble(strength);
+        return true;
+    }
+
+    private void HandleLog(string line)
+    {
+        _logInterpreter?.InterpretLog(line);
+    }
+
+    private void OpenSettings()
+    {
+        DisplaySettingsOverlay = !DisplaySettingsOverlay;
+        _pauseDriver.PushPauseState(DisplaySettingsOverlay);
+        ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
+    }
+
     private void AssignVirtualBindings()
     {
-        foreach (uint inputKey in _inputBindings.GetInputKeys())
+        foreach (uint inputKey in _inputDriver.GetInputKeys())
         {
             VirtualButtonInput? button = new();
             switch (inputKey)
@@ -249,7 +272,7 @@ public class MainViewModel : ViewModelBase
                     button = null;
                     break;
             }
-            _inputBindings.SetBinding(inputKey, button);
+            _inputDriver.SetBinding(inputKey, button);
         }
     }
 }

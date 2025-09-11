@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Input;
@@ -6,11 +5,11 @@ using Libretro.NET.Bindings;
 
 namespace ITDSWrapper.Input;
 
-public class InputBindings
+public class DefaultInputDriver : IInputDriver
 {
     private readonly Dictionary<uint, object?> _bindings;
 
-    public InputBindings(bool isMobile)
+    public DefaultInputDriver(bool isMobile)
     {
         if (isMobile)
         {
@@ -52,10 +51,19 @@ public class InputBindings
         }
     }
 
+    public void Shutdown()
+    {
+    }
+
     public uint[] GetInputKeys()
     {
         return _bindings.Keys.ToArray();
     }
+
+    public void SetActionSet(string actionSet)
+    {
+    }
+
 
     public void SetBinding<T>(uint input, IGameInput<T>? binding)
     {
@@ -85,5 +93,8 @@ public class InputBindings
             input?.Release(binding);
         }
     }
-    
+
+    public void DoRumble(ushort strength)
+    {
+    }
 }

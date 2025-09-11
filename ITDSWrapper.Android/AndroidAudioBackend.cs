@@ -33,6 +33,8 @@ public class AndroidAudioBackend : IAudioBackend
 
     public AudioTrackPerformanceMode PerformanceMode { get; set; }
 
+    public int? AudioSessionId => _audioTrack?.AudioSessionId;
+
     private bool _pause;
     
     public AndroidAudioBackend()

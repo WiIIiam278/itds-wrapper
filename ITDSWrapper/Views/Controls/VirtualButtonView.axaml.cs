@@ -11,19 +11,20 @@ public partial class VirtualButtonView : UserControl
         Focusable = false;
 
         InitializeComponent();
-        InputButton.AddHandler(PointerPressedEvent, Button_OnPointerPressed, handledEventsToo: true);
-        InputButton.AddHandler(PointerReleasedEvent, Button_OnPointerReleased, handledEventsToo: true);
+        InputButton.AddHandler(PointerPressedEvent, Button_OnPointerEntered, handledEventsToo: true);
+        InputButton.AddHandler(PointerReleasedEvent, Button_OnPointerExited, handledEventsToo: true);
     }
 
-    private void Button_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void Button_OnPointerEntered(object? sender, PointerEventArgs e)
     {
-        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire();
+        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire(true);
         ((VirtualButtonViewModel)DataContext!).AssociatedInput?.Press((VirtualButtonViewModel)DataContext!);
     }
-
-    private void Button_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    
+    private void Button_OnPointerExited(object? sender, PointerEventArgs e)
     {
-        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire();
+        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire(false);
         ((VirtualButtonViewModel)DataContext!).AssociatedInput?.Release((VirtualButtonViewModel)DataContext!);
     }
+
 }

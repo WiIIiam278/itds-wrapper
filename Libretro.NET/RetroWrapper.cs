@@ -12,7 +12,12 @@ namespace Libretro.NET
     public unsafe class RetroWrapper : IDisposable
     {
         private RetroInterop _interop;
-        private retro_log_printf_t _log;
+        
+        private static retro_log_printf_t _log;
+        private static retro_set_rumble_state_t _setRumbleState;
+        
+        private static GCHandle? _logHandle;
+        private static GCHandle? _setRumbleStateHandle;
 
         public uint Width { get; private set; }
         public uint Height { get; private set; }
@@ -32,6 +37,14 @@ namespace Libretro.NET
         public delegate short OnCheckInputDelegate(uint port, uint device, uint index, uint id);
 
         public OnCheckInputDelegate OnCheckInput { get; set; }
+
+        public delegate bool OnRumbleDelegate(uint port, uint effect, ushort strength);
+        
+        public OnRumbleDelegate OnRumble { get; set; }
+
+        public delegate void OnReceiveLogDelegate(string line);
+        
+        public OnReceiveLogDelegate OnReceiveLog { get; set; }
 
         public void LoadCore()
         {
@@ -79,7 +92,7 @@ namespace Libretro.NET
             _interop.run();
         }
 
-        private static byte Environment(uint cmd, void* data)
+        private byte Environment(uint cmd, void* data)
         {
             switch (cmd)
             {
@@ -145,15 +158,21 @@ namespace Libretro.NET
                     retro_frame_time_callback* cb = (retro_frame_time_callback*)data;
                     return 1;
                 }
+                case RetroBindings.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
+                {
+                    retro_rumble_interface* cb = (retro_rumble_interface*)data;
+                    _setRumbleState = Rumble;
+                    _setRumbleStateHandle = GCHandle.Alloc(_setRumbleState);
+                    cb->set_rumble_state = Marshal.GetFunctionPointerForDelegate(_setRumbleState);
+                    return 1;
+                }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                 {
-                    if (OperatingSystem.IsMacOS())
-                    {
-                        return 0;
-                    }
-
                     retro_log_callback* cb = (retro_log_callback*)data;
-                    cb->log = Marshal.GetFunctionPointerForDelegate(Log);
+
+                    _log = Log;
+                    _logHandle = GCHandle.Alloc(_log);
+                    cb->log = Marshal.GetFunctionPointerForDelegate(_log);
                     return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
@@ -244,11 +263,22 @@ namespace Libretro.NET
             return frames;
         }
 
-        private static void Log(retro_log_level level, sbyte* fmt)
+        private void Log(retro_log_level level, sbyte* fmt)
         {
             string str = Marshal.PtrToStringAnsi((IntPtr)(char*)fmt);
             Console.Write(str);
-            //Hard to log anything relevant without varargs support.
+            
+            OnReceiveLog?.Invoke(str);
+        }
+
+        private bool Rumble(uint port, retro_rumble_effect effect, ushort strength)
+        {
+            if (strength > 0)
+            {
+                return OnRumble?.Invoke(port, (uint)effect, strength) ?? false;
+            }
+
+            return false;
         }
 
         private void Time(long usec)
@@ -259,6 +289,8 @@ namespace Libretro.NET
         public void Dispose()
         {
             _interop?.Dispose();
+            _logHandle?.Free();
+            _setRumbleStateHandle?.Free();
         }
     }
 }
