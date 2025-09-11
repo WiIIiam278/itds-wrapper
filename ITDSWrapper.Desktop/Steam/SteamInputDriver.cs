@@ -107,15 +107,15 @@ public class SteamInputDriver : IInputDriver
                     else
                     {
                         Release($"{input.ActionName}_RIGHT");
-                        Push($"{input.ActionName}_LEFT");
+                        Release($"{input.ActionName}_LEFT");
                     }
                     
-                    if (state.Y > 0.05f)
+                    if (state.Y < -0.05f)
                     {
                         Push($"{input.ActionName}_DOWN");
                         Release($"{input.ActionName}_UP");
                     }
-                    if (state.Y < -0.05f)
+                    else if (state.Y > 0.05f)
                     {
                         Release($"{input.ActionName}_DOWN");
                         Push($"{input.ActionName}_UP");
@@ -162,7 +162,7 @@ public class SteamInputDriver : IInputDriver
         {
             if (input.RetroBindings.Length > 1)
             {
-                string[] directions = ["RIGHT", "DOWN", "LEFT", "RIGHT"];
+                string[] directions = ["RIGHT", "DOWN", "LEFT", "UP"];
                 for (int i = 0; i < input.RetroBindings.Length; i++)
                 {
                     _actionsDictionary.Add(input.RetroBindings[i], new($"{input.ActionName}_{directions[i]}"));
@@ -194,7 +194,7 @@ public class SteamInputDriver : IInputDriver
 
     public void Push<T>(T binding)
     {
-        if (binding is string action && _controller.GetDigitalState(action).Pressed)
+        if (binding is string action)
         {
             foreach (SteamControllerInput? input in _actionsDictionary.Values)
             {
@@ -205,7 +205,7 @@ public class SteamInputDriver : IInputDriver
 
     public void Release<T>(T binding)
     {
-        if (binding is string action && !_controller.GetDigitalState(action).Pressed)
+        if (binding is string action)
         {
             foreach (SteamControllerInput? input in _actionsDictionary.Values)
             {
