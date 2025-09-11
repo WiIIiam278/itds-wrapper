@@ -25,11 +25,12 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public EmuImage? CurrentFrame { get; set; }
 
-    public bool Closing { get; set; } = false;
+    public bool Closing { get; set; }
 
     private readonly byte[] _frameData = new byte[256 * 384 * 4];
     
     private readonly PauseDriver _pauseDriver;
+    private readonly LogInterpreter _logInterpreter;
     
     private readonly IAudioBackend _audioBackend;
     private readonly IHapticsBackend? _hapticsBackend;
@@ -83,6 +84,7 @@ public class MainViewModel : ViewModelBase
         
         _pauseDriver = ((App)Application.Current!).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
+        _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
 
         _inputDriver = ((App)Application.Current!).InputDriver ?? new DefaultInputDriver(IsMobile);
         _pointerState = new();
@@ -95,6 +97,7 @@ public class MainViewModel : ViewModelBase
         Wrapper.OnSample = PlaySample;
         Wrapper.OnCheckInput = HandleInput;
         Wrapper.OnRumble = DoRumble;
+        Wrapper.OnReceiveLog = HandleLog;
         ThreadPool.QueueUserWorkItem(_ => Run());
     }
 
@@ -205,6 +208,11 @@ public class MainViewModel : ViewModelBase
     {
         _inputDriver.DoRumble(strength);
         return true;
+    }
+
+    private void HandleLog(string line)
+    {
+        _logInterpreter?.InterpretLog(line);
     }
 
     private void OpenSettings()

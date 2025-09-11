@@ -20,12 +20,12 @@ public partial class MainWindow : Window
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
-        ((MainViewModel)View.DataContext!).HandleKey<PhysicalKey>(e.PhysicalKey, true);
+        ((MainViewModel)View.DataContext!).HandleKey(e.PhysicalKey, true);
     }
 
     protected override void OnKeyUp(KeyEventArgs e)
     {
         base.OnKeyUp(e);
-        ((MainViewModel)View.DataContext!).HandleKey<PhysicalKey>(e.PhysicalKey, false);
+        ((MainViewModel)View.DataContext!).HandleKey(e.PhysicalKey, false);
     }
 }

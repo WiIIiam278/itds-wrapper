@@ -1,9 +1,13 @@
+using System;
+
 namespace ITDSWrapper.Core;
 
 public class LogInterpreter
 {
-    public virtual void InterpretLog(string log)
+    protected const string WrapperLogPrefix = "[WRAPPER] ";
+    
+    public virtual int InterpretLog(string log)
     {
-        
+        return log.IndexOf(WrapperLogPrefix, StringComparison.Ordinal);
     }
 }

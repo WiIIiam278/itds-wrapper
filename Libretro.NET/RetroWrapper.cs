@@ -42,6 +42,10 @@ namespace Libretro.NET
         
         public OnRumbleDelegate OnRumble { get; set; }
 
+        public delegate void OnReceiveLogDelegate(string line);
+        
+        public OnReceiveLogDelegate OnReceiveLog { get; set; }
+
         public void LoadCore()
         {
             _interop = new();
@@ -259,11 +263,12 @@ namespace Libretro.NET
             return frames;
         }
 
-        private static void Log(retro_log_level level, sbyte* fmt)
+        private void Log(retro_log_level level, sbyte* fmt)
         {
             string str = Marshal.PtrToStringAnsi((IntPtr)(char*)fmt);
             Console.Write(str);
-            //Hard to log anything relevant without varargs support.
+            
+            OnReceiveLog?.Invoke(str);
         }
 
         private bool Rumble(uint port, retro_rumble_effect effect, ushort strength)
