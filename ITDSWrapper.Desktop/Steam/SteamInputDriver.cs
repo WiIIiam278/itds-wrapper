@@ -82,6 +82,7 @@ public class SteamInputDriver : IInputDriver
     public void SetController(Controller controller)
     {
         _controller = controller;
+        
     }
 
     public void UpdateState()
