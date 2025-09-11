@@ -1,0 +1,134 @@
+"In Game Actions"
+{
+	"actions"
+	{
+		"OverworldControls"
+		{
+			"title"					"#Set_Overworld"
+			"StickPadGyro"
+			{
+				"Move"
+				{
+					"title"			"#Action_Move"
+					"input_mode"	"joystick_move"
+				}
+			}
+            "AnalogTrigger"
+            {}
+			"Button"
+			{
+				"interact"			"#Action_Interact"
+				"cancel"			"#Action_Cancel"
+                "pause_menu"		"#Action_Pause"
+                "debug_menu"		"#Action_Debug"
+			}
+		}
+        "BattleControls"
+        {
+            "title"                 "#Set_Battle"
+            "StickPadGyro"
+            {}
+            "AnalogTrigger"
+            {}
+            "Button"
+            {
+                "menu_up"		"#Menu_Move_Up"
+                "menu_down"		"#Menu_Move_Down"
+                "menu_left"		"#Menu_Move_Left"
+                "menu_right"	"#Menu_Move_Right"
+                "confirm"       "#Confirm"
+                "back"          "#Back"
+                "dash"          "#Start_Dash"
+                "move"          "#Start_Move"
+                "attack"        "#Start_Attack"
+                "target_right"  "#Cycle_Target_Right"
+                "target_left"   "#Cycle_Target_Left"
+            }
+        }
+        "ScriptControls"
+        {
+            "title"                 "#Set_Script"
+            "StickPadGyro"
+            {}
+            "AnalogTrigger"
+            {}
+            "Button"
+            {
+                "advance"           "#Action_Advance"
+                "cancel"            "#Action_Cancel"
+                "auto"              "#Action_Auto"
+                "fast_forward"      "#Action_Fast_Forward"
+                "menu_up"		"#Menu_Up"
+                "menu_down"		"#Menu_Down"
+                "menu_left"		"#Menu_Left"
+                "menu_right"	"#Menu_Right"
+            }
+        }
+		"MenuControls"
+		{
+			"title"		"#Set_Menu"
+			"StickPadGyro"
+			{
+			}
+			"AnalogTrigger"
+			{
+			}
+			"Button"
+			{
+				"menu_up"		"#Menu_Up"
+				"menu_down"		"#Menu_Down"
+				"menu_left"		"#Menu_Left"
+				"menu_right"	"#Menu_Right"
+				"menu_select"	"#Menu_Select"
+				"menu_cancel"	"#Menu_Cancel"
+				"pause_menu"	"#Action_ReturnToGame"
+			}
+		}
+        "DebugCameraControls"
+        {
+            "title"     "#Set_DebugCam"
+            "StickPadGyro"
+            {}
+            "AnalogTrigger"
+            {}
+            "Button"
+            {
+                "camera_right"  "#Camera_Right"
+                "camera_left"   "#Camera_Left"
+            }
+        }
+	}
+	"localization"
+	{
+		"english"
+		{
+			"Set_Overworld"			"Overworld Controls"
+			"Set_Battle"			"Battle Controls"
+            "Set_Script"            "Story Controls"
+            "Set_Menu"              "Menu Controls"
+            "Set_DebugCam"          "Debug Camera Controls"
+			"Action_Move"			"Movement"
+            "Action_Interact"		"Interact"
+			"Action_Cancel"		    "Cancel"
+			"Action_Pause"			"Pause"
+			"Action_Debug"			"Open Debug Menu"
+			"Menu_Move_Up"			"Up"
+            "Menu_Move_Down"        "Down"
+            "Menu_Move_Left"        "Left"
+            "Menu_Move_Right"       "Right"
+            "Confirm"               "Confirm"
+            "Back"                  "Back"
+            "Start_Move"            "Enter Move Mode"
+            "Start_Dash"            "Enter Dash Mode"
+            "Start_Attack"          "Enter Attack Mode"
+            "Cycle_Target_Right"    "Next Target"
+            "Cycle_Target_Left"     "Previous Target"
+            "Action_Advance"        "Advance Dialogue"
+            "Action_Auto"           "Toggle Auto Advance"
+            "Action_Fast_Forward"   "Toggle Fast Forward"
+            "Action_ReturnToGame"   "Return to Game"
+            "Camera_Right"          "Move Camera Right"
+            "Camera_Left"           "Move Camera Left"
+		}
+	}
+}
