@@ -94,6 +94,7 @@ public class MainViewModel : ViewModelBase
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
         Wrapper.OnCheckInput = HandleInput;
+        Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
     }
 
@@ -198,6 +199,12 @@ public class MainViewModel : ViewModelBase
         }
 
         return 0;
+    }
+
+    private bool DoRumble(uint port, uint type, ushort strength)
+    {
+        _inputDriver.DoRumble(strength);
+        return true;
     }
 
     private void OpenSettings()

@@ -213,4 +213,9 @@ public class SteamInputDriver : IInputDriver
             }
         }
     }
+
+    public void DoRumble(ushort strength)
+    {
+        _controller.TriggerVibration(strength, strength);
+    }
 }

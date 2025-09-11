@@ -93,5 +93,8 @@ public class DefaultInputDriver : IInputDriver
             input?.Release(binding);
         }
     }
-    
+
+    public void DoRumble(ushort strength)
+    {
+    }
 }

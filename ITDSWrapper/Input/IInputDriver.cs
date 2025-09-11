@@ -9,4 +9,5 @@ public interface IInputDriver
     public bool QueryInput(uint id);
     public void Push<T>(T binding);
     public void Release<T>(T binding);
+    public void DoRumble(ushort strength);
 }
