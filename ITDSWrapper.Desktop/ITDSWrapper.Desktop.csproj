@@ -20,6 +20,10 @@
         <None Condition="'$(RuntimeIdentifier)'=='win-x64' Or $([System.OperatingSystem]::IsWindows())" Include="melondsds_libretro.dll"
               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
     </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="Steam/Install/**" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop"/>
