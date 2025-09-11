@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="controller_config\**" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
         <None Include="steam_appid.txt" CopyToOutputDirectory="Always" CopyToPublishDirectory="Never"/>
     </ItemGroup>
     

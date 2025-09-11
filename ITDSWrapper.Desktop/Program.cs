@@ -33,7 +33,7 @@ sealed class Program
                     try
                     {
                         SteamClient.Init(4026050);
-                        SteamInputDriver inputDriver = new SteamInputDriver();
+                        SteamInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDriver = inputDriver;
                         ((App)b.Instance!).Updater = new SteamUpdater(inputDriver);
                     }
