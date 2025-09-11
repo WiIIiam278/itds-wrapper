@@ -7,10 +7,12 @@ namespace ITDSWrapper.Desktop.Steam;
 public class SteamUpdater : IUpdater
 {
     private readonly List<Controller> _controllers = [];
+    
+    private SteamInputDriver _inputDriver;
 
-    public SteamUpdater()
+    public SteamUpdater(SteamInputDriver inputDriver)
     {
-        SteamInput.Init();
+        _inputDriver = inputDriver;
     }
     
     public void Update()
@@ -18,7 +20,7 @@ public class SteamUpdater : IUpdater
         SteamInput.GetControllerNoAlloc(_controllers);
         if (_controllers.Count > 0)
         {
-            
+            _inputDriver.SetController(_controllers[0]);
         }
     }
 }
