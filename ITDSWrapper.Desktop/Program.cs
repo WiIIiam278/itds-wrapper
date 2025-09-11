@@ -3,6 +3,7 @@ using System.IO;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using ITDSWrapper.Desktop.Steam;
+using Steamworks;
 
 namespace ITDSWrapper.Desktop;
 
@@ -31,6 +32,7 @@ sealed class Program
                 {
                     try
                     {
+                        SteamClient.Init(4026050);
                         SteamInputDriver inputDriver = new SteamInputDriver();
                         ((App)b.Instance!).InputDriver = inputDriver;
                         ((App)b.Instance!).Updater = new SteamUpdater(inputDriver);
