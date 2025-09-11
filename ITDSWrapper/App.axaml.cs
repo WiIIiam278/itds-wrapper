@@ -12,10 +12,11 @@ namespace ITDSWrapper;
 
 public partial class App : Application
 {
-    public IUpdater? Updater { get; set; }
     public IAudioBackend? AudioBackend { get; set; }
     public IInputDriver? InputDriver { get; set; }
     public IHapticsBackend? HapticsBackend { get; set; }
+    public IUpdater? Updater { get; set; }
+    public LogInterpreter? LogInterpreter { get; set; }
     public PauseDriver? PauseDriver { get; set; }
 
     public override void Initialize()
