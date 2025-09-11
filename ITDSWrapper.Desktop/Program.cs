@@ -35,7 +35,8 @@ sealed class Program
                         SteamClient.Init(4026050);
                         SteamInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDriver = inputDriver;
-                        ((App)b.Instance!).Updater = new SteamUpdater(inputDriver);
+                        ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
+                        ((App)b.Instance).LogInterpreter = new SteamLogInterpreter(inputDriver);
                     }
                     catch (Exception ex)
                     {

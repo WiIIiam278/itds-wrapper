@@ -15,13 +15,13 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
         }
 
         int startIndex = wrapperPrefixLocation + WrapperLogPrefix.Length;
-        int endIndex = log.IndexOf(' ', startIndex);
+        int endIndex = log.IndexOf(':', startIndex);
         string verb = log[startIndex..endIndex];
 
         switch (verb)
         {
             case ActionSetVerb:
-                inputDriver.SetActionSet(log[(endIndex + 1)..]);
+                inputDriver.SetActionSet(log[(endIndex + 2)..^1]);
                 break;
         }
 
