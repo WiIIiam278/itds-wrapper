@@ -143,10 +143,10 @@ public class MainViewModel : ViewModelBase
         
         while (!Closing)
         {
+            updater?.Update();
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
-                updater?.Update();
                 while (DateTime.Now < nextTick)
                 {
                     TimeSpan sleep = nextTick - DateTime.Now;
