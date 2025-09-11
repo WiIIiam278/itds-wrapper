@@ -32,7 +32,7 @@ public class SteamInputDriver : IInputDriver
                 new("menu_right", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT]),
                 new("confirm", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_A]),
                 new("back", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_B]),
-                new("move", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y]),
+                new("start_move", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y]),
                 new("attack", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_X]),
                 new("target_right", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_R]),
                 new("target_left", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L]),
