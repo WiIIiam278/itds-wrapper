@@ -14,7 +14,7 @@
         <vm:MainViewModel />
     </Design.DataContext>
     
-    <Grid RowDefinitions="*,Auto">
+    <Grid RowDefinitions="*,Auto" SizeChanged="ScreenGrid_OnSizeChanged">
         <Image Name="DsScreen" Grid.Row="0"
                Source="{Binding CurrentFrame}"
                Width="{Binding EmuRenderWidth}"
