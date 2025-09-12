@@ -3,7 +3,7 @@ using UIKit;
 
 namespace ITDSWrapper.iOS;
 
-public class iOSHapticsBackend : IHapticsBackend
+public class IosHapticsBackend : IHapticsBackend
 {
     private UIImpactFeedbackGenerator _generator;
     

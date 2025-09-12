@@ -13,6 +13,7 @@ using ITDSWrapper.Input;
 using ITDSWrapper.ViewModels.Controls;
 using Libretro.NET;
 using Libretro.NET.Bindings;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace ITDSWrapper.ViewModels;
@@ -25,18 +26,47 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public EmuImage? CurrentFrame { get; set; }
 
+    private double _emuRenderWidth = 256;
+    private double _emuRenderHeight = 384;
+
+    public double EmuRenderWidth
+    {
+        get => _emuRenderWidth;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _emuRenderWidth, value);
+            if (_pointerState is not null)
+            {
+                _pointerState.Width = value;
+            }
+        }
+    }
+
+    public double EmuRenderHeight
+    {
+        get => _emuRenderHeight;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _emuRenderHeight, value);
+            if (_pointerState is not null)
+            {
+                _pointerState.Height = value;
+            }
+        }
+    }
+
     public bool Closing { get; set; }
 
     private readonly byte[] _frameData = new byte[256 * 384 * 4];
     
     private readonly PauseDriver _pauseDriver;
-    private readonly LogInterpreter _logInterpreter;
+    private readonly LogInterpreter? _logInterpreter;
     
     private readonly IAudioBackend _audioBackend;
     private readonly IHapticsBackend? _hapticsBackend;
     
     private readonly IInputDriver _inputDriver;
-    private readonly PointerState _pointerState;
+    private readonly PointerState? _pointerState;
 
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
@@ -75,19 +105,19 @@ public class MainViewModel : ViewModelBase
             _audioBackend = new SilkNetOpenALBackend(Wrapper.SampleRate, 32);
         }
         
-        
-        if (((App)Application.Current!).HapticsBackend is not null)
+        if (((App)Application.Current).HapticsBackend is not null)
         {
             _hapticsBackend = ((App)Application.Current).HapticsBackend!;
             _hapticsBackend.Initialize();
         }
         
-        _pauseDriver = ((App)Application.Current!).PauseDriver ?? new();
+        _pauseDriver = ((App)Application.Current).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
-        _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
+        
+        _logInterpreter = ((App)Application.Current).LogInterpreter ?? new();
 
-        _inputDriver = ((App)Application.Current!).InputDriver ?? new DefaultInputDriver(IsMobile);
-        _pointerState = new();
+        _inputDriver = ((App)Application.Current).InputDriver ?? new DefaultInputDriver(IsMobile);
+        _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
             AssignVirtualBindings();
@@ -126,13 +156,13 @@ public class MainViewModel : ViewModelBase
         if (pressedArgs is not null)
         {
             Point pos = pressedArgs.GetCurrentPoint(relativeTo).Position;
-            _pointerState.Press(pos.X, pos.Y);
+            _pointerState?.Press(pos.X, pos.Y);
         }
         else if (releasedArgs is not null)
         {
-            _pointerState.Release();
+            _pointerState?.Release();
         }
-        else if (movedArgs is not null && _pointerState.Pressed)
+        else if (movedArgs is not null && (_pointerState?.Pressed ?? false))
         {
             Point pos = movedArgs.GetCurrentPoint(relativeTo).Position;
             _pointerState.Press(pos.X, pos.Y);
@@ -191,13 +221,13 @@ public class MainViewModel : ViewModelBase
             switch (id)
             {
                 case RetroBindings.RETRO_DEVICE_ID_POINTER_X:
-                    return _pointerState.RetroX;
+                    return _pointerState?.RetroX ?? 0;
                 
                 case RetroBindings.RETRO_DEVICE_ID_POINTER_Y:
-                    return _pointerState.RetroY;
+                    return _pointerState?.RetroY ?? 0;
                 
                 case RetroBindings.RETRO_DEVICE_ID_POINTER_PRESSED:
-                    return _pointerState.Pressed ? (short)1 : (short)0;
+                    return (_pointerState?.Pressed ?? false) ? (short)1 : (short)0;
             }
         }
 
