@@ -136,6 +136,6 @@ public class SilkNetOpenALBackend : IAudioBackend
         uint[] buffersToQueue = [alBuffers[_currentBuffer]];
         Al!.SourceQueueBuffers(_alSource, buffersToQueue);
         
-        _currentBuffer = _currentBuffer == alBuffers.Length - 1 ? 0 : _currentBuffer + 1;
+        _currentBuffer = (_currentBuffer + 1) % alBuffers.Length;
     }
 }

@@ -126,12 +126,8 @@ namespace Libretro.NET
                             };
                             break;
                         case "melonds_jit_enable":
-                            *cb = new()
-                            {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
-                            };
-                            break;
+                        case "melonds_jit_branch_optimisations":
+                        case "melonds_jit_literal_optimisations":
                         case "melonds_show_cursor":
                             *cb = new()
                             {
@@ -201,11 +197,6 @@ namespace Libretro.NET
                     string value = Marshal.PtrToStringAnsi((IntPtr)((char *)s.key));
                     return 1;
                 }
-                // case RetroBindings.RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION:
-                // {
-                //     *(uint*)data = 1;
-                //     return 1;
-                // }
                 default:
                 {
                     return 0;
