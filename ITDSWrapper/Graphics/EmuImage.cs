@@ -70,7 +70,9 @@ public class EmuDrawOperation : ICustomDrawOperation
                 GCHandle handle = GCHandle.Alloc(Frame, GCHandleType.Pinned);
 
                 SKPixmap pixmap = new(new(Width, Height, SKColorType.Bgra8888), handle.AddrOfPinnedObject());
-                lease.SkCanvas.DrawImage(SKImage.FromPixels(pixmap), 0, 0);
+                lease.SkCanvas.DrawImage(SKImage.FromPixels(pixmap), new SKRect(0, 0, Width, Height),
+                    new SKRect((float)Bounds.X, (float)Bounds.Y, (float)(Bounds.X + Bounds.Width), (float)(Bounds.Y + Bounds.Height)),
+                    new() { IsAntialias = true});
                 
                 handle.Free();
             }

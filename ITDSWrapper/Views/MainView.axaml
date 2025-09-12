@@ -6,7 +6,8 @@
              xmlns:c="using:ITDSWrapper.Views.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ITDSWrapper.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+             Name="View">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -16,8 +17,8 @@
     <Grid RowDefinitions="*,Auto">
         <Image Name="DsScreen" Grid.Row="0"
                Source="{Binding CurrentFrame}"
-               Width="{Binding Wrapper.Width}"
-               Height="{Binding Wrapper.Height}"
+               Width="{Binding EmuRenderWidth}"
+               Height="{Binding EmuRenderHeight}"
                PointerPressed="DsScreen_OnPointerPressed"
                PointerReleased="DsScreen_OnPointerReleased"
                PointerMoved="DsScreen_OnPointerMoved"
