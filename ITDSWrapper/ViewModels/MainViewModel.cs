@@ -55,6 +55,8 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    public int TopPadding => IsMobile ? 10 : 0;
+
     public bool Closing { get; set; }
 
     private readonly byte[] _frameData = new byte[256 * 384 * 4];
