@@ -8,23 +8,23 @@
              x:Class="ITDSWrapper.Views.MainView"
              x:DataType="vm:MainViewModel"
              Name="View">
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
     
-    <Grid RowDefinitions="*,Auto" SizeChanged="ScreenGrid_OnSizeChanged">
-        <Image Name="DsScreen" Grid.Row="0"
-               Source="{Binding CurrentFrame}"
-               Width="{Binding EmuRenderWidth}"
-               Height="{Binding EmuRenderHeight}"
-               PointerPressed="DsScreen_OnPointerPressed"
-               PointerReleased="DsScreen_OnPointerReleased"
-               PointerMoved="DsScreen_OnPointerMoved"
-               Effect="{Binding ScreenEffect}"/>
+    <Grid RowDefinitions="Auto,*,Auto" >
         
-        <Grid Grid.Row="1" Name="OnScreenControls" IsVisible="{Binding IsMobile}"
+        <StackPanel Grid.Row="0" MinHeight="{Binding TopPadding}"/>
+        
+        <Grid Grid.Row="1" SizeChanged="ScreenGrid_OnSizeChanged">
+            <Image Name="DsScreen"
+                   Source="{Binding CurrentFrame}"
+                   Width="{Binding EmuRenderWidth}"
+                   MaxHeight="{Binding EmuRenderHeight}"
+                   PointerPressed="DsScreen_OnPointerPressed"
+                   PointerReleased="DsScreen_OnPointerReleased"
+                   PointerMoved="DsScreen_OnPointerMoved"
+                   Effect="{Binding ScreenEffect}"/>
+        </Grid>
+        
+        <Grid Grid.Row="2" Name="OnScreenControls" IsVisible="{Binding IsMobile}"
               RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10">
             <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*" Height="50" HorizontalAlignment="Center">
                 <c:VirtualButtonView Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding LButton}" />
@@ -49,7 +49,7 @@
             <c:VirtualButtonView Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding SettingsButton}" HorizontalAlignment="Center"/>
         </Grid>
         
-        <Grid Grid.Row="0" Grid.RowSpan="2" Name="SettingsOverlay" IsVisible="{Binding DisplaySettingsOverlay}">
+        <Grid Grid.Row="1" Grid.RowSpan="2" Name="SettingsOverlay" IsVisible="{Binding DisplaySettingsOverlay}">
             <TextBlock>Settings!</TextBlock>
         </Grid>
     </Grid>
