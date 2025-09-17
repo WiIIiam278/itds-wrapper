@@ -9,5 +9,6 @@ public class SteamAchievementManager : IAchievementManager
     public void Unlock(string achievementName)
     {
         SteamUserStats.SetAchievement(achievementName);
+        while (!SteamUserStats.StoreStats());
     }
 }

@@ -15,8 +15,17 @@ sealed class Program
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            File.WriteAllText("crash.log", $"CRASH: {ex.Message}\n\n{ex.StackTrace}");
+        }
+    }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
@@ -37,6 +46,7 @@ sealed class Program
                     try
                     {
                         SteamClient.Init(4026050);
+                        SteamUserStats.ResetAll(includeAchievements: true);
                         SteamInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
