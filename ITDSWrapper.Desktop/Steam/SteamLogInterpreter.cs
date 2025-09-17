@@ -1,9 +1,5 @@
 using System;
-using System.IO;
-using DiscUtils.Fat;
-using DiscUtils.Streams;
 using ITDSWrapper.Core;
-using Libretro.NET;
 using Steamworks;
 
 namespace ITDSWrapper.Desktop.Steam;
