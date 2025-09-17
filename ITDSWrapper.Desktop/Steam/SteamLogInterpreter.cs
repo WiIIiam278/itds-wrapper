@@ -24,6 +24,12 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
         {
             return wrapperPrefixLocation;
         }
+        if (wrapperPrefixLocation == 0 && WatchForSdCreate)
+        {
+            WatchForSdCreate = false;
+            SteamSaveManager.DownloadCloudSave();
+            return -1;
+        }
 
         int startIndex = wrapperPrefixLocation + WrapperLogPrefix.Length;
         int endIndex = log.IndexOf(':', startIndex);

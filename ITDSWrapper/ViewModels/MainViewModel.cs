@@ -94,13 +94,15 @@ public class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         Wrapper = new();
+        _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
+        Wrapper.OnReceiveLog = HandleLog;
         Wrapper.LoadCore();
         using Stream ndsStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ITDSWrapper.itds.nds")!;
         byte[] data = new byte[ndsStream.Length];
         ndsStream.ReadExactly(data);
         Wrapper.LoadGame(data);
 
-        if (((App)Application.Current!).AudioBackend is not null)
+        if (((App)Application.Current).AudioBackend is not null)
         {
             _audioBackend = ((App)Application.Current).AudioBackend!;
             _audioBackend.Initialize(Wrapper.SampleRate);
@@ -118,8 +120,6 @@ public class MainViewModel : ViewModelBase
         
         _pauseDriver = ((App)Application.Current).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
-        
-        _logInterpreter = ((App)Application.Current).LogInterpreter ?? new();
 
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [new DefaultInputDriver(IsMobile, OpenSettings)];
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
@@ -136,7 +136,6 @@ public class MainViewModel : ViewModelBase
         Wrapper.OnSample = PlaySample;
         Wrapper.OnCheckInput = HandleInput;
         Wrapper.OnRumble = DoRumble;
-        Wrapper.OnReceiveLog = HandleLog;
         ThreadPool.QueueUserWorkItem(_ => Run());
     }
 

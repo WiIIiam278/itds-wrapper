@@ -34,51 +34,56 @@ public static class SteamSaveManager
         SteamRemoteStorage.FileWrite(SdCardHeaderName, sdCardBytes[..0x7E00]);
     }
     
-    public static void DownloadCloudSave()
+    public static bool DownloadCloudSave()
     {
         string sdCardFile = Path.Combine(RetroWrapper.GetDirectoryForPlatform("saves"), "melonDS DS", "dldi_sd_card.bin");
         if (!SteamRemoteStorage.FileExists(SaveFileName))
         {
-            return;
+            return false;
+        }
+        if (!File.Exists(sdCardFile))
+        {
+            return true;
         }
         
         byte[] saveFile = SteamRemoteStorage.FileRead(SaveFileName);
-        if (!File.Exists(sdCardFile))
+        byte[] sdCardBytes = File.ReadAllBytes(sdCardFile);
+        using SparseMemoryStream sdCardStream = new();
+        sdCardStream.Write(sdCardBytes[0x7E00..]);
+        sdCardStream.Seek(0, SeekOrigin.Begin);
+        
+        FatFileSystem sdCardFat = new(sdCardStream, Ownership.None);
+        if (sdCardFat.FileExists(SaveFileName))
         {
-            File.WriteAllText($"{sdCardFile}.idx", "SIZE 4294967296\n");
-
-            byte[] sdCardHeaderBytes = SteamRemoteStorage.FileRead(SdCardHeaderName);
-            using MemoryStream sdCardStream = new();
-            FatFileSystem sdCardFat = FatFileSystem.FormatPartition(sdCardStream, "NO NAME    ",
-                Geometry.FromCapacity(4294393856), 0, 8388545, 0);
-
-            using SparseStream romStream = sdCardFat.OpenFile("itds.nds", FileMode.Create, FileAccess.Write);
-            using Stream ndsStream =
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("ITDSWrapper.itds.nds")!;
-            ndsStream.CopyTo(romStream);
-            romStream.Flush();
-
             using SparseStream savStream =
-                sdCardFat.OpenFile(SaveFileName, FileMode.Create, FileAccess.Write);
+                sdCardFat.OpenFile(SaveFileName, FileMode.Open, FileAccess.Write);
             savStream.Write(saveFile, 0, saveFile.Length);
             savStream.Flush();
-
-            byte[] sdCardBytes = new byte[sdCardHeaderBytes.Length + sdCardStream.Length];
-            sdCardHeaderBytes.CopyTo(sdCardBytes, 0);
-            Array.Copy(sdCardStream.ToArray(), 0, sdCardBytes, 0x7E00, sdCardStream.Length);
-            File.WriteAllBytes(sdCardFile, sdCardBytes);
         }
         else
         {
-            byte[] sdCardBytes = File.ReadAllBytes(sdCardFile);
-            using MemoryStream sdCardStream = new(sdCardBytes[0x7E00..]);
-            FatFileSystem sdCardFat = new(sdCardStream, Ownership.None);
             using SparseStream savStream =
-                sdCardFat.OpenFile(SaveFileName, FileMode.Create, FileAccess.Write);
+                sdCardFat.OpenFile(SaveFileName, FileMode.CreateNew, FileAccess.Write);
             savStream.Write(saveFile, 0, saveFile.Length);
             savStream.Flush();
-            Array.Copy(sdCardStream.ToArray(), 0, sdCardBytes, 0x7E00, sdCardStream.Length);
-            File.WriteAllBytes(sdCardFile, sdCardBytes);
+            byte[] oldSdCardBytes = sdCardBytes;
+            sdCardBytes = new byte[0x7E00 + sdCardStream.Length];
+            Array.Copy(oldSdCardBytes, sdCardBytes, oldSdCardBytes.Length);
         }
+
+        byte[] sdCardStreamBytes = new byte[sdCardStream.Length];
+        sdCardStream.Seek(0, SeekOrigin.Begin);
+        sdCardStream.ReadExactly(sdCardStreamBytes);
+        Array.Copy(sdCardStreamBytes, 0, sdCardBytes, 0x7E00, sdCardStream.Length);
+        File.WriteAllBytes(sdCardFile, sdCardBytes);
+
+        return false;
+    }
+
+    private static long GetNext16KMultiple(long length)
+    {
+        int i = 1;
+        for (; length > 0x1000000 * (long)Math.Pow(2, i); i++) ;
+        return 0x1000000 * (long)Math.Pow(2, i);
     }
 }
