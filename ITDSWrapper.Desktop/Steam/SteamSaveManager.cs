@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
-using DiscUtils;
 using DiscUtils.Fat;
 using DiscUtils.Streams;
 using Libretro.NET;
