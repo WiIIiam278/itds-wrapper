@@ -59,7 +59,7 @@ public class SteamInputDriver : IInputDriver
                 new("menu_left", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT]),
                 new("menu_right", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT]),
                 new("menu_select", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_A]),
-                new("menu_cancel", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_B]),
+                new("cancel", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_B]),
                 new("pause_menu", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_START]),
             ]
         },
@@ -85,8 +85,9 @@ public class SteamInputDriver : IInputDriver
         
     }
 
-    public void UpdateState()
+    public bool UpdateState()
     {
+        bool controllerUsed = false;
         if (!string.IsNullOrEmpty(_currentActionSet))
         {
             foreach (SteamInputAction input in _actionSets[_currentActionSet])
@@ -96,11 +97,13 @@ public class SteamInputDriver : IInputDriver
                     AnalogState state = _controller.GetAnalogState(input.ActionName);
                     if (state.X > 0.05f)
                     {
+                        controllerUsed = true;
                         Push($"{input.ActionName}_RIGHT");
                         Release($"{input.ActionName}_LEFT");
                     }
                     else if (state.X < -0.05f)
                     {
+                        controllerUsed = true;
                         Release($"{input.ActionName}_RIGHT");
                         Push($"{input.ActionName}_LEFT");
                     }
@@ -112,11 +115,13 @@ public class SteamInputDriver : IInputDriver
                     
                     if (state.Y < -0.05f)
                     {
+                        controllerUsed = true;
                         Push($"{input.ActionName}_DOWN");
                         Release($"{input.ActionName}_UP");
                     }
                     else if (state.Y > 0.05f)
                     {
+                        controllerUsed = true;
                         Release($"{input.ActionName}_DOWN");
                         Push($"{input.ActionName}_UP");
                     }
@@ -124,13 +129,13 @@ public class SteamInputDriver : IInputDriver
                     {
                         Release($"{input.ActionName}_DOWN");
                         Release($"{input.ActionName}_UP");
-                        
                     }
                 }
                 else
                 {
                     if (_controller.GetDigitalState(input.ActionName).Pressed)
                     {
+                        controllerUsed = true;
                         Push(input.ActionName);
                     }
                     else
@@ -140,6 +145,8 @@ public class SteamInputDriver : IInputDriver
                 }
             }
         }
+
+        return controllerUsed;
     }
 
     public void Shutdown()

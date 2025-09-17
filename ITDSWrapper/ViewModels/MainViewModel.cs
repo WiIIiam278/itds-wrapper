@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Avalonia;
@@ -67,7 +68,8 @@ public class MainViewModel : ViewModelBase
     private readonly IAudioBackend _audioBackend;
     private readonly IHapticsBackend? _hapticsBackend;
     
-    private readonly IInputDriver _inputDriver;
+    private readonly IInputDriver[] _inputDrivers;
+    private int _currentInputDriver = 0;
     private readonly PointerState? _pointerState;
 
     public VirtualButtonViewModel? AButton { get; set; }
@@ -118,7 +120,7 @@ public class MainViewModel : ViewModelBase
         
         _logInterpreter = ((App)Application.Current).LogInterpreter ?? new();
 
-        _inputDriver = ((App)Application.Current).InputDriver ?? new DefaultInputDriver(IsMobile);
+        _inputDrivers = ((App)Application.Current).InputDrivers ?? [new DefaultInputDriver(IsMobile)];
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
@@ -135,18 +137,31 @@ public class MainViewModel : ViewModelBase
 
     public void HandleKey<T>(T input, bool pressed)
     {
+        for (int i = 0; i < _inputDrivers.Length; i++)
+        {
+            if (_inputDrivers[i] is DefaultInputDriver)
+            {
+                _currentInputDriver = i;
+                break;
+            }
+        }
+        if (_inputDrivers[_currentInputDriver] is not DefaultInputDriver)
+        {
+            return;
+        }
+        
         if (pressed)
         {
-            _inputDriver.Push(input);
+            _inputDrivers[_currentInputDriver].Push(input);
             
-            if (_inputDriver.QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
+            if (_inputDrivers[_currentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
             {
                 OpenSettings();
             }
         }
         else
         {
-            _inputDriver.Release(input);
+            _inputDrivers[_currentInputDriver].Release(input);
         }
     }
 
@@ -179,7 +194,11 @@ public class MainViewModel : ViewModelBase
         
         while (!Closing)
         {
-            updater?.Update();
+            int nextInputDriver = updater?.Update() ?? -1;
+            if (nextInputDriver >= 0)
+            {
+                _currentInputDriver = nextInputDriver;
+            }
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
@@ -195,8 +214,11 @@ public class MainViewModel : ViewModelBase
                 nextTick = DateTime.Now + interval;
             }
         }
-        
-        _inputDriver.Shutdown();
+
+        foreach (IInputDriver inputDriver in _inputDrivers)
+        {
+            inputDriver.Shutdown();
+        }
         Wrapper.Dispose();
     }
 
@@ -215,7 +237,7 @@ public class MainViewModel : ViewModelBase
     {
         if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
         {
-            return _inputDriver.QueryInput(id) ? (short)1 : (short)0;
+            return _inputDrivers[_currentInputDriver].QueryInput(id) ? (short)1 : (short)0;
         }
 
         if (device == RetroBindings.RETRO_DEVICE_POINTER)
@@ -238,7 +260,7 @@ public class MainViewModel : ViewModelBase
 
     private bool DoRumble(uint port, uint type, ushort strength)
     {
-        _inputDriver.DoRumble(strength);
+        _inputDrivers[_currentInputDriver].DoRumble(strength);
         return true;
     }
 
@@ -256,7 +278,7 @@ public class MainViewModel : ViewModelBase
 
     private void AssignVirtualBindings()
     {
-        foreach (uint inputKey in _inputDriver.GetInputKeys())
+        foreach (uint inputKey in _inputDrivers[_currentInputDriver].GetInputKeys())
         {
             VirtualButtonInput? button = new();
             switch (inputKey)
@@ -304,7 +326,7 @@ public class MainViewModel : ViewModelBase
                     button = null;
                     break;
             }
-            _inputDriver.SetBinding(inputKey, button);
+            _inputDrivers[_currentInputDriver].SetBinding(inputKey, button);
         }
     }
 }
