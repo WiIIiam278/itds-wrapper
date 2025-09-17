@@ -37,6 +37,7 @@ sealed class Program
                         ((App)b.Instance!).InputDriver = inputDriver;
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
                         ((App)b.Instance).LogInterpreter = new SteamLogInterpreter(inputDriver);
+                        SteamSaveManager.DownloadCloudSave();
                     }
                     catch (Exception ex)
                     {

@@ -98,10 +98,10 @@ namespace Libretro.NET
             {
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                 {
-                    string sysDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", "sys");
+                    string sysDir = GetDirectoryForPlatform("sys");
                     if (!Directory.Exists(sysDir))
                     {
-                        Directory.CreateDirectory(sysDir);
+                        Directory.CreateDirectory(sysDir!);
                     }
                     char** cb = (char**)data;
                     *cb = (char*)Marshal.StringToHGlobalAnsi(sysDir);
@@ -129,6 +129,8 @@ namespace Libretro.NET
                         case "melonds_jit_branch_optimisations":
                         case "melonds_jit_literal_optimisations":
                         case "melonds_show_cursor":
+                        case "melonds_homebrew_sync_sdcard_to_host":
+                        case "melonds_homebrew_readonly":
                             *cb = new()
                             {
                                 key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
@@ -173,10 +175,10 @@ namespace Libretro.NET
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
-                    string saveDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", "saves");
+                    string saveDir = GetDirectoryForPlatform("saves");
                     if (!Directory.Exists(saveDir))
                     {
-                        Directory.CreateDirectory(saveDir);
+                        Directory.CreateDirectory(saveDir!);
                     }
                     char** cb = (char**)data;
                     *cb = (char*)Marshal.StringToHGlobalAnsi(saveDir);
@@ -275,6 +277,15 @@ namespace Libretro.NET
         private void Time(long usec)
         {
             //Nothing relevant to do yet...
+        }
+
+        public static string GetDirectoryForPlatform(string dirName)
+        {
+            return OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() ?
+                Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", dirName) :
+                OperatingSystem.IsMacOS() ?
+                    Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName, dirName) :
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dirName);
         }
 
         public void Dispose()

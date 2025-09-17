@@ -1,10 +1,21 @@
+using System;
+using System.IO;
+using DiscUtils.Fat;
+using DiscUtils.Streams;
 using ITDSWrapper.Core;
+using Libretro.NET;
+using Steamworks;
 
 namespace ITDSWrapper.Desktop.Steam;
 
 public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
 {
     private const string ActionSetVerb = "ACTION_SET";
+    private const string CloudSaveVerb = "CLOUD_SAVE";
+    private const string AchievementUnlockedVerb = "ACHIEVEMENT_UNLOCKED";
+    private const string RichPresenceVerb = "RICH_PRESENCE";
+    private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
+    private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
     
     public override int InterpretLog(string log)
     {
@@ -22,6 +33,32 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
         {
             case ActionSetVerb:
                 inputDriver.SetActionSet(log[(endIndex + 2)..^1]);
+                break;
+
+            case CloudSaveVerb:
+                SteamSaveManager.UploadCloudSave();
+                break;
+            
+            case AchievementUnlockedVerb:
+                break;
+            
+            case RichPresenceVerb:
+                break;
+            
+            case TimelineInstantaneousEventVerb:
+                try
+                {
+                    string[] timelineSplit = log[(endIndex + 2)..^1].Split('|');
+                    SteamTimeline.AddInstantaneousTimelineEvent(timelineSplit[0], timelineSplit[1], timelineSplit[2],
+                        uint.Parse(timelineSplit[3]), float.Parse(timelineSplit[4]), TimelineEventClipPriority.Standard);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to add instantaneous timeline event due exception: {ex.Message}");
+                }
+                break;
+            
+            case TimelineRangeEventVerb:
                 break;
         }
 
