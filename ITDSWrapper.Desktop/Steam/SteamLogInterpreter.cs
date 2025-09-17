@@ -43,6 +43,16 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 break;
             
             case RichPresenceVerb:
+                try
+                {
+                    string[] rpSplit = log[(endIndex + 2)..^1].Split('|');
+                    SteamFriends.SetRichPresence(rpSplit[0], rpSplit[1]);
+                    SteamFriends.SetRichPresence("steam_display", "#Status");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to set rich presence due to exception: {ex.Message}");
+                }
                 break;
             
             case TimelineInstantaneousEventVerb:
@@ -54,7 +64,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to add instantaneous timeline event due exception: {ex.Message}");
+                    Console.WriteLine($"Failed to add instantaneous timeline event due to exception: {ex.Message}");
                 }
                 break;
             
