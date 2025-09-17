@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using DiscUtils.Fat;
 using DiscUtils.Streams;
 using Libretro.NET;
@@ -18,6 +19,7 @@ public static class SteamSaveManager
         if (OperatingSystem.IsWindows())
         {
             string sdCardCopyPath = Path.Combine(SaveDir, "melonDS DS", "dldi_sd_card_copy.bin");
+            Thread.Sleep(500); // Sleep for just a sec before copying the SD card to get write updates
             File.Copy(sdCardPath, sdCardCopyPath, true);
             sdCardPath = sdCardCopyPath;
         }
