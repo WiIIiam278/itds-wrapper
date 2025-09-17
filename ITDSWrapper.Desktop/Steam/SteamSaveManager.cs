@@ -79,11 +79,4 @@ public static class SteamSaveManager
 
         return false;
     }
-
-    private static long GetNext16KMultiple(long length)
-    {
-        int i = 1;
-        for (; length > 0x1000000 * (long)Math.Pow(2, i); i++) ;
-        return 0x1000000 * (long)Math.Pow(2, i);
-    }
 }
