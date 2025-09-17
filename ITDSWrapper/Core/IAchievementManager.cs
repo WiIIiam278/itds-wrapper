@@ -2,5 +2,5 @@ namespace ITDSWrapper.Core;
 
 public interface IAchievementManager
 {
-    public void Unlock(string id);
+    public void Unlock(string achievementName);
 }

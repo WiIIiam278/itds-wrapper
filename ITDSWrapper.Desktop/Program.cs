@@ -39,6 +39,7 @@ sealed class Program
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
                         SteamLogInterpreter logInterpreter = new(inputDriver)
                         {
+                            AchievementManager = new SteamAchievementManager(),
                             WatchForSdCreate = SteamSaveManager.DownloadCloudSave(),
                         };
                         ((App)b.Instance).LogInterpreter = logInterpreter;
