@@ -12,7 +12,6 @@ namespace ITDSWrapper.Desktop.Steam;
 public static class SteamSaveManager
 {
     private const string SaveFileName = "into-the-dream-spring.sav";
-    private const string SdCardHeaderName = "sd_header.bin";
     private static readonly string SaveDir = RetroWrapper.GetDirectoryForPlatform("saves");
     
     
@@ -30,8 +29,6 @@ public static class SteamSaveManager
         byte[] savFile = new byte[savStream.Length];
         savStream.ReadExactly(savFile);
         SteamRemoteStorage.FileWrite(SaveFileName, savFile);
-
-        SteamRemoteStorage.FileWrite(SdCardHeaderName, sdCardBytes[..0x7E00]);
     }
     
     public static bool DownloadCloudSave()
