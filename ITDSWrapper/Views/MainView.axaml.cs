@@ -1,7 +1,6 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using ITDSWrapper.ViewModels;
 
 namespace ITDSWrapper.Views;

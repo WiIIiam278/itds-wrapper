@@ -3,6 +3,7 @@ using System.IO;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using ITDSWrapper.Desktop.Steam;
+using ITDSWrapper.Input;
 using Steamworks;
 
 namespace ITDSWrapper.Desktop;
@@ -34,9 +35,10 @@ sealed class Program
                     {
                         SteamClient.Init(4026050);
                         SteamInputDriver inputDriver = new();
-                        ((App)b.Instance!).InputDriver = inputDriver;
+                        ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
                         ((App)b.Instance).LogInterpreter = new SteamLogInterpreter(inputDriver);
+                        SteamSaveManager.DownloadCloudSave();
                     }
                     catch (Exception ex)
                     {

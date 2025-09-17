@@ -8,13 +8,18 @@ public class SteamUpdater(SteamInputDriver inputDriver) : IUpdater
 {
     private readonly List<Controller> _controllers = [];
 
-    public void Update()
+    public int Update()
     {
         SteamInput.GetControllerNoAlloc(_controllers);
         if (_controllers.Count > 0)
         {
             inputDriver.SetController(_controllers[0]);
-            inputDriver.UpdateState();
+            if (inputDriver.UpdateState())
+            {
+                return 0;
+            }
         }
+
+        return -1;
     }
 }
