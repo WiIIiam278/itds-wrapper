@@ -37,8 +37,11 @@ sealed class Program
                         SteamInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
-                        ((App)b.Instance).LogInterpreter = new SteamLogInterpreter(inputDriver);
-                        SteamSaveManager.DownloadCloudSave();
+                        SteamLogInterpreter logInterpreter = new(inputDriver)
+                        {
+                            WatchForSdCreate = SteamSaveManager.DownloadCloudSave(),
+                        };
+                        ((App)b.Instance).LogInterpreter = logInterpreter;
                     }
                     catch (Exception ex)
                     {

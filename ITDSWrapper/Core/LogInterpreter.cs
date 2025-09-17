@@ -5,9 +5,12 @@ namespace ITDSWrapper.Core;
 public class LogInterpreter
 {
     protected const string WrapperLogPrefix = "[WRAPPER] ";
-    
+    public bool WatchForSdCreate { get; set; }
+
     public virtual int InterpretLog(string log)
     {
-        return log.IndexOf(WrapperLogPrefix, StringComparison.Ordinal);
+        // The SD card is initialized after the game boots -- if we replace the SD card image here, it will load properly
+        return WatchForSdCreate && log.Contains("[melonDS] Game is now booting") ? 0 :
+            log.IndexOf(WrapperLogPrefix, StringComparison.Ordinal);
     }
 }
