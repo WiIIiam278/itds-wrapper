@@ -3,7 +3,6 @@ using System.IO;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using ITDSWrapper.Desktop.Steam;
-using ITDSWrapper.Input;
 using Steamworks;
 
 namespace ITDSWrapper.Desktop;
@@ -26,9 +25,10 @@ sealed class Program
             .WithInterFont()
             .UseReactiveUI()
             .LogToTrace()
-#if WINDOWS
-            .UseDirect2D1()
-#endif
+            .With(new Win32PlatformOptions
+            {
+                RenderingMode = [Win32RenderingMode.Vulkan, Win32RenderingMode.Wgl, Win32RenderingMode.Software],
+            })
             .AfterSetup(b =>
             {
                 if (!Environment.GetEnvironmentVariable(NoSteamEnvironmentVariable)
