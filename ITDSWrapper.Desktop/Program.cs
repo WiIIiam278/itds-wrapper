@@ -27,7 +27,7 @@ sealed class Program
             .LogToTrace()
             .With(new Win32PlatformOptions
             {
-                RenderingMode = [Win32RenderingMode.Vulkan, Win32RenderingMode.Wgl, Win32RenderingMode.Software],
+                RenderingMode = [Win32RenderingMode.Vulkan, Win32RenderingMode.AngleEgl, Win32RenderingMode.Wgl, Win32RenderingMode.Software],
             })
             .AfterSetup(b =>
             {
