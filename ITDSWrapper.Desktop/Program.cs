@@ -26,6 +26,9 @@ sealed class Program
             .WithInterFont()
             .UseReactiveUI()
             .LogToTrace()
+#if WINDOWS
+            .UseDirect2D1()
+#endif
             .AfterSetup(b =>
             {
                 if (!Environment.GetEnvironmentVariable(NoSteamEnvironmentVariable)

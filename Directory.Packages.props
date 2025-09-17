@@ -6,6 +6,7 @@
   <ItemGroup>
     <!-- Avalonia packages -->
     <!-- Important: keep version in sync! -->
+<<<<<<< Updated upstream
     <PackageVersion Include="Avalonia" Version="11.3.999-cibuild0058780-alpha" />
     <PackageVersion Include="Avalonia.Skia" Version="11.3.999-cibuild0058780-alpha" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.999-cibuild0058780-alpha" />
@@ -19,6 +20,21 @@
     <PackageVersion Include="Facepunch.Steamworks.Package" Version="1.0.4" />
     <PackageVersion Include="Facepunch.Steamworks.Posix" Version="2.4.4" />
     <PackageVersion Include="Facepunch.Steamworks.Win64" Version="2.4.4" />
+=======
+    <PackageVersion Include="Avalonia" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.Direct2D1" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.Skia" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.iOS" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.Android" Version="11.3.6" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.6" />
+    <PackageVersion Include="Facepunch.Steamworks.Package" Version="1.0.5" />
+    <PackageVersion Include="Facepunch.Steamworks.Posix" Version="2.4.5" />
+    <PackageVersion Include="Facepunch.Steamworks.Win64" Version="2.4.5" />
+>>>>>>> Stashed changes
     <PackageVersion Include="LTRData.DiscUtils.Fat" Version="1.0.64" />
     <PackageVersion Include="NAudio" Version="2.2.1" />
     <PackageVersion Include="NAudio.Sdl2.Library.Android" Version="2.30.3" />
