@@ -1,3 +1,5 @@
+using System;
+
 namespace ITDSWrapper.Input;
 
 public interface IInputDriver

@@ -35,7 +35,7 @@ sealed class Program
                     {
                         SteamClient.Init(4026050);
                         SteamInputDriver inputDriver = new();
-                        ((App)b.Instance!).InputDrivers = [inputDriver, new DefaultInputDriver(false)];
+                        ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
                         ((App)b.Instance).LogInterpreter = new SteamLogInterpreter(inputDriver);
                         SteamSaveManager.DownloadCloudSave();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -13,7 +14,7 @@ namespace ITDSWrapper;
 public partial class App : Application
 {
     public IAudioBackend? AudioBackend { get; set; }
-    public IInputDriver[]? InputDrivers { get; set; }
+    public List<IInputDriver>? InputDrivers { get; set; }
     public IHapticsBackend? HapticsBackend { get; set; }
     public IUpdater? Updater { get; set; }
     public LogInterpreter? LogInterpreter { get; set; }

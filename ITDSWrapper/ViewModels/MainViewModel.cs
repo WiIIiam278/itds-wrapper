@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -68,7 +69,7 @@ public class MainViewModel : ViewModelBase
     private readonly IAudioBackend _audioBackend;
     private readonly IHapticsBackend? _hapticsBackend;
     
-    private readonly IInputDriver[] _inputDrivers;
+    private readonly List<IInputDriver> _inputDrivers;
     private int _currentInputDriver = 0;
     private readonly PointerState? _pointerState;
 
@@ -120,11 +121,15 @@ public class MainViewModel : ViewModelBase
         
         _logInterpreter = ((App)Application.Current).LogInterpreter ?? new();
 
-        _inputDrivers = ((App)Application.Current).InputDrivers ?? [new DefaultInputDriver(IsMobile)];
+        _inputDrivers = ((App)Application.Current).InputDrivers ?? [new DefaultInputDriver(IsMobile, OpenSettings)];
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
             AssignVirtualBindings();
+        }
+        else
+        {
+            _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
         }
         
         Wrapper.OnFrame = DisplayFrame;
@@ -137,7 +142,7 @@ public class MainViewModel : ViewModelBase
 
     public void HandleKey<T>(T input, bool pressed)
     {
-        for (int i = 0; i < _inputDrivers.Length; i++)
+        for (int i = 0; i < _inputDrivers.Count; i++)
         {
             if (_inputDrivers[i] is DefaultInputDriver)
             {
@@ -153,11 +158,6 @@ public class MainViewModel : ViewModelBase
         if (pressed)
         {
             _inputDrivers[_currentInputDriver].Push(input);
-            
-            if (_inputDrivers[_currentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3))
-            {
-                OpenSettings();
-            }
         }
         else
         {
@@ -319,7 +319,8 @@ public class MainViewModel : ViewModelBase
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT:
                     SelectButton = new("SELECT", button, 50, 25, _hapticsBackend);
                     break;
-                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3:
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2:
+                    button.SpecialAction = OpenSettings;
                     SettingsButton = new("*", button, 25, 25, _hapticsBackend);
                     break;
                 default:

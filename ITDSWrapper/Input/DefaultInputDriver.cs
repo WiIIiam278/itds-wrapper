@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Input;
@@ -9,7 +10,7 @@ public class DefaultInputDriver : IInputDriver
 {
     private readonly Dictionary<uint, object?> _bindings;
 
-    public DefaultInputDriver(bool isMobile)
+    public DefaultInputDriver(bool isMobile, Action openSettings)
     {
         if (isMobile)
         {
@@ -27,7 +28,7 @@ public class DefaultInputDriver : IInputDriver
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, null },
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, null },
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, null },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3, null },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2, null },
             };
         }
         else
@@ -46,7 +47,7 @@ public class DefaultInputDriver : IInputDriver
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, new PhysicalKeyInput(PhysicalKey.ArrowLeft) },
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, new PhysicalKeyInput(PhysicalKey.Enter) },
                 { RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, new PhysicalKeyInput(PhysicalKey.ShiftRight) },
-                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3, new PhysicalKeyInput(PhysicalKey.Escape) },
+                { RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2, new PhysicalKeyInput(PhysicalKey.Escape) { SpecialAction = openSettings } },
             };
         }
     }
