@@ -1,7 +1,11 @@
 using System;
+using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 using ITDSWrapper.ViewModels;
+using ITDSWrapper.Views.Controls;
 
 namespace ITDSWrapper.Views;
 
@@ -10,6 +14,8 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
+        OnScreenControls.AddHandler(PointerPressedEvent, OnScreenControls_OnPointerPressed, handledEventsToo: true);
+        OnScreenControls.AddHandler(PointerReleasedEvent, OnScreenControls_OnPointerReleased, handledEventsToo: true);
     }
 
     private void ScreenGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
@@ -31,5 +37,65 @@ public partial class MainView : UserControl
     private void DsScreen_OnPointerMoved(object? sender, PointerEventArgs e)
     {
         ((MainViewModel)DataContext!).HandlePointer(DsScreen, movedArgs: e);
+    }
+
+    private void OnScreenControls_OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        HandleOnScreenControls(sender, e, false);
+    }
+
+    private void OnScreenControls_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        HandleOnScreenControls(sender, e, false);
+    }
+
+    private void OnScreenControls_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        HandleOnScreenControls(sender, e, true);
+    }
+
+    private void HandleOnScreenControls(object? sender, PointerEventArgs e, bool release)
+    {
+        if (sender is null)
+        {
+            return;
+        }
+        
+        Grid grid = (sender as Grid)!;
+        foreach (Control control in grid.Children)
+        {
+            if (control is Grid subGrid)
+            {
+                Point pos = e.GetPosition(subGrid);
+                foreach (VirtualButtonView button in subGrid.Children.Cast<VirtualButtonView>())
+                {
+                    CheckButtonPressed(pos, button, release);
+                }
+            }
+            else if (control is VirtualButtonView button)
+            {
+                CheckButtonPressed(e.GetPosition(grid), button, release);
+            }
+        }
+    }
+
+    private void CheckButtonPressed(Point pos, VirtualButtonView button, bool release)
+    {
+        if (pos.X >= button.Bounds.Left && pos.Y >= button.Bounds.Top && pos.X <= button.Bounds.Right &&
+            pos.Y <= button.Bounds.Bottom)
+        {
+            if (release)
+            {
+                button.ReleaseButton();
+            }
+            else
+            {
+                button.PressButton();
+            }
+        }
+        else if (!release)
+        {
+            button.ReleaseButton();
+        }
     }
 }
