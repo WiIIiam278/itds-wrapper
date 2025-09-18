@@ -16,7 +16,6 @@ public class IosAudioBackend : IAudioBackend
     private AVAudioPlayerNode? _audioPlayerNode;
     private AVAudioPcmBuffer[] _buffers = [];
     private SemaphoreSlim? _bufferSemaphore;
-    private NSObject? _configurationChangeNotificationToken;
     private float _volume = 1.0f;
     private int _bufferIndex;
     private uint _bufferFrames;
@@ -50,7 +49,6 @@ public class IosAudioBackend : IAudioBackend
         _audioConverter = new(_sourceAudioFormat, _outputAudioFormat);
         _audioEngine.AttachNode(_audioPlayerNode);
         _audioEngine.Connect(_audioPlayerNode, _audioEngine.MainMixerNode, _outputAudioFormat);
-        _configurationChangeNotificationToken = AVAudioEngine.Notifications.ObserveConfigurationChange(AVAudioEngine_ConfigurationChangeNotification);
 
         _buffers = new AVAudioPcmBuffer[NumberOfBuffers];
         int bufferSize = 10000;
@@ -120,17 +118,5 @@ public class IosAudioBackend : IAudioBackend
         }
 
         destination.FrameLength = frames;
-    }
-
-    private void AVAudioEngine_ConfigurationChangeNotification(object? sender, NSNotificationEventArgs e)
-    {
-        if (_audioPlayerNode is null)
-        {
-            return;
-        }
-        
-        _audioEngine?.DisconnectNodeOutput(_audioPlayerNode);
-        _audioEngine?.Connect(_audioPlayerNode, _audioEngine.MainMixerNode, _outputAudioFormat);
-        _audioPlayerNode.Play();
     }
 }

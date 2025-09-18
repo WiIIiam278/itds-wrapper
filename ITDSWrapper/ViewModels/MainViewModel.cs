@@ -150,15 +150,12 @@ public class MainViewModel : ViewModelBase
         _pauseDriver = ((App)Application.Current).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
 
-        _inputDrivers = ((App)Application.Current).InputDrivers ?? [new DefaultInputDriver(IsMobile, OpenSettings)];
+        _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
+        _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
             AssignVirtualBindings();
-        }
-        else
-        {
-            _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
         }
         
         Wrapper.OnFrame = DisplayFrame;

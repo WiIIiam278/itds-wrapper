@@ -2,6 +2,7 @@ using Foundation;
 using Avalonia;
 using Avalonia.iOS;
 using Avalonia.ReactiveUI;
+using ITDSWrapper.Input;
 
 namespace ITDSWrapper.iOS;
 
