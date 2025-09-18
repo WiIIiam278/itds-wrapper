@@ -24,7 +24,8 @@ sealed class Program
         }
         catch (Exception ex)
         {
-            File.WriteAllText("crash.log", $"CRASH: {ex.Message}\n\n{ex.StackTrace}");
+            File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"), $"CRASH: {ex.Message}\n\n{ex.StackTrace}");
+            throw;
         }
     }
 
