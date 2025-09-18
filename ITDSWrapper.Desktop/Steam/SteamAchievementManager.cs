@@ -1,4 +1,3 @@
-using System.Linq;
 using ITDSWrapper.Core;
 using Steamworks;
 

@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using ITDSWrapper.Audio;
