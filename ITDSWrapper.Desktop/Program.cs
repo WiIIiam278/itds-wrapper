@@ -10,6 +10,7 @@ namespace ITDSWrapper.Desktop;
 sealed class Program
 {
     private const string NoSteamEnvironmentVariable = "NOSTEAM";
+    private const string ResetAchievementsEnvironmentVariable = "RESET_ACHIEVEMENTS";
     
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -46,7 +47,11 @@ sealed class Program
                     try
                     {
                         SteamClient.Init(4026050);
-                        SteamUserStats.ResetAll(includeAchievements: true);
+                        if (Environment.GetEnvironmentVariable(ResetAchievementsEnvironmentVariable)
+                                ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? false)
+                        {
+                            SteamUserStats.ResetAll(includeAchievements: true); // TODO: DELETE THIS
+                        }
                         SteamInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
