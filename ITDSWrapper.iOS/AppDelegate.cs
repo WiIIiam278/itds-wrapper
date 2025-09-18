@@ -20,9 +20,12 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
             .UseReactiveUI()
             .AfterSetup(b =>
             {
+                IosControllerInputDriver inputDriver = new();
                 ((App)b.Instance!).AudioBackend = new IosAudioBackend();
                 ((App)b.Instance).PauseDriver = new(useActivatableLifetime: true);
                 ((App)b.Instance).HapticsBackend = new IosHapticsBackend();
+                ((App)b.Instance).InputDrivers = [inputDriver];
+                ((App)b.Instance).Updater = new IosUpdater(inputDriver);
             });
     }
 }

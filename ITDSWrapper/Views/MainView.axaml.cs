@@ -60,6 +60,8 @@ public partial class MainView : UserControl
         {
             return;
         }
+
+        ((MainViewModel)DataContext!).CurrentInputDriver = ((MainViewModel)DataContext!).NumInputDrivers - 1;
         
         Grid grid = (sender as Grid)!;
         foreach (Control control in grid.Children)
