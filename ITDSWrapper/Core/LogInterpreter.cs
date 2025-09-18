@@ -6,8 +6,10 @@ public class LogInterpreter
 {
     protected const string WrapperLogPrefix = "[WRAPPER] ";
     public bool WatchForSdCreate { get; set; }
+    public Action<string>? SetNextBorder { get; set; }
 
     private const string AchievementUnlockedVerb = "ACHIEVEMENT_UNLOCKED";
+    private const string BorderSetVerb = "BORDER_SET";
     
     public IAchievementManager? AchievementManager { get; set; }
     
@@ -29,6 +31,10 @@ public class LogInterpreter
         {
             case AchievementUnlockedVerb:
                 AchievementManager?.Unlock(log[(endIndex + 2)..^1]);
+                break;
+            
+            case BorderSetVerb:
+                SetNextBorder?.Invoke(log[(endIndex + 2)..^1]);
                 break;
         }
 

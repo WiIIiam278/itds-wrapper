@@ -12,6 +12,11 @@
     
     <Grid RowDefinitions="Auto,*,Auto" >
         
+        <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding CurrentBorder}"
+               Opacity="{Binding CurrentBorderOpacity}"/>
+        <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding NextBorder}"
+               Opacity="{Binding NextBorderOpacity}"/>
+        
         <StackPanel Grid.Row="0" MinHeight="{Binding TopPadding}"/>
         
         <Grid Grid.Row="1" SizeChanged="ScreenGrid_OnSizeChanged">
