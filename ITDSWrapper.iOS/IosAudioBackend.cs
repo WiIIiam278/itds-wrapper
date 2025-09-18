@@ -1,8 +1,6 @@
-using System;
 using System.Buffers.Binary;
 using System.Threading;
 using AVFoundation;
-using Foundation;
 using ITDSWrapper.Audio;
 
 namespace ITDSWrapper.iOS;
