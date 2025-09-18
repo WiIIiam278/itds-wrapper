@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using DiscUtils.Fat;
 using DiscUtils.Streams;
 using Libretro.NET;
@@ -12,12 +13,19 @@ public static class SteamSaveManager
     private const string SaveFileName = "into-the-dream-spring.sav";
     private static readonly string SaveDir = RetroWrapper.GetDirectoryForPlatform("saves");
     
-    
     public static void UploadCloudSave()
     {
-        byte[] sdCardBytes = File.ReadAllBytes(Path.Combine(SaveDir, "melonDS DS", "dldi_sd_card.bin"));
+        string sdCardPath = Path.Combine(SaveDir, "melonDS DS", "dldi_sd_card.bin");
+        if (OperatingSystem.IsWindows())
+        {
+            string sdCardCopyPath = Path.Combine(SaveDir, "melonDS DS", "dldi_sd_card_copy.bin");
+            Thread.Sleep(500); // Sleep for just a sec before copying the SD card to get write updates
+            File.Copy(sdCardPath, sdCardCopyPath, true);
+            sdCardPath = sdCardCopyPath;
+        }
+        byte[] sdCardBytes = File.ReadAllBytes(sdCardPath);
         using MemoryStream sdCardStream = new(sdCardBytes[0x7E00..]);
-        FatFileSystem sdCardFat = new(sdCardStream, Ownership.None);
+        using FatFileSystem sdCardFat = new(sdCardStream, Ownership.None);
         if (!sdCardFat.FileExists(SaveFileName))
         {
             return;
@@ -27,6 +35,11 @@ public static class SteamSaveManager
         byte[] savFile = new byte[savStream.Length];
         savStream.ReadExactly(savFile);
         SteamRemoteStorage.FileWrite(SaveFileName, savFile);
+
+        if (OperatingSystem.IsWindows())
+        {
+            File.Delete(sdCardPath);
+        }
     }
     
     public static bool DownloadCloudSave()
@@ -47,7 +60,7 @@ public static class SteamSaveManager
         sdCardStream.Write(sdCardBytes[0x7E00..]);
         sdCardStream.Seek(0, SeekOrigin.Begin);
         
-        FatFileSystem sdCardFat = new(sdCardStream, Ownership.None);
+        using FatFileSystem sdCardFat = new(sdCardStream, Ownership.None);
         if (sdCardFat.FileExists(SaveFileName))
         {
             using SparseStream savStream =

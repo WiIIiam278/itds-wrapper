@@ -5,16 +5,16 @@ namespace ITDSWrapper.iOS;
 
 public class IosHapticsBackend : IHapticsBackend
 {
-    private UIImpactFeedbackGenerator _generator;
+    private UIImpactFeedbackGenerator? _generator;
     
     public void Initialize()
     {
-        _generator = new UIImpactFeedbackGenerator(UIImpactFeedbackStyle.Medium);
+        _generator = new(UIImpactFeedbackStyle.Medium);
     }
 
     public void Fire(bool press)
     {
-        _generator.Prepare();
-        _generator.ImpactOccurred();
+        _generator?.Prepare();
+        _generator?.ImpactOccurred();
     }
 }

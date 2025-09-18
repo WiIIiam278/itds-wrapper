@@ -8,7 +8,6 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
 {
     private const string ActionSetVerb = "ACTION_SET";
     private const string CloudSaveVerb = "CLOUD_SAVE";
-    private const string AchievementUnlockedVerb = "ACHIEVEMENT_UNLOCKED";
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
     private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
@@ -39,9 +38,6 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
 
             case CloudSaveVerb:
                 SteamSaveManager.UploadCloudSave();
-                break;
-            
-            case AchievementUnlockedVerb:
                 break;
             
             case RichPresenceVerb:

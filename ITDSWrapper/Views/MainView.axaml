@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ITDSWrapper.ViewModels"
              xmlns:c="using:ITDSWrapper.Views.Controls"
+             xmlns:g="using:ITDSWrapper.Graphics"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ITDSWrapper.Views.MainView"
              x:DataType="vm:MainViewModel"
@@ -11,10 +12,15 @@
     
     <Grid RowDefinitions="Auto,*,Auto" >
         
+        <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding CurrentBorder}"
+               Opacity="{Binding CurrentBorderOpacity}"/>
+        <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding NextBorder}"
+               Opacity="{Binding NextBorderOpacity}"/>
+        
         <StackPanel Grid.Row="0" MinHeight="{Binding TopPadding}"/>
         
         <Grid Grid.Row="1" SizeChanged="ScreenGrid_OnSizeChanged">
-            <Image Name="DsScreen"
+            <g:EmuImage Name="DsScreen"
                    Source="{Binding CurrentFrame}"
                    Width="{Binding EmuRenderWidth}"
                    MaxHeight="{Binding EmuRenderHeight}"
@@ -25,7 +31,8 @@
         </Grid>
         
         <Grid Grid.Row="2" Name="OnScreenControls" IsVisible="{Binding IsMobile}"
-              RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10">
+              RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10" PointerMoved="OnScreenControls_OnPointerMoved"
+              IsHitTestVisible="True">
             <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*" Height="50" HorizontalAlignment="Center">
                 <c:VirtualButtonView Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding LButton}" />
                 <c:VirtualButtonView Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding RButton}" />

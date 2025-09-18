@@ -6,6 +6,8 @@ using System.Threading;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
 using ITDSWrapper.Graphics;
@@ -25,7 +27,7 @@ public class MainViewModel : ViewModelBase
     
     public RetroWrapper Wrapper { get; }
     [Reactive]
-    public EmuImage? CurrentFrame { get; set; }
+    public EmuImageSource? CurrentFrame { get; set; }
 
     private double _emuRenderWidth = 256;
     private double _emuRenderHeight = 384;
@@ -58,6 +60,20 @@ public class MainViewModel : ViewModelBase
 
     public int TopPadding => IsMobile ? 10 : 0;
 
+    [Reactive]
+    public Bitmap? CurrentBorder { get; set; }
+    [Reactive]
+    public Bitmap? NextBorder { get; set; }
+    [Reactive]
+    public double CurrentBorderOpacity { get; set; } = 1.0;
+    [Reactive]
+    public double NextBorderOpacity { get; set; }
+    private System.Timers.Timer _borderTimer;
+    private string _currentBorder = "TITLE_BG";
+    private int _currentBorderFrame;
+    private string _nextBorder = string.Empty;
+    private int _nextBorderFrame;
+    
     public bool Closing { get; set; }
 
     private readonly byte[] _frameData = new byte[256 * 384 * 4];
@@ -94,12 +110,26 @@ public class MainViewModel : ViewModelBase
     {
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
+        _logInterpreter.SetNextBorder = border =>
+        {
+            _nextBorder = border;
+            SetNextBorder();
+        };
         Wrapper.OnReceiveLog = HandleLog;
         Wrapper.LoadCore();
         using Stream ndsStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ITDSWrapper.itds.nds")!;
         byte[] data = new byte[ndsStream.Length];
         ndsStream.ReadExactly(data);
         Wrapper.LoadGame(data);
+
+        SetBorder();
+        _borderTimer = new(TimeSpan.FromMilliseconds(100)) { AutoReset = true };
+        _borderTimer.Elapsed += (_, _) =>
+        {
+            _currentBorderFrame = (_currentBorderFrame + 1) % 600;
+            SetBorder();
+        };
+        _borderTimer.Start();
 
         if (((App)Application.Current).AudioBackend is not null)
         {
@@ -120,15 +150,12 @@ public class MainViewModel : ViewModelBase
         _pauseDriver = ((App)Application.Current).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
 
-        _inputDrivers = ((App)Application.Current).InputDrivers ?? [new DefaultInputDriver(IsMobile, OpenSettings)];
+        _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
+        _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
             AssignVirtualBindings();
-        }
-        else
-        {
-            _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
         }
         
         Wrapper.OnFrame = DisplayFrame;
@@ -223,7 +250,7 @@ public class MainViewModel : ViewModelBase
     private void DisplayFrame(byte[] frame, uint width, uint height)
     {
         Array.Copy(frame, _frameData, frame.Length);
-        CurrentFrame = new(_frameData, width, height);
+        CurrentFrame ??= new(_frameData, width, height);
     }
     
     private void PlaySample(byte[] sample)
@@ -272,6 +299,41 @@ public class MainViewModel : ViewModelBase
         DisplaySettingsOverlay = !DisplaySettingsOverlay;
         _pauseDriver.PushPauseState(DisplaySettingsOverlay);
         ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
+    }
+
+    private void SetBorder()
+    {
+        using Stream borderStream = AssetLoader.Open(new($"avares://ITDSWrapper/Assets/Borders/{_currentBorder}/{_currentBorderFrame + 1:0000}.jpg"));
+        CurrentBorder = new(borderStream);
+
+        if (NextBorder is not null)
+        {
+            SetNextBorder();
+            FadeBorder();
+        }
+    }
+
+    private void SetNextBorder()
+    {
+        using Stream borderStream = AssetLoader.Open(new($"avares://ITDSWrapper/Assets/Borders/{_nextBorder}/{_nextBorderFrame + 1:0000}.jpg"));
+        NextBorder = new(borderStream);
+    }
+
+    private void FadeBorder()
+    {
+        if (CurrentBorderOpacity < 0.01)
+        {
+            CurrentBorder = NextBorder;
+            NextBorder = null;
+            CurrentBorderOpacity = 1.0;
+            NextBorderOpacity = 0.0;
+            _nextBorder = string.Empty;
+            _nextBorderFrame = 0;
+            return;
+        }
+
+        CurrentBorderOpacity -= 0.01;
+        NextBorderOpacity += 0.01;
     }
 
     private void AssignVirtualBindings()
