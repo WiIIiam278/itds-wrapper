@@ -1,81 +1,63 @@
 using System;
-using System.Runtime.InteropServices;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Platform;
-using Avalonia.Rendering.SceneGraph;
-using Avalonia.Skia;
-using SkiaSharp;
+using Avalonia.Threading;
 
 namespace ITDSWrapper.Graphics;
 
-public class EmuImage : IImage, IDisposable
+public class EmuImage : Control
 {
-    private byte[] _frame;
-    private EmuDrawOperation? _drawOperation;
-    public Size Size { get; }
+    public static readonly AvaloniaProperty<EmuImageSource?> SourceProperty = AvaloniaProperty.Register<EmuImage, EmuImageSource?>(nameof(Source));
 
-    public EmuImage(byte[] frame, uint width, uint height)
+    public EmuImageSource? Source
     {
-        _frame = frame;
-        Size = new(width, height);
+        get => (EmuImageSource?)GetValue(SourceProperty);
+        set => SetValue(SourceProperty, value);
+    }
+    
+    public override void Render(DrawingContext context)
+    {
+        Source?.Draw(context, new(0, 0, Width, Height), new(0, 0, Width, MaxHeight));
+        Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background);
+    }
+}
+
+
+/*
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Threading;
+
+namespace ITDSWrapper.Graphics;
+
+public class EmuImage : Control
+{
+    public static readonly AvaloniaProperty<byte[]?> SourceProperty = AvaloniaProperty.Register<EmuImage, byte[]?>(nameof(Source));
+
+    private EmuDrawOperation? _drawOperation;
+
+    public byte[]? Source
+    {
+        get => (byte[]?)GetValue(SourceProperty);
+        set => SetValue(SourceProperty, value);
     }
 
-    public void Draw(DrawingContext context, Rect sourceRect, Rect destRect)
+    public override void Render(DrawingContext context)
     {
+        if (Source is null)
+        {
+            return;
+        }
         _drawOperation ??= new()
         {
-            Frame = _frame,
-            Width = (int)Size.Width,
-            Height = (int)Size.Height,
-            Bounds = destRect,
+            Frame = Source,
+            Width = 256,
+            Height = 384,
+            Bounds = new(0, 0, Width, Height),
         };
         context.Custom(_drawOperation);
+        Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background);
     }
-
-    public void SetFrame(byte[] frame)
-    {
-        _frame = frame;
-    }
-
-    public void Dispose()
-    {
-        _drawOperation?.Dispose();
-        GC.SuppressFinalize(this);
-    }
-}
-
-public class EmuDrawOperation : ICustomDrawOperation
-{
-    public Rect Bounds { get; set; }
-    public required byte[] Frame { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
-
-    public bool Equals(ICustomDrawOperation? other) => false;
-
-    public void Dispose()
-    {
-    }
-
-    public bool HitTest(Point p) => Bounds.Contains(p);
-
-    public void Render(ImmediateDrawingContext context)
-    {
-        if (context.PlatformImpl.GetFeature<ISkiaSharpApiLeaseFeature>() is { } leaseFeature)
-        {
-            ISkiaSharpApiLease lease = leaseFeature.Lease();
-            using (lease)
-            {
-                GCHandle handle = GCHandle.Alloc(Frame, GCHandleType.Pinned);
-
-                SKPixmap pixmap = new(new(Width, Height, SKColorType.Bgra8888), handle.AddrOfPinnedObject());
-                lease.SkCanvas.DrawImage(SKImage.FromPixels(pixmap), new SKRect(0, 0, Width, Height),
-                    new SKRect((float)Bounds.X, (float)Bounds.Y, (float)(Bounds.X + Bounds.Width), (float)(Bounds.Y + Bounds.Height)),
-                    new() { IsAntialias = true});
-                
-                handle.Free();
-            }
-        }
-    }
-}
+}*/

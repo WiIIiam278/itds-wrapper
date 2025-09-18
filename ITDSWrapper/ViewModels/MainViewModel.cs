@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using ITDSWrapper.Audio;
@@ -25,7 +26,7 @@ public class MainViewModel : ViewModelBase
     
     public RetroWrapper Wrapper { get; }
     [Reactive]
-    public EmuImage? CurrentFrame { get; set; }
+    public EmuImageSource? CurrentFrame { get; set; }
 
     private double _emuRenderWidth = 256;
     private double _emuRenderHeight = 384;
@@ -223,7 +224,7 @@ public class MainViewModel : ViewModelBase
     private void DisplayFrame(byte[] frame, uint width, uint height)
     {
         Array.Copy(frame, _frameData, frame.Length);
-        CurrentFrame = new(_frameData, width, height);
+        CurrentFrame ??= new(_frameData, width, height);
     }
     
     private void PlaySample(byte[] sample)

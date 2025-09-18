@@ -12,11 +12,6 @@ public partial class MainView : UserControl
         InitializeComponent();
     }
 
-    protected override void OnSizeChanged(SizeChangedEventArgs e)
-    {
-        base.OnSizeChanged(e);
-    }
-
     private void ScreenGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         ((MainViewModel)DataContext!).EmuRenderWidth = Math.Min(e.NewSize.Width, e.NewSize.Height * (256.0 / 384.0));

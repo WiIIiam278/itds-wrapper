@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ITDSWrapper.ViewModels"
              xmlns:c="using:ITDSWrapper.Views.Controls"
+             xmlns:g="using:ITDSWrapper.Graphics"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ITDSWrapper.Views.MainView"
              x:DataType="vm:MainViewModel"
@@ -14,7 +15,7 @@
         <StackPanel Grid.Row="0" MinHeight="{Binding TopPadding}"/>
         
         <Grid Grid.Row="1" SizeChanged="ScreenGrid_OnSizeChanged">
-            <Image Name="DsScreen"
+            <g:EmuImage Name="DsScreen"
                    Source="{Binding CurrentFrame}"
                    Width="{Binding EmuRenderWidth}"
                    MaxHeight="{Binding EmuRenderHeight}"
