@@ -34,7 +34,11 @@ public static class SteamSaveManager
         using SparseStream savStream = sdCardFat.OpenFile(SaveFileName, FileMode.Open);
         byte[] savFile = new byte[savStream.Length];
         savStream.ReadExactly(savFile);
-        SteamRemoteStorage.FileWrite(SaveFileName, savFile);
+        if (!SteamRemoteStorage.FileWrite(SaveFileName, savFile))
+        {
+            File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"cloud_save_fail.log"), 
+                "Failed to upload save to steam cloud.");
+        }
 
         if (OperatingSystem.IsWindows())
         {
@@ -54,7 +58,11 @@ public static class SteamSaveManager
             return true;
         }
         
-        byte[] saveFile = SteamRemoteStorage.FileRead(SaveFileName);
+        byte[]? saveFile = SteamRemoteStorage.FileRead(SaveFileName);
+        if (saveFile is null)
+        {
+            return false;
+        }
         byte[] sdCardBytes = File.ReadAllBytes(sdCardFile);
         using SparseMemoryStream sdCardStream = new();
         sdCardStream.Write(sdCardBytes[0x7E00..]);
@@ -86,5 +94,13 @@ public static class SteamSaveManager
         File.WriteAllBytes(sdCardFile, sdCardBytes);
 
         return false;
+    }
+
+    public static void ClearSteamCloud()
+    {
+        foreach (string file in SteamRemoteStorage.Files)
+        {
+            File.Delete(file);
+        }
     }
 }
