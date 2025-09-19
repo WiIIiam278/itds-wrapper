@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Android.OS;
@@ -88,6 +89,13 @@ public class AndroidControllerInputDriver : IInputDriver
 
     public void DoRumble(ushort strength)
     {
-        Controller?.Vibrator?.Vibrate(VibrationEffect.CreateOneShot(1000, strength / 258 + 1));
+        if (OperatingSystem.IsAndroidVersionAtLeast(31))
+        {
+            Controller?.VibratorManager.DefaultVibrator.Vibrate(VibrationEffect.CreateOneShot(1000, strength / 258 + 1));
+        }
+        else
+        {
+            Controller?.Vibrator?.Vibrate(VibrationEffect.CreateOneShot(1000, strength / 258 + 1));
+        }
     }
 }
