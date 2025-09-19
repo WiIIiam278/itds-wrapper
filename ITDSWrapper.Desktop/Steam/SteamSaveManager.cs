@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using DiscUtils.Fat;
 using DiscUtils.Streams;
@@ -98,7 +99,8 @@ public static class SteamSaveManager
 
     public static void ClearSteamCloud()
     {
-        foreach (string file in SteamRemoteStorage.Files)
+        string[] files = SteamRemoteStorage.Files.ToArray();
+        foreach (string file in files)
         {
             SteamRemoteStorage.FileDelete(file);
         }
