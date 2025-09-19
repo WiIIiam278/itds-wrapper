@@ -38,7 +38,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         _controllerInputDriver?.Push(new AndroidInputContainer(AndroidInputType.KEY, keyCode, null));
         if (_updater is not null)
         {
-            _updater.RetValue = 0;
+            _updater.RetValue = 1;
         }
 
         return true;

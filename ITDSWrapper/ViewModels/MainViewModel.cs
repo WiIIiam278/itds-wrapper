@@ -59,7 +59,7 @@ public class MainViewModel : ViewModelBase
     }
 
     public int TopPadding => IsMobile ? 10 : 0;
-    public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == NumInputDrivers - 1;
+    public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == 0;
 
     [Reactive]
     public Bitmap? CurrentBorder { get; set; }
@@ -163,7 +163,7 @@ public class MainViewModel : ViewModelBase
         _pauseDriver.AudioBackend = _audioBackend;
 
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
-        _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
+        _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, OpenSettings));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
@@ -350,7 +350,7 @@ public class MainViewModel : ViewModelBase
 
     private void AssignVirtualBindings()
     {
-        int defaultInputDriverIndex = NumInputDrivers - 1;
+        int defaultInputDriverIndex = 0;
         foreach (uint inputKey in _inputDrivers[defaultInputDriverIndex].GetInputKeys())
         {
             VirtualButtonInput? button = new();
