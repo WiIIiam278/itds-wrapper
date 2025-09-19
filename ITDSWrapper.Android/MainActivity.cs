@@ -20,11 +20,29 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     private PauseDriver? _pauseDriver;
     private AndroidHapticsBackend? _hapticsBackend;
+    private AndroidControllerInputDriver? _controllerInputDriver;
+    private AndroidUpdater? _updater;
     
     public override void OnWindowFocusChanged(bool hasFocus)
     {
         _pauseDriver?.PushPauseState(!hasFocus);
         base.OnWindowFocusChanged(hasFocus);
+    }
+
+    public override bool OnKeyDown(Keycode keyCode, KeyEvent? e)
+    {
+        _controllerInputDriver?.Push(new AndroidInputContainer(AndroidInputType.KEY, keyCode, null));
+        if (_updater is not null)
+        {
+            _updater.RetValue = 0;
+        }
+        return base.OnKeyDown(keyCode, e);
+    }
+
+    public override bool OnKeyUp(Keycode keyCode, KeyEvent? e)
+    {
+        _controllerInputDriver?.Release(new AndroidInputContainer(AndroidInputType.KEY, keyCode, null));
+        return base.OnKeyUp(keyCode, e);
     }
 
     public override View? OnCreateView(View? parent, string name, Context context, IAttributeSet attrs)
@@ -45,6 +63,8 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         _pauseDriver = new();
         _hapticsBackend = new();
+        _controllerInputDriver = new();
+        _updater = new(_controllerInputDriver);
         
         return base
             .CustomizeAppBuilder(builder)
@@ -56,6 +76,8 @@ public class MainActivity : AvaloniaMainActivity<App>
                 ((App)b.Instance!).AudioBackend = audioBackend;
                 ((App)b.Instance).PauseDriver = _pauseDriver;
                 ((App)b.Instance).HapticsBackend = _hapticsBackend;
+                ((App)b.Instance).InputDrivers = [_controllerInputDriver];
+                ((App)b.Instance).Updater = _updater;
             });
     }
 }
