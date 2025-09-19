@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Threading;
 using ITDSWrapper.Core;
 using Steamworks;
 
@@ -37,7 +38,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 break;
 
             case CloudSaveVerb:
-                SteamSaveManager.UploadCloudSave();
+                Dispatcher.UIThread.InvokeAsync(SteamSaveManager.UploadCloudSave);
                 break;
             
             case RichPresenceVerb:

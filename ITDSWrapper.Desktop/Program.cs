@@ -11,6 +11,7 @@ sealed class Program
 {
     private const string NoSteamEnvironmentVariable = "NOSTEAM";
     private const string ResetAchievementsEnvironmentVariable = "RESET_ACHIEVEMENTS";
+    private const string ClearSteamCloudEnvironmentVariable = "CLEAR_CLOUD";
     
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -24,7 +25,8 @@ sealed class Program
         }
         catch (Exception ex)
         {
-            File.WriteAllText("crash.log", $"CRASH: {ex.Message}\n\n{ex.StackTrace}");
+            File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"), $"CRASH: {ex.Message}\n\n{ex.StackTrace}");
+            throw;
         }
     }
 
@@ -52,6 +54,11 @@ sealed class Program
                         {
                             SteamUserStats.ResetAll(includeAchievements: true); // TODO: DELETE THIS
                         }
+                        if (Environment.GetEnvironmentVariable(ClearSteamCloudEnvironmentVariable)
+                                ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? false)
+                        {
+                            SteamSaveManager.ClearSteamCloud();
+                        }
                         SteamInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
@@ -64,7 +71,7 @@ sealed class Program
                     }
                     catch (Exception ex)
                     {
-                        File.WriteAllText("crash.log", $"{ex.Message}\n{ex.StackTrace}");
+                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"setup_crash.log"), $"{ex.Message}\n{ex.StackTrace}");
                         throw;
                     }
                 }
