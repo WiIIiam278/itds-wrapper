@@ -11,6 +11,10 @@
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="..\itds.nds"/>
+        <EmbeddedResource Update="Assets\Strings.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -45,5 +49,13 @@
 
     <ItemGroup>
       <AdditionalFiles Include="Views\Controls\VirtualButtonView.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Assets\Strings.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Strings.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
