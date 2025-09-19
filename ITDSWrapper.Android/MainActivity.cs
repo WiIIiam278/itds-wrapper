@@ -31,18 +31,28 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     public override bool OnKeyDown(Keycode keyCode, KeyEvent? e)
     {
+        if (e?.DeviceId != _controllerInputDriver?.Controller?.Id)
+        {
+            return base.OnKeyDown(keyCode, e);
+        }
         _controllerInputDriver?.Push(new AndroidInputContainer(AndroidInputType.KEY, keyCode, null));
         if (_updater is not null)
         {
             _updater.RetValue = 0;
         }
-        return base.OnKeyDown(keyCode, e);
+
+        return true;
     }
 
     public override bool OnKeyUp(Keycode keyCode, KeyEvent? e)
     {
+        if (e?.DeviceId != _controllerInputDriver?.Controller?.Id)
+        {
+            return base.OnKeyDown(keyCode, e);
+        }
         _controllerInputDriver?.Release(new AndroidInputContainer(AndroidInputType.KEY, keyCode, null));
-        return base.OnKeyUp(keyCode, e);
+        
+        return true;
     }
 
     public override View? OnCreateView(View? parent, string name, Context context, IAttributeSet attrs)
