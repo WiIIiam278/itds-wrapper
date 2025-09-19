@@ -10,7 +10,7 @@ namespace ITDSWrapper.Android;
 
 public class AndroidControllerInputDriver : IInputDriver
 {
-    public InputDevice? Controller { get; set; }
+    public InputDevice? Controller { get; private set; }
     private readonly Dictionary<uint, AndroidControllerInput?> _inputDictionary = [];
 
     public void SetController(InputDevice controller)

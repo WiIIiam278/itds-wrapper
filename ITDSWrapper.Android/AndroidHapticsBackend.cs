@@ -1,3 +1,4 @@
+using System;
 using Android.Views;
 using ITDSWrapper.Haptics;
 
@@ -13,7 +14,9 @@ public class AndroidHapticsBackend : IHapticsBackend
 
     public void Fire(bool press)
     {
-        FeedbackConstants type = press ? FeedbackConstants.VirtualKey : FeedbackConstants.VirtualKeyRelease;
+        FeedbackConstants type = OperatingSystem.IsAndroidVersionAtLeast(27)
+            ? press ? FeedbackConstants.VirtualKey : FeedbackConstants.VirtualKeyRelease
+            : FeedbackConstants.VirtualKey;
         View?.PerformHapticFeedback(type);
     }
 }
