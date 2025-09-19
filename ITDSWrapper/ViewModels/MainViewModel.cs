@@ -60,6 +60,7 @@ public class MainViewModel : ViewModelBase
     }
 
     public int TopPadding => IsMobile ? 10 : 0;
+    public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == 0;
 
     [Reactive]
     public Bitmap? CurrentBorder { get; set; }
@@ -87,7 +88,17 @@ public class MainViewModel : ViewModelBase
     
     private readonly List<IInputDriver> _inputDrivers;
     public int NumInputDrivers => _inputDrivers.Count;
-    public int CurrentInputDriver { get; set; }
+    private int _currentInputDriver = 0;
+
+    public int CurrentInputDriver
+    {
+        get => _currentInputDriver;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _currentInputDriver, value);
+            this.RaisePropertyChanged(nameof(DisplayVirtualControls));
+        }
+    }
     private readonly PointerState? _pointerState;
 
     public VirtualButtonViewModel? AButton { get; set; }
@@ -153,7 +164,7 @@ public class MainViewModel : ViewModelBase
         _pauseDriver.AudioBackend = _audioBackend;
 
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
-        _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
+        _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, OpenSettings));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
@@ -340,7 +351,7 @@ public class MainViewModel : ViewModelBase
 
     private void AssignVirtualBindings()
     {
-        int defaultInputDriverIndex = _inputDrivers.Count - 1;
+        int defaultInputDriverIndex = 0;
         foreach (uint inputKey in _inputDrivers[defaultInputDriverIndex].GetInputKeys())
         {
             VirtualButtonInput? button = new();

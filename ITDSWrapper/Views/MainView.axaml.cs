@@ -61,7 +61,7 @@ public partial class MainView : UserControl
             return;
         }
 
-        ((MainViewModel)DataContext!).CurrentInputDriver = ((MainViewModel)DataContext!).NumInputDrivers - 1;
+        ((MainViewModel)DataContext!).CurrentInputDriver = 0;
         
         Grid grid = (sender as Grid)!;
         foreach (Control control in grid.Children)
@@ -98,6 +98,17 @@ public partial class MainView : UserControl
         else if (!release)
         {
             button.ReleaseButton();
+        }
+    }
+
+    private void MainScreen_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        Point pos = e.GetPosition(sender as Control);
+        // If we touch anywhere except the bottom screen, reveal the virtual controls
+        if (MainViewModel.IsMobile && (pos.X < DsScreen.Bounds.Left || pos.Y < DsScreen.Bounds.Top + DsScreen.Bounds.Height / 2 ||
+                                       pos.X > DsScreen.Bounds.Right || pos.Y > DsScreen.Bounds.Bottom))
+        {
+            ((MainViewModel)DataContext!).CurrentInputDriver = 0;
         }
     }
 }
