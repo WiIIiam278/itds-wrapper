@@ -100,7 +100,7 @@ public static class SteamSaveManager
     {
         foreach (string file in SteamRemoteStorage.Files)
         {
-            File.Delete(file);
+            SteamRemoteStorage.FileDelete(file);
         }
     }
 }
