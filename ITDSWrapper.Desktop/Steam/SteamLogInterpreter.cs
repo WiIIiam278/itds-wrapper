@@ -12,7 +12,10 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
     private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
-    
+    private const string ScreenReaderVerb = "SCREEN_READER";
+
+    public ScreenReader? ScreenReader { get; set; }
+
     public override int InterpretLog(string log)
     {
         int wrapperPrefixLocation = base.InterpretLog(log);
@@ -68,6 +71,11 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 break;
             
             case TimelineRangeEventVerb:
+                break;
+            
+            case ScreenReaderVerb:
+                string[] srSplit = log[(endIndex + 2)..^1].Split('|');
+                ScreenReader?.Speak(srSplit[0], bool.Parse(srSplit[1]));
                 break;
         }
 
