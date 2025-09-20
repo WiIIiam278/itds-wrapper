@@ -88,7 +88,7 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object put into-the-dream-spring-wrappers/com.intothedreamspring.itdswrapper.apk --file wrappers/com.intothedreamspring.itdswrapper.apk
+        command: r2 object put into-the-dream-spring-wrapper/com.intothedreamspring.itdswrapper.apk --file wrappers/com.intothedreamspring.itdswrapper.apk
       if: matrix.platform.project == 'ITDSWrapper.Android'
 
 
@@ -185,7 +185,7 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object put into-the-dream-spring-wrappers/${{ matrix.platform.rid }}.zip --file publish.zip
+        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.rid }}.zip --file publish.zip
 
   upload-to-steam:
     runs-on: ubuntu-latest
@@ -201,28 +201,28 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrappers/linux-x64.zip
+        command: r2 object get into-the-dream-spring-wrapper/linux-x64.zip
     - name: 'Download Linux x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrappers/macos-x64.zip
+        command: r2 object get into-the-dream-spring-wrapper/macos-x64.zip
     - name: 'Download Linux x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrappers/macos-arm64.zip
+        command: r2 object get into-the-dream-spring-wrapper/macos-arm64.zip
     - name: 'Download Linux x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrappers/win-x64.zip
+        command: r2 object get into-the-dream-spring-wrapper/win-x64.zip
     - name: Unzip Wrappers
       run: |
         Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
