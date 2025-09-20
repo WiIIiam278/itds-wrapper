@@ -150,6 +150,7 @@ jobs:
         packages: ccache cmake libepoxy-dev libopengl0 libopengl-dev ninja-build p7zip-full x11-xserver-utils xdg-utils xvfb
         version: 1.2
     - name: Install Dependencies (macOS)
+      if: ${{ matrix.platform.image == 'macos-latest' }}
       shell: bash
       run: brew install pkg-config cmake ninja ccache
     - name: Install MSYS2 Dependencies (Windows)
