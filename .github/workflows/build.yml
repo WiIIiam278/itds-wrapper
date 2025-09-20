@@ -40,7 +40,10 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
         wranglerVersion: "4.38.0"
-        command: r2 object get into-the-dream-spring-builds/itds.nds
+        command: r2 object get into-the-dream-spring-builds/into-the-dream-spring.nds
+    - name: 'Rename ROM'
+      run: mv into-the-dream-spring.nds itds.nds
+      
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
       with:
@@ -133,7 +136,9 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
         wranglerVersion: "4.38.0"
-        command: r2 object get into-the-dream-spring-builds/itds.nds
+        command: r2 object get into-the-dream-spring-builds/into-the-dream-spring.nds
+    - name: 'Rename ROM'
+      run: mv into-the-dream-spring.nds itds.nds
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
