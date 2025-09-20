@@ -23,8 +23,8 @@ namespace Libretro.NET
         public uint Height { get; private set; }
         public double FPS { get; private set; }
         public double SampleRate { get; private set; }
+        public uint BatteryLevel { get; set; } = 100;
         public static retro_pixel_format PixelFormat { get; private set; }
-        public retro_core_option_definition[] Options { get; private set; }
 
         public delegate void OnFrameDelegate(byte[] frame, uint width, uint height);
 
@@ -197,6 +197,16 @@ namespace Libretro.NET
                 {
                     retro_core_option_display s = Marshal.PtrToStructure<retro_core_option_display>((IntPtr)data);
                     string value = Marshal.PtrToStringAnsi((IntPtr)((char *)s.key));
+                    return 1;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_GET_DEVICE_POWER:
+                {
+                    if (data == null)
+                    {
+                        return 1;
+                    }
+
+                    *(uint*)data = BatteryLevel;
                     return 1;
                 }
                 default:

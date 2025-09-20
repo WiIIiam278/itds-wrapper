@@ -56,6 +56,7 @@ public class MainActivity : AvaloniaMainActivity<App>
                 ((App)b.Instance!).AudioBackend = audioBackend;
                 ((App)b.Instance).PauseDriver = _pauseDriver;
                 ((App)b.Instance).HapticsBackend = _hapticsBackend;
+                ((App)b.Instance).BatteryMonitor = new AndroidBatteryMonitor();
             });
     }
 }
