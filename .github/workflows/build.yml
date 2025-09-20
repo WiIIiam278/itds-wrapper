@@ -123,7 +123,7 @@ jobs:
             melondsds_src: build/src/libretro/melondsds_libretro.dll
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dll
             cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe"'
-            shell: 'msys2'
+            shell: 'msys2 {0}'
     runs-on: ${{ matrix.platform.image }}
     defaults:
       run:
