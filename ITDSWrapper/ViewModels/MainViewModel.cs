@@ -87,6 +87,9 @@ public class MainViewModel : ViewModelBase
     private readonly List<IInputDriver> _inputDrivers;
     private int _currentInputDriver = 0;
     private readonly PointerState? _pointerState;
+    
+    private readonly IBatteryMonitor? _batteryMonitor;
+    private System.Timers.Timer _batteryTimer;
 
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
@@ -158,6 +161,15 @@ public class MainViewModel : ViewModelBase
             AssignVirtualBindings();
         }
         
+        _batteryMonitor = ((App)Application.Current).BatteryMonitor;
+        Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
+        _batteryTimer = new(TimeSpan.FromMinutes(1)) { AutoReset = true };
+        _batteryTimer.Elapsed += (_, _) =>
+        {
+            Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
+        };
+        _batteryTimer.Start();
+        
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
         Wrapper.OnCheckInput = HandleInput;
@@ -224,6 +236,7 @@ public class MainViewModel : ViewModelBase
             {
                 _currentInputDriver = nextInputDriver;
             }
+            
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();

@@ -19,6 +19,7 @@ public partial class App : Application
     public IUpdater? Updater { get; set; }
     public LogInterpreter? LogInterpreter { get; set; }
     public PauseDriver? PauseDriver { get; set; }
+    public IBatteryMonitor? BatteryMonitor { get; set; }
 
     public override void Initialize()
     {
