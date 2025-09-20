@@ -74,8 +74,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 break;
             
             case ScreenReaderVerb:
-                string[] srSplit = log[(endIndex + 2)..^1].Split('|');
-                ScreenReader?.Speak(srSplit[0], bool.Parse(srSplit[1]));
+                ScreenReader?.Speak(log[(endIndex + 2)..^1]);
                 break;
         }
 

@@ -11,9 +11,9 @@ public class ScreenReader : IDisposable
         CrossSpeakManager.Instance.Initialize();
     }
 
-    public void Speak(string str, bool interrupt)
+    public void Speak(string str)
     {
-        CrossSpeakManager.Instance.Speak(str, interrupt);
+        CrossSpeakManager.Instance.Speak(str);
         if (OperatingSystem.IsWindows())
         {
             CrossSpeakManager.Instance.Braille(str);
