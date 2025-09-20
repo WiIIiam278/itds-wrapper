@@ -1,3 +1,4 @@
+using System;
 using Hardware.Info;
 using ITDSWrapper.Core;
 
@@ -11,9 +12,14 @@ public class BatteryMonitor : IBatteryMonitor
         info.RefreshBatteryList();
         if (info.BatteryList.Count == 0 || info.BatteryList[0].DesignCapacity == 0)
         {
+            if (info.BatteryList.Count > 0)
+            {
+                Console.WriteLine(info.BatteryList[0]);
+            }
             return 100;
         }
-
+        
+        Console.WriteLine(info.BatteryList[0]);
         return info.BatteryList[0].EstimatedChargeRemaining;
     }
 }
