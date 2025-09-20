@@ -102,25 +102,32 @@ jobs:
             melondsds_src: build/src/libretro/melondsds_libretro.so
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.so
             cmake_flags: ''
+            shell: 'bash'
           - image: 'macos-latest'
             tfm: net9.0
             rid: 'osx-x64'
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64"'
+            shell: 'bash'
           - image: 'macos-latest'
             tfm: net9.0
             rid: 'osx-arm64'
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: ''
+            shell: 'bash'
           - image: 'windows-latest'
             tfm: net9.0
             rid: 'win-x64'
             melondsds_src: build/src/libretro/melondsds_libretro.dll
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dll
             cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe"'
+            shell: 'msys2'
     runs-on: ${{ matrix.platform.image }}
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
     steps:
     - name: 'Checkout repository'
       uses: actions/checkout@v5
@@ -160,9 +167,6 @@ jobs:
         msystem: MINGW64
         update: true
         install: git pkgconf mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
-    - name: Install Mesa
-      if: ${{ matrix.platform.image == 'windows-latest' }}
-      uses: ssciwr/setup-mesa-dist-win@v2
 
     - name: 'Build melonDS DS'
       run: |
@@ -176,6 +180,7 @@ jobs:
       run: |
         dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -r ${{ matrix.platform.rid }}
         dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=true
+      shell: pwsh
     - name: Zip wrapper
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish -DestinationPath ./publish.zip
       shell: pwsh
