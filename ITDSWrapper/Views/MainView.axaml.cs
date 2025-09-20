@@ -103,7 +103,7 @@ public partial class MainView : UserControl
     private void MainScreen_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         Point pos = e.GetPosition(sender as Control);
-        if (MainViewModel.IsMobile && (pos.X < DsScreen.Bounds.Left || pos.Y < DsScreen.Bounds.Top ||
+        if (MainViewModel.IsMobile && (pos.X < DsScreen.Bounds.Left || pos.Y < DsScreen.Bounds.Top + DsScreen.Bounds.Height / 2||
                                        pos.X > DsScreen.Bounds.Right || pos.Y > DsScreen.Bounds.Bottom))
         {
             ((MainViewModel)DataContext!).CurrentInputDriver = 0;
