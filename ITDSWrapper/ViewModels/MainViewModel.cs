@@ -258,6 +258,7 @@ public class MainViewModel : ViewModelBase
             inputDriver.Shutdown();
         }
         Wrapper.Dispose();
+        _logInterpreter?.Dispose();
     }
 
     private void DisplayFrame(byte[] frame, uint width, uint height)

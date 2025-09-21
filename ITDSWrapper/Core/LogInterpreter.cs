@@ -3,7 +3,7 @@ using ITDSWrapper.Accessibility;
 
 namespace ITDSWrapper.Core;
 
-public class LogInterpreter
+public class LogInterpreter : IDisposable
 {
     protected const string WrapperLogPrefix = "[WRAPPER] ";
 
@@ -48,5 +48,10 @@ public class LogInterpreter
         }
 
         return wrapperPrefixLocation;
+    }
+
+    public void Dispose()
+    {
+        ScreenReader?.Dispose();
     }
 }

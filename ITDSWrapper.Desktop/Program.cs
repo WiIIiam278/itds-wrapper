@@ -66,7 +66,7 @@ sealed class Program
                         {
                             AchievementManager = new SteamAchievementManager(),
                             WatchForSdCreate = SteamSaveManager.DownloadCloudSave(),
-                            ScreenReader = DesktopScreenReader.Instantiate(),
+                            ScreenReader = DesktopScreenReader.Instantiate(SteamApps.GameLanguage),
                         };
                         ((App)b.Instance).LogInterpreter = logInterpreter;
                     }
