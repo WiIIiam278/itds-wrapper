@@ -76,5 +76,7 @@ sealed class Program
                         throw;
                     }
                 }
+
+                ((App)b.Instance!).BatteryMonitor = new BatteryMonitor();
             });
 }
