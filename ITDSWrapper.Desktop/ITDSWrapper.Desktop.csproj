@@ -40,6 +40,7 @@
         <PackageReference Condition="'$(RuntimeIdentifier)' == 'win-x64' Or $([System.OperatingSystem]::IsWindows())" Include="Facepunch.Steamworks.Win64"/>
         <PackageReference Condition="'$(RuntimeIdentifier)' != 'win-x64' And !$([System.OperatingSystem]::IsWindows())" Include="Facepunch.Steamworks.Posix"/>
         <PackageReference Include="Hardware.Info" />
+        <PackageReference Include="System.Speech" />
     </ItemGroup>
 
     <ItemGroup>

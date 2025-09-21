@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Speech.Synthesis;
 using Avalonia.Threading;
 using ITDSWrapper.Accessibility;
 
@@ -9,6 +11,10 @@ namespace ITDSWrapper.Desktop;
 public unsafe partial class DesktopScreenReader : IScreenReader
 {
     private List<GCHandle> _handles = [];
+    
+#if IS_WINDOWS
+    private SpeechSynthesizer? _synthesizer;
+#endif
 
     public static DesktopScreenReader? Instantiate(string language)
     {
@@ -34,11 +40,12 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     {
 #if IS_LINUX
         bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, null, 0) != -1;
-        success = success && SetLanguage(language) == 0;
-
-        return success;
+        success = success && SetLanguage(language);
 #elif IS_MACOS
 #else
+        _synthesizer = new();
+        _synthesizer.SelectVoiceByHints(VoiceGender.NotSet, VoiceAge.NotSet, 0, CultureInfo.GetCultureInfo(language));
+        return true;
 #endif
         return false;
     }
@@ -54,6 +61,8 @@ public unsafe partial class DesktopScreenReader : IScreenReader
             IntPtr.Zero, IntPtr.Zero);
 #elif IS_MACOS
 #else
+        _synthesizer?.SpeakAsyncCancelAll();
+        _synthesizer?.SpeakAsync(text);
 #endif
     }
 
@@ -66,6 +75,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 #if IS_LINUX
 #elif IS_MACOS
 #else
+        _synthesizer?.Dispose();
 #endif
     }
 
@@ -74,11 +84,11 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         return language switch
         {
 #if IS_LINUX
-            _ => "en",
+            _ => "en-GB",
 #elif IS_MACOS
-            _ => "en",
+            _ => "en-GB",
 #else
-            _ => "en",
+            _ => "en-GB",
 #endif
         };
     }
@@ -140,6 +150,5 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     private static partial int IsPlaying();
 
 #else
-    private static void InitializeInternal(IntPtr context);
 #endif
 }
