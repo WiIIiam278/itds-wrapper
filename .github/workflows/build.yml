@@ -18,6 +18,8 @@ jobs:
             cmake_flags: '-DENABLE_OGLRENDERER=OFF -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=24 -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" -DENABLE_LTO_RELEASE=OFF'
                           # Disabling LTO because it causes a linker error with Clang 18.0.3 and NDK 27.2.12479018 for some reason
             single_file: false
+            artifact: com.intothedreamspring.itdswrapper-Signed.apk
+            upload: com.intothedreamspring.itdswrapper.apk
           # - image: 'macos-latest'
           #   tfm: net9.0-ios
           #   rid: 'ios-arm64'
@@ -97,8 +99,7 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object put into-the-dream-spring-wrapper/com.intothedreamspring.itdswrapper.apk --file wrappers/com.intothedreamspring.itdswrapper-Signed.apk
-      if: matrix.platform.project == 'ITDSWrapper.Android'
+        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.upload }} --file ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }}
 
 
   build-steam-wrappers:
