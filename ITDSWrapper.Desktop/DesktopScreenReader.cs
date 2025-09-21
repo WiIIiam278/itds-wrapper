@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
+using System.Text;
 using Avalonia.Threading;
 using ITDSWrapper.Accessibility;
 
@@ -10,8 +11,6 @@ namespace ITDSWrapper.Desktop;
 
 public unsafe partial class DesktopScreenReader : IScreenReader
 {
-    private List<GCHandle> _handles = [];
-    
 #if IS_WINDOWS
     private SpeechSynthesizer? _synthesizer;
 #endif
@@ -40,7 +39,14 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     {
 #if IS_LINUX
         bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, null, 0) != -1;
-        success = success && SetLanguage(language) == 0;
+        
+        Voice voice = new()
+        {
+            language = (sbyte*)Marshal.StringToHGlobalAnsi(language),
+        };
+        GCHandle voiceHandle = GCHandle.Alloc(voice, GCHandleType.Pinned);
+        success = success && SetLanguage(voiceHandle.AddrOfPinnedObject()) == 0;
+        voiceHandle.Free();
         return success;
 #elif IS_MACOS
 #else
@@ -58,7 +64,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         {
             _ = Cancel();
         }
-        _ = Synthesize(text, text.Length, 0, EspeakPositionType.POS_CHARACTER, 0, 1,
+        _ = Synthesize(text, Encoding.UTF8.GetByteCount(text), 0, EspeakPositionType.POS_CHARACTER, 0, 1,
             IntPtr.Zero, IntPtr.Zero);
 #elif IS_MACOS
 #else
@@ -69,10 +75,6 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 
     public void Dispose()
     {
-        foreach (GCHandle handle in _handles)
-        {
-            handle.Free();
-        }
 #if IS_LINUX
 #elif IS_MACOS
 #else
@@ -85,7 +87,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         return language switch
         {
 #if IS_LINUX
-            _ => "en-GB",
+            _ => "en-uk",
 #elif IS_MACOS
             _ => "en-GB",
 #else
@@ -95,13 +97,18 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     }
 
 #if IS_LINUX
-
-    private struct EspeakErrorContext
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Voice
     {
-        public uint type;
-        public IntPtr name;
-        public int version;
-        public int expected_version;
+        public sbyte* name;
+        public sbyte* language;
+        public sbyte* identifier;
+        public byte gender;
+        public byte age;
+        public byte variant;
+        public byte xx1;
+        public int score;
+        public nint spare;
     }
 
     private enum EspeakPositionType
@@ -137,8 +144,8 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Initialize", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int Initialize(EspeakAudioOutput output, int bufferLength, string? path, int options);
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_SetVoiceByName",  StringMarshalling = StringMarshalling.Utf8)]
-    private static partial uint SetLanguage(string name);
+    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_SetVoiceByProperties")]
+    private static partial uint SetLanguage(nint properties);
 
     [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Synth", StringMarshalling = StringMarshalling.Utf8)]
     private static partial uint Synthesize(string text, nint size, uint position, EspeakPositionType type,
