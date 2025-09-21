@@ -125,7 +125,7 @@ jobs:
             rid: 'osx-arm64'
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
-            cmake_flags: ''
+            cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF'
             shell: 'bash'
           - image: 'windows-latest'
             tfm: net9.0
