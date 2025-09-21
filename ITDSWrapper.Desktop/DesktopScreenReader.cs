@@ -1,10 +1,12 @@
 using System;
+#if !MACOS
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
 using System.Text;
-using Avalonia.Threading;
+#endif
+
 using ITDSWrapper.Accessibility;
 
 namespace ITDSWrapper.Desktop;
@@ -48,8 +50,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         success = success && SetLanguage(voiceHandle.AddrOfPinnedObject()) == 0;
         voiceHandle.Free();
         return success;
-#elif IS_MACOS
-#else
+#elif IS_WINDOWS
         _synthesizer = new();
         _synthesizer.SelectVoiceByHints(VoiceGender.NotSet, VoiceAge.NotSet, 0, CultureInfo.GetCultureInfo(language));
         return true;
@@ -66,8 +67,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         }
         _ = Synthesize(text, Encoding.UTF8.GetByteCount(text), 0, EspeakPositionType.POS_CHARACTER, 0, 1,
             IntPtr.Zero, IntPtr.Zero);
-#elif IS_MACOS
-#else
+#elif IS_WINDOWS
         _synthesizer?.SpeakAsyncCancelAll();
         _synthesizer?.SpeakAsync(text);
 #endif
@@ -76,19 +76,18 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     public void Dispose()
     {
 #if IS_LINUX
-#elif IS_MACOS
-#else
+#elif IS_WINDOWS
         _synthesizer?.Dispose();
 #endif
     }
 
-    private static string GetPlatformSpecificLanguageCode(string language)
+    public static string GetPlatformSpecificLanguageCode(string language)
     {
         return language switch
         {
 #if IS_LINUX
             _ => "en-uk",
-#elif IS_MACOS
+#elif MACOS
             _ => "en-GB",
 #else
             _ => "en-GB",
@@ -156,7 +155,5 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 
     [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_IsPlaying")]
     private static partial int IsPlaying();
-
-#else
 #endif
 }

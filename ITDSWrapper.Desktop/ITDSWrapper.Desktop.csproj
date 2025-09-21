@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
-        One for Windows with net8.0-windows TFM, one for MacOS with net8.0-macos and one with net8.0 TFM for Linux.-->
-        <TargetFramework>net9.0</TargetFramework>
+        <OutputType Condition="'$(RuntimeIdentifier)'!='osx-arm64' And '$(RuntimeIdentifier)'!='osx-x64' And !$([System.OperatingSystem]::IsMacOs())">WinExe</OutputType>
+        <OutputType Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">Exe</OutputType>
+        <TargetFramework Condition="'$(RuntimeIdentifier)'!='osx-arm64' And '$(RuntimeIdentifier)'!='osx-x64' And !$([System.OperatingSystem]::IsMacOs())">net9.0</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">net9.0-macos</TargetFramework>
+<!--        <TargetFramework>net9.0</TargetFramework>-->
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <DefineConstants Condition="'$(RuntimeIdentifier)'=='linux-x64' Or $([System.OperatingSystem]::IsLinux())">IS_LINUX</DefineConstants>
-        <DefineConstants Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">IS_MACOS</DefineConstants>
         <DefineConstants Condition="'$(RuntimeIdentifier)'=='win-x64' Or $([System.OperatingSystem]::IsWindows())">IS_WINDOWS</DefineConstants>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
@@ -15,6 +15,14 @@
     <PropertyGroup>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">
+        <CreatePackage>false</CreatePackage>
+    </PropertyGroup>
+    
+    <ItemGroup Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">
+        <PartialAppManifest Include="macos/Info.plist"/>
+    </ItemGroup>
     
     <ItemGroup>
         <None Condition="'$(RuntimeIdentifier)'=='linux-x64' Or $([System.OperatingSystem]::IsLinux())" Include="melondsds_libretro.so"
@@ -44,6 +52,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Condition="'$(TargetFramework)' == 'net9.0-macos'" Include="..\AvFoundationBackend\AvFoundationBackend.csproj" />
         <ProjectReference Include="..\ITDSWrapper\ITDSWrapper.csproj"/>
     </ItemGroup>
 </Project>

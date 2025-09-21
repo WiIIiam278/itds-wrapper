@@ -20,6 +20,7 @@
     </ItemGroup>
     
     <ItemGroup>
+        <ProjectReference Include="..\AvFoundationBackend\AvFoundationBackend.csproj" />
         <ProjectReference Include="..\ITDSWrapper\ITDSWrapper.csproj"/>
     </ItemGroup>
 </Project>
