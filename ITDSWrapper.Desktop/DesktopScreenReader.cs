@@ -1,9 +1,10 @@
 using System;
-#if !MACOS
+#if IS_WINDOWS
 using System.Collections.Generic;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
+#elif IS_LINUX
+using System.Runtime.InteropServices;
 using System.Text;
 #endif
 
