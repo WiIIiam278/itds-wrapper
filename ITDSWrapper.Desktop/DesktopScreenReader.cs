@@ -33,7 +33,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     public bool Initialize(string language)
     {
 #if IS_LINUX
-        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 512, null, 0) != -1;
+        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, null, 0) != -1;
         success = success && SetLanguage(language) == 0;
 
         return success;
@@ -46,12 +46,12 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     public void Speak(string text)
     {
 #if IS_LINUX
-        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        if (IsPlaying() == 1)
         {
             _ = Cancel();
-            _ = Synthesize(text, text.Length, 0, EspeakPositionType.POS_CHARACTER, 0, 1,
-                IntPtr.Zero, IntPtr.Zero);
-        });
+        }
+        _ = Synthesize(text, text.Length, 0, EspeakPositionType.POS_CHARACTER, 0, 1,
+            IntPtr.Zero, IntPtr.Zero);
 #elif IS_MACOS
 #else
 #endif
@@ -135,6 +135,9 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 
     [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Cancel")]
     private static partial uint Cancel();
+
+    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_IsPlaying")]
+    private static partial int IsPlaying();
 
 #else
     private static void InitializeInternal(IntPtr context);

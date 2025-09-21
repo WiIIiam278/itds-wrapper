@@ -1,9 +1,10 @@
 using System;
+using System.Text.RegularExpressions;
 using ITDSWrapper.Accessibility;
 
 namespace ITDSWrapper.Core;
 
-public class LogInterpreter : IDisposable
+public partial class LogInterpreter : IDisposable
 {
     protected const string WrapperLogPrefix = "[WRAPPER] ";
 
@@ -43,7 +44,7 @@ public class LogInterpreter : IDisposable
                 break;
             
             case ScreenReaderVerb:
-                ScreenReader?.Speak(logParam);
+                ScreenReader?.Speak(TextColorRegex().Replace(logParam, ""));
                 break;
         }
 
@@ -54,4 +55,7 @@ public class LogInterpreter : IDisposable
     {
         ScreenReader?.Dispose();
     }
+
+    [GeneratedRegex(@"\@\d")]
+    private static partial Regex TextColorRegex();
 }
