@@ -55,14 +55,7 @@ jobs:
       with:
         packages: ccache cmake libepoxy-dev libopengl0 libopengl-dev ninja-build p7zip-full x11-xserver-utils xdg-utils xvfb
         version: 1.2
-    - name: 'Build melonDS DS'
-      run: |
-        pushd melondsds
-        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" ${{ matrix.platform.cmake_flags }} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-        cmake --build build
-        popd
-        cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
-      
+
     # Android-specific setup
     - name: Set up JDK 17
       uses: actions/setup-java@v5
@@ -76,6 +69,14 @@ jobs:
     - name: Install Android .NET workload
       run: dotnet workload install android
       if: matrix.platform.project == 'ITDSWrapper.Android'
+
+    - name: 'Build melonDS DS'
+      run: |
+        pushd melondsds
+        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" ${{ matrix.platform.cmake_flags }} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+        cmake --build build
+        popd
+        cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
 
     # Build & Publish
     - name: Restore & Publish Wrapper
@@ -132,6 +133,9 @@ jobs:
     steps:
     - name: 'Checkout repository'
       uses: actions/checkout@v5
+      with:
+        path: itds-wrapper
+        clean: false
     - name: Setup .NET
       uses: actions/setup-dotnet@v5.0.0
       with:
