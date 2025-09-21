@@ -40,7 +40,8 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     {
 #if IS_LINUX
         bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, null, 0) != -1;
-        success = success && SetLanguage(language);
+        success = success && SetLanguage(language) == 0;
+        return success;
 #elif IS_MACOS
 #else
         _synthesizer = new();
