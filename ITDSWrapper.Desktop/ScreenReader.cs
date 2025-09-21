@@ -5,19 +5,19 @@ namespace ITDSWrapper.Desktop;
 
 public class ScreenReader : IDisposable
 {
-    public ScreenReader()
+    public static ScreenReader? Initialize()
     {
-        CrossSpeakManager.Instance.TrySAPI(true);
-        CrossSpeakManager.Instance.Initialize();
+        if (CrossSpeakManager.Instance.Initialize())
+        {
+            return new();
+        }
+
+        return null;
     }
 
     public void Speak(string str)
     {
         CrossSpeakManager.Instance.Speak(str);
-        if (OperatingSystem.IsWindows())
-        {
-            CrossSpeakManager.Instance.Braille(str);
-        }
     }
 
     public void Dispose()
