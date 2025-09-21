@@ -66,7 +66,7 @@ sealed class Program
                         {
                             AchievementManager = new SteamAchievementManager(),
                             WatchForSdCreate = SteamSaveManager.DownloadCloudSave(),
-                            ScreenReader = ScreenReader.Initialize(),
+                            ScreenReader = DesktopScreenReader.Instantiate(),
                         };
                         ((App)b.Instance).LogInterpreter = logInterpreter;
                     }
@@ -76,7 +76,6 @@ sealed class Program
                         throw;
                     }
                 }
-
                 ((App)b.Instance!).BatteryMonitor = new BatteryMonitor();
             });
 }

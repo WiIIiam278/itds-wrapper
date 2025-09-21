@@ -6,6 +6,10 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <DefineConstants Condition="'$(RuntimeIdentifier)'=='linux-x64' Or $([System.OperatingSystem]::IsLinux())">IS_LINUX</DefineConstants>
+        <DefineConstants Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">IS_MACOS</DefineConstants>
+        <DefineConstants Condition="'$(RuntimeIdentifier)'=='win-x64' Or $([System.OperatingSystem]::IsWindows())">IS_WINDOWS</DefineConstants>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -13,7 +17,7 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <None Condition="'$(RuntimeIdentifier)'=='linux-x64' Or '$(RuntimeIdentifier)'=='linux-arm64' Or $([System.OperatingSystem]::IsLinux())" Include="melondsds_libretro.so"
+        <None Condition="'$(RuntimeIdentifier)'=='linux-x64' Or $([System.OperatingSystem]::IsLinux())" Include="melondsds_libretro.so"
               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
         <None Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())" Include="melondsds_libretro.dylib"
               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>
@@ -36,7 +40,6 @@
         <PackageReference Condition="'$(RuntimeIdentifier)' == 'win-x64' Or $([System.OperatingSystem]::IsWindows())" Include="Facepunch.Steamworks.Win64"/>
         <PackageReference Condition="'$(RuntimeIdentifier)' != 'win-x64' And !$([System.OperatingSystem]::IsWindows())" Include="Facepunch.Steamworks.Posix"/>
         <PackageReference Include="Hardware.Info" />
-        <PackageReference Include="TOWK.Utility.CrossSpeak" />
     </ItemGroup>
 
     <ItemGroup>

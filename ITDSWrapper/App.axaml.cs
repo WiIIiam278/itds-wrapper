@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using ITDSWrapper.Accessibility;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
 using ITDSWrapper.Haptics;
