@@ -67,11 +67,15 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       if: matrix.platform.project == 'ITDSWrapper.Android'
+    - name: Setup Android NDK
+      uses: nttld/setup-ndk@v1.5.0
+      with:
+        ndk-version: r26d
     - name: Install Android .NET workload
       run: dotnet workload install android
       if: matrix.platform.project == 'ITDSWrapper.Android'
 
-
+    # Build melonDS DS
     - name: 'Build melonDS DS'
       run: |
         pushd melondsds
