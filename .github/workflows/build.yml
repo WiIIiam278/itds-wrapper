@@ -74,6 +74,9 @@ jobs:
     - name: Install Android .NET workload
       run: dotnet workload install android
       if: matrix.platform.project == 'ITDSWrapper.Android'
+    - name: Make libs dir
+      run: mkdir -p ITDSWrapper.Android/libs/arm64-v8a
+      if: matrix.platform.project == 'ITDSWrapper.Android'
 
     # Build melonDS DS
     - name: 'Build melonDS DS'
