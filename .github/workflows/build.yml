@@ -113,20 +113,23 @@ jobs:
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.so
             cmake_flags: ''
             shell: 'bash'
+            artifact: 'publish'
           - image: 'macos-latest'
-            tfm: net9.0
+            tfm: net9.0-macos
             rid: 'osx-x64'
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64"'
             shell: 'bash'
+            artifact: 'ITDS.Desktop'
           - image: 'macos-latest'
-            tfm: net9.0
+            tfm: net9.0-macos
             rid: 'osx-arm64'
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF'
             shell: 'bash'
+            artifact: 'ITDS.Desktop'
           - image: 'windows-latest'
             tfm: net9.0
             rid: 'win-x64'
@@ -135,6 +138,7 @@ jobs:
             cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe" -DENABLE_LTO_RELEASE=OFF'
                           # Temporarily disable LTO until a regression in GCC 15 is resolved https://github.com/msys2/MINGW-packages/issues/24152
             shell: 'msys2 {0}'
+            artifact: 'publish'
     runs-on: ${{ matrix.platform.image }}
     defaults:
       run:
@@ -202,7 +206,7 @@ jobs:
         dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=true
       shell: pwsh
     - name: Zip wrapper
-      run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/* -DestinationPath ./publish.zip
+      run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
       shell: pwsh
     - name: 'Upload wrappers to bucket'
       uses: cloudflare/wrangler-action@v3
