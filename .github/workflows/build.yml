@@ -204,6 +204,9 @@ jobs:
         popd
         cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
 
+    - name: Install macOS Workload
+      run: dotnet workload install macos
+      if: ${{ matrix.platform.tfm == 'net9.0-macos' }}
     - name: Restore & Publish Wrapper
       run: |
         dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
