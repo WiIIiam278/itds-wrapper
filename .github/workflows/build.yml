@@ -271,18 +271,9 @@ jobs:
       shell: pwsh
     - name: Construct macOS app bundle
       run: |
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MacOS/
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MonoBundle/
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MacOS/
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MonoBundle/
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/Resources
-        cp itds-wrapper/ITDSWrapper.Desktop/macos/Info.plist steam/macos/Into\ the\ Dream\ Spring.app/Contents/Info.plist
-        cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/ITDSWrapper
-        cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper.icns steam/macos/Into\ the\ Dream\ Spring.app/Contents/Resources/ITDSWrapper.icns
-        cp -r macos-x64/Contents/MacOS/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MacOS/
-        cp -r macos-x64/Contents/MonoBundle/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MonoBundle/
-        cp -r macos-arm64/Contents/MacOS/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MacOS/
-        cp -r macos-arm64/Contents/MonoBundle/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MonoBundle/
+        cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/ITDSWrapper
+        cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.X64.app/
+        cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.ARM64.app/
       shell: bash
     - name: Deploy to Steam
       uses: game-ci/steam-deploy@v3
