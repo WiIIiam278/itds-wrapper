@@ -4,7 +4,7 @@ DIR=$(dirname "$0")
 ARM64=$(sysctl -ni hw.optional.arm64)
 
 if [[ "$ARM64" == 1 ]]; then
-    exec "$DIR/ITDSWrapper.Desktop.ARM64.app/Contents/MacOS/ITDSWrapper.Desktop"
+    exec "$DIR/Into the Dream Spring.ARM64.app/Contents/MacOS/ITDSWrapper.Desktop"
 else
-    exec "$DIR/ITDSWrapper.Desktop.X64.app/Contents/MacOS/ITDSWrapper.Desktop"
+    exec "$DIR/Into the Dream Spring.X64.app/Contents/MacOS/ITDSWrapper.Desktop"
 fi
