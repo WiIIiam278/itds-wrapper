@@ -1,0 +1,293 @@
+name: Build Wrapper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-mobile-wrappers:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - image: 'ubuntu-latest'
+            tfm: net9.0-android
+            rid: 'android-arm64'
+            project: ITDSWrapper.Android
+            melondsds_src: build/src/libretro/melondsds_libretro_android.so
+            melondsds_dst: ITDSWrapper.Android/libs/arm64-v8a/libmelondsds_libretro.so
+            cmake_flags: '-DENABLE_OGLRENDERER=OFF -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=24 -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" -DENABLE_LTO_RELEASE=OFF'
+                          # Disabling LTO because it causes a linker error with Clang 18.0.3 and NDK 27.2.12479018 for some reason
+            single_file: false
+            artifact: com.intothedreamspring.itdswrapper-Signed.apk
+            upload: com.intothedreamspring.itdswrapper.apk
+          # - image: 'macos-latest'
+          #   tfm: net9.0-ios
+          #   rid: 'ios-arm64'
+          #   project: ITDSWrapper.iOS
+          #   melondsds_src: melondsds_libretro-ios-Release/cores/melondsds_libretro.dylib
+          #   melondsds_dst: ITDSWrapper.iOS/melondsds_libretro.dylib
+          #   single_file: false
+    runs-on: ${{ matrix.platform.image }}
+    steps:
+    # Setup
+    - name: 'Checkout repository'
+      uses: actions/checkout@v5
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5.0.0
+      with:
+        dotnet-version: '9.0.x'
+    - name: 'Download ROM'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object get into-the-dream-spring-builds/itds.nds
+      
+    - name: 'Checkout melonDS DS'
+      uses: actions/checkout@v5
+      with:
+        repository: jonko0493/melonds-ds
+        ref: use-my-fork
+        path: melondsds
+        clean: false
+    - name: Install Dependencies (Linux)
+      if: ${{ matrix.platform.image == 'ubuntu-latest' }}
+      uses: awalsh128/cache-apt-pkgs-action@v1.4.3
+      with:
+        packages: ccache cmake libepoxy-dev libopengl0 libopengl-dev ninja-build p7zip-full x11-xserver-utils xdg-utils xvfb
+        version: 1.2
+
+    # Android-specific setup
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+      if: matrix.platform.project == 'ITDSWrapper.Android'
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      if: matrix.platform.project == 'ITDSWrapper.Android'
+    - name: Setup Android NDK
+      uses: nttld/setup-ndk@v1.5.0
+      with:
+        ndk-version: r26d
+    - name: Install Android .NET workload
+      run: dotnet workload install android
+      if: matrix.platform.project == 'ITDSWrapper.Android'
+    - name: Make libs dir
+      run: mkdir -p ITDSWrapper.Android/libs/arm64-v8a
+      if: matrix.platform.project == 'ITDSWrapper.Android'
+
+    # Build melonDS DS
+    - name: 'Build melonDS DS'
+      run: |
+        pushd melondsds
+        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" ${{ matrix.platform.cmake_flags }} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+        cmake --build build
+        popd
+        cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
+
+    # Build & Publish
+    - name: Restore & Publish Wrapper
+      run: |
+        dotnet restore ${{ matrix.platform.project }} -r ${{ matrix.platform.rid }}
+        dotnet publish ${{ matrix.platform.project }}/${{ matrix.platform.project }}.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
+    - name: 'Upload wrappers to bucket'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.upload }} --file ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }}
+
+
+  build-steam-wrappers:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - image: 'ubuntu-latest'
+            tfm: net9.0
+            rid: 'linux-x64'
+            single-file: true
+            melondsds_src: build/src/libretro/melondsds_libretro.so
+            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.so
+            cmake_flags: ''
+            shell: 'bash'
+            artifact: 'publish'
+          - image: 'macos-latest'
+            tfm: net9.0-macos
+            rid: 'osx-x64'
+            single-file: false
+            melondsds_src: build/src/libretro/melondsds_libretro.dylib
+            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
+            cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64" -DBUILD_AS_SHARED_LIBRARY=ON'
+            shell: 'bash'
+            artifact: 'ITDSWrapper.Desktop.app'
+          - image: 'macos-latest'
+            tfm: net9.0-macos
+            rid: 'osx-arm64'
+            single-file: false
+            melondsds_src: build/src/libretro/melondsds_libretro.dylib
+            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
+            cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF -DBUILD_AS_SHARED_LIBRARY=ON'
+            shell: 'bash'
+            artifact: 'ITDSWrapper.Desktop.app'
+          - image: 'windows-latest'
+            tfm: net9.0
+            rid: 'win-x64'
+            single-file: true
+            melondsds_src: build/src/libretro/melondsds_libretro.dll
+            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dll
+            cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe" -DENABLE_LTO_RELEASE=OFF'
+                          # Temporarily disable LTO until a regression in GCC 15 is resolved https://github.com/msys2/MINGW-packages/issues/24152
+            shell: 'msys2 {0}'
+            artifact: 'publish'
+    runs-on: ${{ matrix.platform.image }}
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
+    steps:
+    - name: 'Checkout repository'
+      uses: actions/checkout@v5
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5.0.0
+      with:
+        dotnet-version: '9.0.x'
+    - name: 'Download ROM'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object get into-the-dream-spring-builds/itds.nds
+
+    - name: 'Checkout melonDS DS'
+      uses: actions/checkout@v5
+      with:
+        repository: jonko0493/melonds-ds
+        ref: use-my-fork
+        path: melondsds
+        clean: false
+    - name: Install Dependencies (Linux)
+      if: ${{ matrix.platform.image == 'ubuntu-latest' }}
+      uses: awalsh128/cache-apt-pkgs-action@v1.4.3
+      with:
+        packages: ccache cmake libepoxy-dev libopengl0 libopengl-dev ninja-build p7zip-full x11-xserver-utils xdg-utils xvfb
+        version: 1.2
+    - name: Install Dependencies (macOS)
+      if: ${{ matrix.platform.image == 'macos-latest' }}
+      shell: bash
+      run: brew install pkg-config cmake ninja ccache
+    - name: Install MSYS2 Dependencies (Windows)
+      uses: msys2/setup-msys2@v2
+      if: ${{ matrix.platform.image == 'windows-latest' }}
+      with:
+        msystem: MINGW64
+        update: true
+        install: git pkgconf mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+    - name: Install CCache
+      uses: hendrikmuhs/ccache-action@53911442209d5c18de8a31615e0923161e435875
+      if: ${{ matrix.platform.image == 'windows-latest' }}
+      with:
+        key: win-x64-Release
+        variant: 'sccache'
+        # Using sccache on Windows due to https://github.com/hendrikmuhs/ccache-action/issues/112
+        verbose: 2
+        evict-old-files: job
+
+    - name: 'Build melonDS DS'
+      run: |
+        pushd melondsds
+        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" ${{ matrix.platform.cmake_flags }} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+        cmake --build build
+        popd
+        cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
+
+    - name: Install macOS Workload
+      run: dotnet workload install macos
+      if: ${{ matrix.platform.tfm == 'net9.0-macos' }}
+    - name: Restore & Publish Wrapper
+      run: |
+        dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
+        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
+      shell: pwsh
+    - name: Zip wrapper
+      run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
+      shell: pwsh
+    - name: 'Upload wrappers to bucket'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.rid }}.zip --file publish.zip
+
+  upload-to-steam:
+    runs-on: ubuntu-latest
+    needs: build-steam-wrappers
+    steps:
+    - name: 'Checkout repository'
+      uses: actions/checkout@v5
+      with:
+        path: itds-wrapper
+        clean: false
+    - name: Make steam dir
+      run: mkdir -p steam/macos
+    - name: 'Download Linux x64 Wrapper'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object get into-the-dream-spring-wrapper/linux-x64.zip
+    - name: 'Download macOS x64 Wrapper'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object get into-the-dream-spring-wrapper/osx-x64.zip
+    - name: 'Download macOS ARM64 Wrapper'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object get into-the-dream-spring-wrapper/osx-arm64.zip
+    - name: 'Download Windows x64 Wrapper'
+      uses: cloudflare/wrangler-action@v3
+      with:
+        accountId: ${{ secrets.R2_ACCOUNT_ID }}
+        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
+        wranglerVersion: "2.20.0"
+        command: r2 object get into-the-dream-spring-wrapper/win-x64.zip
+    - name: Unzip Wrappers
+      run: |
+        Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
+        Expand-Archive -Path osx-x64.zip -DestinationPath macos-x64
+        Expand-Archive -Path osx-arm64.zip -DestinationPath macos-arm64
+        Expand-Archive -Path win-x64.zip -DestinationPath steam/win-x64
+      shell: pwsh
+    - name: Construct macOS app bundle
+      run: |
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.ARM64.app/Contents/
+        cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/ITDSWrapper
+        cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
+        cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.ARM64.app/Contents/
+      shell: bash
+    - name: Deploy to Steam
+      uses: game-ci/steam-deploy@v3
+      with:
+        username: ${{ secrets.STEAM_USERNAME }}          
+        configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
+        appId: '4026050'
+        buildDescription: ${{ github.run_id }}
+        rootPath: steam
+        depot1Path: win-x64
+        depot2Path: linux-x64
+        depot3Path: macos
+        releaseBranch: prerelease
+      continue-on-error: true

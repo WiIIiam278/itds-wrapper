@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using Libretro.NET.Bindings;
 
 namespace Libretro.NET
@@ -23,8 +24,8 @@ namespace Libretro.NET
         public uint Height { get; private set; }
         public double FPS { get; private set; }
         public double SampleRate { get; private set; }
+        public uint BatteryLevel { get; set; } = 100;
         public static retro_pixel_format PixelFormat { get; private set; }
-        public retro_core_option_definition[] Options { get; private set; }
 
         public delegate void OnFrameDelegate(byte[] frame, uint width, uint height);
 
@@ -114,7 +115,7 @@ namespace Libretro.NET
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_VARIABLE:
                 {
-                    string key = Marshal.PtrToStringAnsi((IntPtr)(*(char **)data));
+                    string key = Marshal.PtrToStringUTF8((IntPtr)(*(char **)data));
                     retro_variable* cb = (retro_variable*)data;
                     switch (key)
                     {
@@ -196,7 +197,17 @@ namespace Libretro.NET
                 case RetroBindings.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
                 {
                     retro_core_option_display s = Marshal.PtrToStructure<retro_core_option_display>((IntPtr)data);
-                    string value = Marshal.PtrToStringAnsi((IntPtr)((char *)s.key));
+                    string value = Marshal.PtrToStringUTF8((IntPtr)((char *)s.key));
+                    return 1;
+                }
+                case RetroBindings.RETRO_ENVIRONMENT_GET_DEVICE_POWER:
+                {
+                    if (data == null)
+                    {
+                        return 1;
+                    }
+
+                    *(uint*)data = BatteryLevel;
                     return 1;
                 }
                 default:
@@ -258,7 +269,7 @@ namespace Libretro.NET
 
         private void Log(retro_log_level level, sbyte* fmt)
         {
-            string str = Marshal.PtrToStringAnsi((IntPtr)(char*)fmt);
+            string str = Marshal.PtrToStringUTF8((IntPtr)(char*)fmt);
             Console.Write(str);
             
             OnReceiveLog?.Invoke(str);
@@ -284,7 +295,7 @@ namespace Libretro.NET
             return OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() ?
                 Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", dirName) :
                 OperatingSystem.IsMacOS() ?
-                    Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName, dirName) :
+                    Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName)!.FullName, dirName) :
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dirName);
         }
 

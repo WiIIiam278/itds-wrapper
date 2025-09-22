@@ -1,7 +1,10 @@
+using System.Globalization;
 using Foundation;
 using Avalonia;
 using Avalonia.iOS;
 using Avalonia.ReactiveUI;
+using AvFoundationBackend;
+using ITDSWrapper.Core;
 
 namespace ITDSWrapper.iOS;
 
@@ -20,9 +23,14 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
             .UseReactiveUI()
             .AfterSetup(b =>
             {
-                ((App)b.Instance!).AudioBackend = new IosAudioBackend();
+                ((App)b.Instance!).AudioBackend = new AvFoundationAudioBackend();
                 ((App)b.Instance).PauseDriver = new(useActivatableLifetime: true);
                 ((App)b.Instance).HapticsBackend = new IosHapticsBackend();
+                ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(
+                    CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
+                    {
+                        _ => "en-GB",
+                    });
             });
     }
 }

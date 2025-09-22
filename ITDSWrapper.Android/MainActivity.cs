@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using System.Globalization;
+using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Util;
@@ -7,6 +8,7 @@ using Avalonia;
 using Avalonia.Android;
 using Avalonia.ReactiveUI;
 using ITDSWrapper.Core;
+using Java.Util;
 
 namespace ITDSWrapper.Android;
 
@@ -86,6 +88,12 @@ public class MainActivity : AvaloniaMainActivity<App>
                 ((App)b.Instance!).AudioBackend = audioBackend;
                 ((App)b.Instance).PauseDriver = _pauseDriver;
                 ((App)b.Instance).HapticsBackend = _hapticsBackend;
+                ((App)b.Instance).BatteryMonitor = new AndroidBatteryMonitor();
+                ((App)b.Instance).ScreenReader = new AndroidScreenReader(this,
+                    CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
+                    {
+                        _ => "en-GB",
+                    });
                 ((App)b.Instance).InputDrivers = [_controllerInputDriver];
                 ((App)b.Instance).Updater = _updater;
             });

@@ -1,17 +1,22 @@
 using System;
+using System.Text.RegularExpressions;
+using ITDSWrapper.Accessibility;
 
 namespace ITDSWrapper.Core;
 
-public class LogInterpreter
+public partial class LogInterpreter : IDisposable
 {
     protected const string WrapperLogPrefix = "[WRAPPER] ";
-    public bool WatchForSdCreate { get; set; }
-    public Action<string>? SetNextBorder { get; set; }
 
     private const string AchievementUnlockedVerb = "ACHIEVEMENT_UNLOCKED";
     private const string BorderSetVerb = "BORDER_SET";
+    private const string ScreenReaderVerb = "SCREEN_READER";
+
+    public bool WatchForSdCreate { get; set; }
+    public Action<string>? SetNextBorder { get; set; }
     
     public IAchievementManager? AchievementManager { get; set; }
+    public IScreenReader? ScreenReader { get; set; }
     
     public virtual int InterpretLog(string log)
     {
@@ -27,17 +32,30 @@ public class LogInterpreter
         int endIndex = log.IndexOf(':', startIndex);
         string verb = log[startIndex..endIndex];
 
+        string logParam = log[(endIndex + 2)..^1];
         switch (verb)
         {
             case AchievementUnlockedVerb:
-                AchievementManager?.Unlock(log[(endIndex + 2)..^1]);
+                AchievementManager?.Unlock(logParam);
                 break;
             
             case BorderSetVerb:
-                SetNextBorder?.Invoke(log[(endIndex + 2)..^1]);
+                SetNextBorder?.Invoke(logParam);
+                break;
+            
+            case ScreenReaderVerb:
+                ScreenReader?.Speak(TextColorRegex().Replace(logParam, ""));
                 break;
         }
 
         return wrapperPrefixLocation;
     }
+
+    public void Dispose()
+    {
+        ScreenReader?.Dispose();
+    }
+
+    [GeneratedRegex(@"\@\d")]
+    private static partial Regex TextColorRegex();
 }

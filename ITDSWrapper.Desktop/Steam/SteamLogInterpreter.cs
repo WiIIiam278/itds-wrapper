@@ -12,7 +12,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
     private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
-    
+
     public override int InterpretLog(string log)
     {
         int wrapperPrefixLocation = base.InterpretLog(log);
