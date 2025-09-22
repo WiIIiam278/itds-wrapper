@@ -8,6 +8,7 @@ public class Settings
     public bool FirstLaunch { get; set; } = true;
     public bool BordersEnabled { get; set; } = true;
     public bool ScreenReaderEnabled { get; set; } = false;
+    public string LanguageCode { get; set; } = "en";
 
     public void Save(string path)
     {
