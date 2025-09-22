@@ -234,7 +234,7 @@ jobs:
         path: itds-wrapper
         clean: false
     - name: Make steam dir
-      run: mkdir steam
+      run: mkdir -p steam/macos
     - name: 'Download Linux x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
