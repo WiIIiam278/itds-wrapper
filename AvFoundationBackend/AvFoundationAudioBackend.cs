@@ -3,9 +3,9 @@ using System.Threading;
 using AVFoundation;
 using ITDSWrapper.Audio;
 
-namespace ITDSWrapper.iOS;
+namespace AvFoundationBackend;
 
-public class IosAudioBackend : IAudioBackend
+public class AvFoundationAudioBackend : IAudioBackend
 {
     private AVAudioFormat? _sourceAudioFormat;
     private AVAudioFormat? _outputAudioFormat;

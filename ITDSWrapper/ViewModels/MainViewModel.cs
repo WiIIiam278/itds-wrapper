@@ -30,6 +30,8 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public EmuImageSource? CurrentFrame { get; set; }
 
+    private Settings _settings;
+
     private double _emuRenderWidth = 256;
     private double _emuRenderHeight = 384;
 
@@ -70,7 +72,7 @@ public class MainViewModel : ViewModelBase
     public double CurrentBorderOpacity { get; set; } = 1.0;
     [Reactive]
     public double NextBorderOpacity { get; set; }
-    private System.Timers.Timer _borderTimer;
+    private System.Timers.Timer? _borderTimer;
     private string _currentBorder = "TITLE_BG";
     private int _currentBorderFrame;
     private string _nextBorder = string.Empty;
@@ -100,6 +102,9 @@ public class MainViewModel : ViewModelBase
         }
     }
     private readonly PointerState? _pointerState;
+    
+    private readonly IBatteryMonitor? _batteryMonitor;
+    private System.Timers.Timer _batteryTimer;
 
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
@@ -121,6 +126,12 @@ public class MainViewModel : ViewModelBase
     
     public MainViewModel()
     {
+        _settings = Settings.Load(IsMobile
+            ? Environment.GetFolderPath(Environment.SpecialFolder.Personal)
+            : OperatingSystem.IsMacOS()
+                ? Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName)!.FullName
+                : AppDomain.CurrentDomain.BaseDirectory);
+        
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
         _logInterpreter.SetNextBorder = border =>
@@ -128,6 +139,10 @@ public class MainViewModel : ViewModelBase
             _nextBorder = border;
             SetNextBorder();
         };
+        if (_settings.ScreenReaderEnabled)
+        {
+            StartScreenReader();
+        }
         Wrapper.OnReceiveLog = HandleLog;
         Wrapper.LoadCore();
         using Stream ndsStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ITDSWrapper.itds.nds")!;
@@ -135,14 +150,10 @@ public class MainViewModel : ViewModelBase
         ndsStream.ReadExactly(data);
         Wrapper.LoadGame(data);
 
-        SetBorder();
-        _borderTimer = new(TimeSpan.FromMilliseconds(100)) { AutoReset = true };
-        _borderTimer.Elapsed += (_, _) =>
+        if (_settings.BordersEnabled)
         {
-            _currentBorderFrame = (_currentBorderFrame + 1) % 600;
-            SetBorder();
-        };
-        _borderTimer.Start();
+            StartBorder();
+        }
 
         if (((App)Application.Current).AudioBackend is not null)
         {
@@ -170,6 +181,15 @@ public class MainViewModel : ViewModelBase
         {
             AssignVirtualBindings();
         }
+        
+        _batteryMonitor = ((App)Application.Current).BatteryMonitor;
+        Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
+        _batteryTimer = new(TimeSpan.FromMinutes(1)) { AutoReset = true };
+        _batteryTimer.Elapsed += (_, _) =>
+        {
+            Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
+        };
+        _batteryTimer.Start();
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
@@ -237,6 +257,7 @@ public class MainViewModel : ViewModelBase
             {
                 CurrentInputDriver = nextInputDriver;
             }
+            
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
@@ -258,6 +279,7 @@ public class MainViewModel : ViewModelBase
             inputDriver.Shutdown();
         }
         Wrapper.Dispose();
+        _logInterpreter?.Dispose();
     }
 
     private void DisplayFrame(byte[] frame, uint width, uint height)
@@ -312,6 +334,34 @@ public class MainViewModel : ViewModelBase
         DisplaySettingsOverlay = !DisplaySettingsOverlay;
         _pauseDriver.PushPauseState(DisplaySettingsOverlay);
         ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
+    }
+
+    private void StartScreenReader()
+    {
+        _logInterpreter!.ScreenReader = ((App)Application.Current!).LogInterpreter?.ScreenReader;
+    }
+
+    private void StopScreenReader()
+    {
+        _logInterpreter!.ScreenReader = null;
+    }
+    
+    private void StartBorder()
+    {
+        SetBorder();
+        _borderTimer = new(TimeSpan.FromMilliseconds(100)) { AutoReset = true };
+        _borderTimer.Elapsed += (_, _) =>
+        {
+            _currentBorderFrame = (_currentBorderFrame + 1) % 600;
+            SetBorder();
+        };
+        _borderTimer.Start();
+    }
+
+    private void StopBorder()
+    {
+        CurrentBorder = null;
+        _borderTimer?.Stop();
     }
 
     private void SetBorder()

@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Threading;
 using ITDSWrapper.Core;
 using Steamworks;
 
@@ -11,7 +12,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
     private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
-    
+
     public override int InterpretLog(string log)
     {
         int wrapperPrefixLocation = base.InterpretLog(log);
@@ -37,7 +38,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 break;
 
             case CloudSaveVerb:
-                SteamSaveManager.UploadCloudSave();
+                Dispatcher.UIThread.InvokeAsync(SteamSaveManager.UploadCloudSave);
                 break;
             
             case RichPresenceVerb:
