@@ -74,6 +74,26 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 #endif
     }
 
+    public void SetLanguage(string language)
+    {
+        language = language switch
+        {
+            "ja" => "ja",
+            _ => "en-gb",
+        };
+#if IS_LINUX
+        Voice voice = new()
+        {
+            language = (sbyte*)Marshal.StringToHGlobalAnsi(language),
+        };
+        GCHandle voiceHandle = GCHandle.Alloc(voice, GCHandleType.Pinned);
+        SetLanguage(voiceHandle.AddrOfPinnedObject());
+        voiceHandle.Free();
+#elif IS_WINDOWS
+        _synthesizer.SelectVoiceByHints(VoiceGender.NotSet, VoiceAge.NotSet, 0, CultureInfo.GetCultureInfo(language));
+#endif
+    }
+
     public void Dispose()
     {
 #if IS_LINUX

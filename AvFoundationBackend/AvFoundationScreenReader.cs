@@ -27,6 +27,15 @@ public class AvFoundationScreenReader : IScreenReader
         _synthesizer?.StopSpeaking(AVSpeechBoundary.Immediate);
         _synthesizer?.SpeakUtterance(utterance);
     }
+
+    public void SetLanguage(string language)
+    {
+        _voice = AVSpeechSynthesisVoice.FromLanguage(language switch
+        {
+            "ja" => "ja",
+            _ => "en-GB",
+        });
+    }
     
     public void Dispose()
     {

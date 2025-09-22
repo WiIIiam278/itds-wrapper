@@ -32,6 +32,20 @@ public class AndroidScreenReader : Java.Lang.Object, IScreenReader, TextToSpeech
     {
         _tts?.Speak(text, QueueMode.Flush, Bundle.Empty, $"tts_{_currentId++}");
     }
+
+    public void SetLanguage(string language)
+    {
+        _language = language switch
+        {
+            _ => Locale.Uk,
+        };
+        LanguageAvailableResult result = _tts.SetLanguage(_language);
+        if (result is LanguageAvailableResult.MissingData or LanguageAvailableResult.NotSupported)
+        {
+            Console.WriteLine("Language is not available");
+            Dispose();
+        }
+    }
     
     public void Dispose()
     {
