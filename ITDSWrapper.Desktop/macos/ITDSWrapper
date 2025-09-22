@@ -4,7 +4,7 @@ DIR=$(dirname "$0")
 ARM64=$(sysctl -ni hw.optional.arm64)
 
 if [[ "$ARM64" == 1 ]]; then
-    exec "$DIR/osx-arm64/ITDSWrapper.Desktop"
+    exec "$DIR/osx-arm64/MacOS/ITDSWrapper.Desktop"
 else
-    exec "$DIR/osx-x64/ITDSWrapper.Desktop"
+    exec "$DIR/osx-x64/MacOS/ITDSWrapper.Desktop"
 fi

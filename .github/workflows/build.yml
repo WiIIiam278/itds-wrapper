@@ -109,6 +109,7 @@ jobs:
           - image: 'ubuntu-latest'
             tfm: net9.0
             rid: 'linux-x64'
+            single-file: true
             melondsds_src: build/src/libretro/melondsds_libretro.so
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.so
             cmake_flags: ''
@@ -117,22 +118,25 @@ jobs:
           - image: 'macos-latest'
             tfm: net9.0-macos
             rid: 'osx-x64'
+            single-file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64"'
             shell: 'bash'
-            artifact: 'ITDS.Desktop'
+            artifact: 'ITDS.Desktop.app'
           - image: 'macos-latest'
             tfm: net9.0-macos
             rid: 'osx-arm64'
+            single-file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF'
             shell: 'bash'
-            artifact: 'ITDS.Desktop'
+            artifact: 'ITDS.Desktop.app'
           - image: 'windows-latest'
             tfm: net9.0
             rid: 'win-x64'
+            single-file: true
             melondsds_src: build/src/libretro/melondsds_libretro.dll
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dll
             cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe" -DENABLE_LTO_RELEASE=OFF'
@@ -202,8 +206,8 @@ jobs:
 
     - name: Restore & Publish Wrapper
       run: |
-        dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -r ${{ matrix.platform.rid }}
-        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=true
+        dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
+        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
       shell: pwsh
     - name: Zip wrapper
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
@@ -264,14 +268,18 @@ jobs:
       shell: pwsh
     - name: Construct macOS app bundle
       run: |
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MacOS/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MonoBundle/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MacOS/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MonoBundle/
         mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/Resources
         cp itds-wrapper/ITDSWrapper.Desktop/macos/Info.plist steam/macos/Into\ the\ Dream\ Spring.app/Contents/Info.plist
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/ITDSWrapper
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper.icns steam/macos/Into\ the\ Dream\ Spring.app/Contents/Resources/ITDSWrapper.icns
-        cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/
-        cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/
+        cp -r macos-x64/Contents/MacOS/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MacOS/
+        cp -r macos-x64/Contents/MonoBundle/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MonoBundle/
+        cp -r macos-arm64/Contents/MacOS/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MacOS/
+        cp -r macos-arm64/Contents/MonoBundle/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MonoBundle/
       shell: bash
     - name: Deploy to Steam
       uses: game-ci/steam-deploy@v3
