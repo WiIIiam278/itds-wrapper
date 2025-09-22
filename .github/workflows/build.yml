@@ -272,7 +272,7 @@ jobs:
       shell: pwsh
     - name: Construct macOS app bundle
       run: |
-        mdkir -p steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
         mkdir -p steam/macos/Into\ the\ Dream\ Spring.ARM64.app/Contents/
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/ITDSWrapper
         cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
