@@ -26,14 +26,11 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
                 ((App)b.Instance!).AudioBackend = new AvFoundationAudioBackend();
                 ((App)b.Instance).PauseDriver = new(useActivatableLifetime: true);
                 ((App)b.Instance).HapticsBackend = new IosHapticsBackend();
-                ((App)b.Instance).LogInterpreter = new()
-                {
-                    ScreenReader = new AvFoundationScreenReader(
-                        CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
-                        {
-                            _ => "en-GB",
-                        }),
-                };
+                ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(
+                    CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
+                    {
+                        _ => "en-GB",
+                    });
             });
     }
 }

@@ -247,14 +247,14 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/macos-x64.zip
+        command: r2 object get into-the-dream-spring-wrapper/osx-x64.zip
     - name: 'Download macOS ARM64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/macos-arm64.zip
+        command: r2 object get into-the-dream-spring-wrapper/osx-arm64.zip
     - name: 'Download Windows x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
@@ -265,8 +265,8 @@ jobs:
     - name: Unzip Wrappers
       run: |
         Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
-        Expand-Archive -Path macos-x64.zip -DestinationPath macos-x64
-        Expand-Archive -Path macos-arm64.zip -DestinationPath macos-arm64
+        Expand-Archive -Path osx-x64.zip -DestinationPath macos-x64
+        Expand-Archive -Path osx-arm64.zip -DestinationPath macos-arm64
         Expand-Archive -Path win-x64.zip -DestinationPath steam/win-x64
       shell: pwsh
     - name: Construct macOS app bundle

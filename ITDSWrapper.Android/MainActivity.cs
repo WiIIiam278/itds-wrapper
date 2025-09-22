@@ -59,14 +59,11 @@ public class MainActivity : AvaloniaMainActivity<App>
                 ((App)b.Instance).PauseDriver = _pauseDriver;
                 ((App)b.Instance).HapticsBackend = _hapticsBackend;
                 ((App)b.Instance).BatteryMonitor = new AndroidBatteryMonitor();
-                ((App)b.Instance).LogInterpreter = new()
-                {
-                    ScreenReader = new AndroidScreenReader(this,
-                        CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
-                        {
-                            _ => "en-GB",
-                        }),
-                };
+                ((App)b.Instance).ScreenReader = new AndroidScreenReader(this,
+                    CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
+                    {
+                        _ => "en-GB",
+                    });
             });
     }
 }

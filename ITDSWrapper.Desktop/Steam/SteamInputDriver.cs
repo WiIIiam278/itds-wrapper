@@ -11,7 +11,7 @@ public class SteamInputDriver : IInputDriver
     private Controller _controller;
     private readonly Dictionary<uint, SteamControllerInput?> _actionsDictionary = [];
     
-    private static readonly Dictionary<string, SteamInputAction[]> _actionSets = new()
+    private static readonly Dictionary<string, SteamInputAction[]> ActionSets = new()
     {
         { 
             "OverworldControls",
@@ -90,7 +90,7 @@ public class SteamInputDriver : IInputDriver
         bool controllerUsed = false;
         if (!string.IsNullOrEmpty(_currentActionSet))
         {
-            foreach (SteamInputAction input in _actionSets[_currentActionSet])
+            foreach (SteamInputAction input in ActionSets[_currentActionSet])
             {
                 if (input.RetroBindings.Length > 1)
                 {
@@ -165,7 +165,7 @@ public class SteamInputDriver : IInputDriver
         _currentActionSet = actionSet;
 
         _actionsDictionary.Clear();
-        foreach (SteamInputAction input in _actionSets[_currentActionSet])
+        foreach (SteamInputAction input in ActionSets[_currentActionSet])
         {
             if (input.RetroBindings.Length > 1)
             {

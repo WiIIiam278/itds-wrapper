@@ -69,11 +69,6 @@ sealed class Program
                         {
                             AchievementManager = new SteamAchievementManager(),
                             WatchForSdCreate = SteamSaveManager.DownloadCloudSave(),
-#if MACOS
-                            ScreenReader = new AvFoundationScreenReader(DesktopScreenReader.GetPlatformSpecificLanguageCode(SteamApps.GameLanguage)),
-#else
-                            ScreenReader = DesktopScreenReader.Instantiate(SteamApps.GameLanguage),
-#endif
                         };
                         ((App)b.Instance).LogInterpreter = logInterpreter;
                     }
@@ -86,6 +81,12 @@ sealed class Program
                 ((App)b.Instance!).BatteryMonitor = new BatteryMonitor();
 #if MACOS
                 ((App)b.Instance).AudioBackend = new AvFoundationAudioBackend();
+#endif
+                
+#if MACOS
+                ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(DesktopScreenReader.GetPlatformSpecificLanguageCode(SteamApps.GameLanguage));
+#else
+                ((App)b.Instance).ScreenReader = DesktopScreenReader.Instantiate(SteamApps.GameLanguage);
 #endif
             });
 }

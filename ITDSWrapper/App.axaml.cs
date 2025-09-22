@@ -21,6 +21,7 @@ public partial class App : Application
     public LogInterpreter? LogInterpreter { get; set; }
     public PauseDriver? PauseDriver { get; set; }
     public IBatteryMonitor? BatteryMonitor { get; set; }
+    public IScreenReader? ScreenReader { get; set; }
 
     public override void Initialize()
     {
