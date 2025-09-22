@@ -104,6 +104,7 @@ jobs:
 
   build-steam-wrappers:
     strategy:
+      fail-fast: false
       matrix:
         platform:
           - image: 'ubuntu-latest'
