@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">net9.0-macos</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier)' == 'ios-arm64' Or '$(RuntimeIdentifier)' == 'iossimulator-arm64'">net9.0-ios</TargetFramework>
+        <TargetFrameworks Condition="'$(RuntimeIdentifier)' == ''">net9.0-macos;net9.0-ios</TargetFrameworks>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ITDSWrapper\ITDSWrapper.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -2,6 +2,9 @@
 using System.IO;
 using Avalonia;
 using Avalonia.ReactiveUI;
+#if MACOS
+using AvFoundationBackend;
+#endif
 using ITDSWrapper.Desktop.Steam;
 using Steamworks;
 
@@ -75,7 +78,15 @@ sealed class Program
                         throw;
                     }
                 }
-
                 ((App)b.Instance!).BatteryMonitor = new BatteryMonitor();
+#if MACOS
+                ((App)b.Instance).AudioBackend = new AvFoundationAudioBackend();
+#endif
+                
+#if MACOS
+                ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(DesktopScreenReader.GetPlatformSpecificLanguageCode(SteamApps.GameLanguage));
+#else
+                ((App)b.Instance).ScreenReader = DesktopScreenReader.Instantiate(SteamApps.GameLanguage);
+#endif
             });
 }

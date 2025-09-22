@@ -7,7 +7,7 @@
         <key>CFBundleDisplayName</key>
         <string>Into the Dream Spring</string>
         <key>CFBundleIdentifier</key>
-        <string>club.intothedreamspring.ITDSWrapper</string>
+        <string>com.intothedreamspring.ITDSWrapper</string>
         <key>CFBundleVersion</key>
         <string>0.1.0</string>
         <key>CFBundlePackageType</key>
@@ -16,8 +16,6 @@
         <string>????</string>
         <key>CFBundleExecutable</key>
         <string>ITDSWrapper</string>
-        <key>CFBundleIconFile</key>
-        <string>ITDSWrapper.icns</string>
         <key>CFBundleShortVersionString</key>
         <string>0.1.0</string>
         <key>NSPrincipalClass</key>

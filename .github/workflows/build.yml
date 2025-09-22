@@ -104,37 +104,46 @@ jobs:
 
   build-steam-wrappers:
     strategy:
+      fail-fast: false
       matrix:
         platform:
           - image: 'ubuntu-latest'
             tfm: net9.0
             rid: 'linux-x64'
+            single-file: true
             melondsds_src: build/src/libretro/melondsds_libretro.so
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.so
             cmake_flags: ''
             shell: 'bash'
+            artifact: 'publish'
           - image: 'macos-latest'
-            tfm: net9.0
+            tfm: net9.0-macos
             rid: 'osx-x64'
+            single-file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
-            cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64"'
+            cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64" -DBUILD_AS_SHARED_LIBRARY=ON'
             shell: 'bash'
+            artifact: 'ITDSWrapper.Desktop.app'
           - image: 'macos-latest'
-            tfm: net9.0
+            tfm: net9.0-macos
             rid: 'osx-arm64'
+            single-file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
-            cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF'
+            cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF -DBUILD_AS_SHARED_LIBRARY=ON'
             shell: 'bash'
+            artifact: 'ITDSWrapper.Desktop.app'
           - image: 'windows-latest'
             tfm: net9.0
             rid: 'win-x64'
+            single-file: true
             melondsds_src: build/src/libretro/melondsds_libretro.dll
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dll
             cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe" -DENABLE_LTO_RELEASE=OFF'
                           # Temporarily disable LTO until a regression in GCC 15 is resolved https://github.com/msys2/MINGW-packages/issues/24152
             shell: 'msys2 {0}'
+            artifact: 'publish'
     runs-on: ${{ matrix.platform.image }}
     defaults:
       run:
@@ -196,13 +205,16 @@ jobs:
         popd
         cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
 
+    - name: Install macOS Workload
+      run: dotnet workload install macos
+      if: ${{ matrix.platform.tfm == 'net9.0-macos' }}
     - name: Restore & Publish Wrapper
       run: |
-        dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -r ${{ matrix.platform.rid }}
-        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=true
+        dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
+        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
       shell: pwsh
     - name: Zip wrapper
-      run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/* -DestinationPath ./publish.zip
+      run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
       shell: pwsh
     - name: 'Upload wrappers to bucket'
       uses: cloudflare/wrangler-action@v3
@@ -222,7 +234,7 @@ jobs:
         path: itds-wrapper
         clean: false
     - name: Make steam dir
-      run: mkdir steam
+      run: mkdir -p steam/macos
     - name: 'Download Linux x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
@@ -236,14 +248,14 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/macos-x64.zip
+        command: r2 object get into-the-dream-spring-wrapper/osx-x64.zip
     - name: 'Download macOS ARM64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/macos-arm64.zip
+        command: r2 object get into-the-dream-spring-wrapper/osx-arm64.zip
     - name: 'Download Windows x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
@@ -254,20 +266,17 @@ jobs:
     - name: Unzip Wrappers
       run: |
         Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
-        Expand-Archive -Path macos-x64.zip -DestinationPath macos-x64
-        Expand-Archive -Path macos-arm64.zip -DestinationPath macos-arm64
+        Expand-Archive -Path osx-x64.zip -DestinationPath macos-x64
+        Expand-Archive -Path osx-arm64.zip -DestinationPath macos-arm64
         Expand-Archive -Path win-x64.zip -DestinationPath steam/win-x64
       shell: pwsh
     - name: Construct macOS app bundle
       run: |
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.app/Contents/Resources
-        cp itds-wrapper/ITDSWrapper.Desktop/macos/Info.plist steam/macos/Into\ the\ Dream\ Spring.app/Contents/Info.plist
-        cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/ITDSWrapper
-        cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper.icns steam/macos/Into\ the\ Dream\ Spring.app/Contents/Resources/ITDSWrapper.icns
-        cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/
-        cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.ARM64.app/Contents/
+        cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/ITDSWrapper
+        cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
+        cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.ARM64.app/Contents/
       shell: bash
     - name: Deploy to Steam
       uses: game-ci/steam-deploy@v3
