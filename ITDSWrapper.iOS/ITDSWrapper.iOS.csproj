@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <UseInterpreter>true</UseInterpreter>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AppIcon>AppIcon</AppIcon>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <CodesignKey>iPhone Developer</CodesignKey>
