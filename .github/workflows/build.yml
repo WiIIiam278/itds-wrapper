@@ -279,6 +279,9 @@ jobs:
         cp itds-wrapper/ITDSWrapper.Desktop/macos/Info.plist steam/macos/Into\ the\ Dream\ Spring.app/Contents/Info.plist
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/ITDSWrapper
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper.icns steam/macos/Into\ the\ Dream\ Spring.app/Contents/Resources/ITDSWrapper.icns
+        ls -l macos-x64/
+        ls -l macos-x64/Contents/
+        ls -l macos-x64/Contents/MacOS/
         cp -r macos-x64/Contents/MacOS/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MacOS/
         cp -r macos-x64/Contents/MonoBundle/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-x64/MonoBundle/
         cp -r macos-arm64/Contents/MacOS/* steam/macos/Into\ the\ Dream\ Spring.app/Contents/MacOS/osx-arm64/MacOS/
