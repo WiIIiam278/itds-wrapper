@@ -356,7 +356,7 @@ public class MainViewModel : ViewModelBase
 
         if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
         {
-            if (id is RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN or RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT or RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT)
+            if (id is RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN)
             {
                 return 1;
             }
