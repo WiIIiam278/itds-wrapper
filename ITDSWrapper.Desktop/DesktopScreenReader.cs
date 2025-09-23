@@ -1,6 +1,5 @@
 using System;
 #if IS_WINDOWS
-using System.Collections.Generic;
 using System.Globalization;
 using System.Speech.Synthesis;
 #elif IS_LINUX
