@@ -2,7 +2,6 @@ using System;
 using Android.OS;
 using Android.Speech.Tts;
 using ITDSWrapper.Accessibility;
-using Java.Interop;
 using Java.Util;
 
 namespace ITDSWrapper.Android;
@@ -39,7 +38,7 @@ public class AndroidScreenReader : Java.Lang.Object, IScreenReader, TextToSpeech
         {
             _ => Locale.Uk,
         };
-        LanguageAvailableResult result = _tts.SetLanguage(_language);
+        LanguageAvailableResult result = _tts?.SetLanguage(_language) ?? LanguageAvailableResult.NotSupported;
         if (result is LanguageAvailableResult.MissingData or LanguageAvailableResult.NotSupported)
         {
             Console.WriteLine("Language is not available");
@@ -47,7 +46,7 @@ public class AndroidScreenReader : Java.Lang.Object, IScreenReader, TextToSpeech
         }
     }
     
-    public void Dispose()
+    public new void Dispose()
     {
         _tts?.Shutdown();
         _tts?.Dispose();
