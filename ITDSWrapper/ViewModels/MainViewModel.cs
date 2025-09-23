@@ -29,7 +29,7 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public EmuImageSource? CurrentFrame { get; set; }
 
-    private Settings _settings;
+    private readonly Settings _settings;
 
     private double _emuRenderWidth = 256;
     private double _emuRenderHeight = 384;

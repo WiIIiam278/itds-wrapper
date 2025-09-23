@@ -1,6 +1,5 @@
 using System;
 #if IS_WINDOWS
-using System.Collections.Generic;
 using System.Globalization;
 using System.Speech.Synthesis;
 #elif IS_LINUX
@@ -52,11 +51,12 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         voiceHandle.Free();
         return success;
 #elif IS_WINDOWS
+#pragma warning disable CA1416
         _synthesizer = new();
         _synthesizer.SelectVoiceByHints(VoiceGender.NotSet, VoiceAge.NotSet, 0, CultureInfo.GetCultureInfo(language));
+#pragma warning restore CA1416
         return true;
 #endif
-        return false;
     }
 
     public void Speak(string text)
@@ -69,8 +69,10 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         _ = Synthesize(text, Encoding.UTF8.GetByteCount(text), 0, EspeakPositionType.POS_CHARACTER, 0, 1,
             IntPtr.Zero, IntPtr.Zero);
 #elif IS_WINDOWS
+#pragma warning disable CA1416
         _synthesizer?.SpeakAsyncCancelAll();
         _synthesizer?.SpeakAsync(text);
+#pragma warning restore CA1416
 #endif
     }
 
@@ -90,7 +92,9 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         SetLanguage(voiceHandle.AddrOfPinnedObject());
         voiceHandle.Free();
 #elif IS_WINDOWS
-        _synthesizer.SelectVoiceByHints(VoiceGender.NotSet, VoiceAge.NotSet, 0, CultureInfo.GetCultureInfo(language));
+#pragma warning disable CA1416
+        _synthesizer?.SelectVoiceByHints(VoiceGender.NotSet, VoiceAge.NotSet, 0, CultureInfo.GetCultureInfo(language));
+#pragma warning restore CA1416
 #endif
     }
 
@@ -98,7 +102,9 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     {
 #if IS_LINUX
 #elif IS_WINDOWS
+#pragma warning disable CA1416
         _synthesizer?.Dispose();
+#pragma warning restore CA1416
 #endif
     }
 

@@ -8,7 +8,6 @@ using Avalonia;
 using Avalonia.Android;
 using Avalonia.ReactiveUI;
 using ITDSWrapper.Core;
-using Java.Util;
 
 namespace ITDSWrapper.Android;
 
