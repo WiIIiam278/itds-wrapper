@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using DynamicData;
 
 namespace ITDSWrapper.Core;
 
@@ -9,6 +10,9 @@ public class Settings
     public bool BordersEnabled { get; set; } = true;
     public bool ScreenReaderEnabled { get; set; } = false;
     public string LanguageCode { get; set; } = "en";
+
+    private static string[] LangCodeArray = ["en", "ja"];
+    public byte LanguageIndex => (byte)LangCodeArray.IndexOf(LanguageCode);
 
     public void Save(string path)
     {
