@@ -57,6 +57,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 #pragma warning restore CA1416
         return true;
 #endif
+        return false;
     }
 
     public void Speak(string text)
