@@ -79,8 +79,6 @@ public class MainViewModel : ViewModelBase
     private int _nextBorderFrame;
     
     public bool Closing { get; set; }
-
-    private readonly byte[] _frameData = new byte[256 * 384 * 4];
     
     private readonly PauseDriver _pauseDriver;
     private readonly LogInterpreter? _logInterpreter;
@@ -273,8 +271,8 @@ public class MainViewModel : ViewModelBase
 
     private void DisplayFrame(byte[] frame, uint width, uint height)
     {
-        Array.Copy(frame, _frameData, frame.Length);
-        CurrentFrame ??= new(_frameData, width, height);
+        CurrentFrame ??= new(frame, width, height);
+        CurrentFrame.SetFrame(frame);
     }
     
     private void PlaySample(byte[] sample)
