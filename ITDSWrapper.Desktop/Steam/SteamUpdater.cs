@@ -16,7 +16,7 @@ public class SteamUpdater(SteamInputDriver inputDriver) : IUpdater
             inputDriver.SetController(_controllers[0]);
             if (inputDriver.UpdateState())
             {
-                return 0;
+                return 1;
             }
         }
 

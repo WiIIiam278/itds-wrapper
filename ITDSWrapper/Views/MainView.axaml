@@ -10,7 +10,7 @@
              x:DataType="vm:MainViewModel"
              Name="View">
     
-    <Grid RowDefinitions="Auto,*,Auto" >
+    <Grid RowDefinitions="Auto,*,Auto" PointerPressed="MainScreen_OnPointerPressed">
         
         <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding CurrentBorder}"
                Opacity="{Binding CurrentBorderOpacity}"/>
