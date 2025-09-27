@@ -10,7 +10,7 @@
              x:DataType="vm:MainViewModel"
              Name="View">
     
-    <Grid RowDefinitions="Auto,*,Auto" >
+    <Grid RowDefinitions="Auto,*,Auto" PointerPressed="MainScreen_OnPointerPressed">
         
         <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding CurrentBorder}"
                Opacity="{Binding CurrentBorderOpacity}"/>
@@ -30,7 +30,7 @@
                    Effect="{Binding ScreenEffect}"/>
         </Grid>
         
-        <Grid Grid.Row="2" Name="OnScreenControls" IsVisible="{Binding IsMobile}"
+        <Grid Grid.Row="2" Name="OnScreenControls" IsVisible="{Binding DisplayVirtualControls}"
               RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10" PointerMoved="OnScreenControls_OnPointerMoved"
               IsHitTestVisible="True">
             <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*" Height="50" HorizontalAlignment="Center">

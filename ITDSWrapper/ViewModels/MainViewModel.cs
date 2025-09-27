@@ -63,6 +63,7 @@ public class MainViewModel : ViewModelBase
     }
 
     public int TopPadding => IsMobile ? 10 : 0;
+    public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == 0;
 
     [Reactive]
     public Bitmap? CurrentBorder { get; set; }
@@ -87,7 +88,18 @@ public class MainViewModel : ViewModelBase
     private readonly IHapticsBackend? _hapticsBackend;
     
     private readonly List<IInputDriver> _inputDrivers;
-    private int _currentInputDriver = 0;
+    public int NumInputDrivers => _inputDrivers.Count;
+    private int _currentInputDriver;
+
+    public int CurrentInputDriver
+    {
+        get => _currentInputDriver;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _currentInputDriver, value);
+            this.RaisePropertyChanged(nameof(DisplayVirtualControls));
+        }
+    }
     private readonly PointerState? _pointerState;
     
     private readonly IBatteryMonitor? _batteryMonitor;
@@ -162,7 +174,7 @@ public class MainViewModel : ViewModelBase
         _pauseDriver.AudioBackend = _audioBackend;
 
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
-        _inputDrivers.Add(new DefaultInputDriver(IsMobile, OpenSettings));
+        _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, OpenSettings));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
@@ -191,22 +203,22 @@ public class MainViewModel : ViewModelBase
         {
             if (_inputDrivers[i] is DefaultInputDriver)
             {
-                _currentInputDriver = i;
+                CurrentInputDriver = i;
                 break;
             }
         }
-        if (_inputDrivers[_currentInputDriver] is not DefaultInputDriver)
+        if (_inputDrivers[CurrentInputDriver] is not DefaultInputDriver)
         {
             return;
         }
         
         if (pressed)
         {
-            _inputDrivers[_currentInputDriver].Push(input);
+            _inputDrivers[CurrentInputDriver].Push(input);
         }
         else
         {
-            _inputDrivers[_currentInputDriver].Release(input);
+            _inputDrivers[CurrentInputDriver].Release(input);
         }
     }
 
@@ -242,7 +254,7 @@ public class MainViewModel : ViewModelBase
             int nextInputDriver = updater?.Update() ?? -1;
             if (nextInputDriver >= 0)
             {
-                _currentInputDriver = nextInputDriver;
+                CurrentInputDriver = nextInputDriver;
             }
             
             if (!_pauseDriver.IsPaused())
@@ -284,7 +296,7 @@ public class MainViewModel : ViewModelBase
     {
         if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
         {
-            return _inputDrivers[_currentInputDriver].QueryInput(id) ? (short)1 : (short)0;
+            return _inputDrivers[CurrentInputDriver].QueryInput(id) ? (short)1 : (short)0;
         }
 
         if (device == RetroBindings.RETRO_DEVICE_POINTER)
@@ -365,7 +377,7 @@ public class MainViewModel : ViewModelBase
 
     private bool DoRumble(uint port, uint type, ushort strength)
     {
-        _inputDrivers[_currentInputDriver].DoRumble(strength);
+        _inputDrivers[CurrentInputDriver].DoRumble(strength);
         return true;
     }
 
@@ -446,7 +458,8 @@ public class MainViewModel : ViewModelBase
 
     private void AssignVirtualBindings()
     {
-        foreach (uint inputKey in _inputDrivers[_currentInputDriver].GetInputKeys())
+        int defaultInputDriverIndex = 0;
+        foreach (uint inputKey in _inputDrivers[defaultInputDriverIndex].GetInputKeys())
         {
             VirtualButtonInput? button = new();
             switch (inputKey)
@@ -495,7 +508,7 @@ public class MainViewModel : ViewModelBase
                     button = null;
                     break;
             }
-            _inputDrivers[_currentInputDriver].SetBinding(inputKey, button);
+            _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);
         }
     }
 }
