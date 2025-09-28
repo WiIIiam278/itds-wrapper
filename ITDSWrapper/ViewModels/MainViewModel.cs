@@ -30,7 +30,9 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public EmuImageSource? CurrentFrame { get; set; }
 
-    private Settings _settings;
+    private readonly Settings _settings;
+    private int _currentLangBit;
+    private int _langInputsSent;
 
     private double _emuRenderWidth = 256;
     private double _emuRenderHeight = 384;
@@ -79,8 +81,6 @@ public class MainViewModel : ViewModelBase
     private int _nextBorderFrame;
     
     public bool Closing { get; set; }
-
-    private readonly byte[] _frameData = new byte[256 * 384 * 4];
     
     private readonly PauseDriver _pauseDriver;
     private readonly LogInterpreter? _logInterpreter;
@@ -90,7 +90,7 @@ public class MainViewModel : ViewModelBase
     
     private readonly List<IInputDriver> _inputDrivers;
     public int NumInputDrivers => _inputDrivers.Count;
-    private int _currentInputDriver = 0;
+    private int _currentInputDriver;
 
     public int CurrentInputDriver
     {
@@ -193,7 +193,7 @@ public class MainViewModel : ViewModelBase
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
-        Wrapper.OnCheckInput = HandleInput;
+        Wrapper.OnCheckInput = HandleStartupInput;
         Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
     }
@@ -284,8 +284,8 @@ public class MainViewModel : ViewModelBase
 
     private void DisplayFrame(byte[] frame, uint width, uint height)
     {
-        Array.Copy(frame, _frameData, frame.Length);
-        CurrentFrame ??= new(_frameData, width, height);
+        CurrentFrame ??= new(frame, width, height);
+        CurrentFrame.SetFrame(frame);
     }
     
     private void PlaySample(byte[] sample)
@@ -315,6 +315,64 @@ public class MainViewModel : ViewModelBase
             }
         }
 
+        return 0;
+    }
+
+    private short HandleStartupInput(uint port, uint device, uint index, uint id)
+    {
+        if ((_logInterpreter?.StartupReceived ?? false) && device == RetroBindings.RETRO_DEVICE_JOYPAD)
+        {
+            switch (id)
+            {
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
+                    if (_langInputsSent < 4)
+                    {
+                        _langInputsSent++;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                    return (_settings.LanguageIndex & (0x1 << (6 - _currentLangBit))) != 0 ? (short)1 : (short)0;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
+                    if (_langInputsSent < 4)
+                    {
+                        _langInputsSent++;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                    return (_settings.LanguageIndex & (0x1 << (6 - _currentLangBit))) == 0 ? (short)1 : (short)0;
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
+                    if (_langInputsSent is >= 4 and < 6)
+                    {
+                        _langInputsSent++;
+                        return 1;
+                    }
+                    if (_langInputsSent >= 6)
+                    {
+                        _langInputsSent = 0;
+                        _currentLangBit++;
+                    }
+                    return 0;
+            }
+        }
+        
+        if (_logInterpreter?.LangReceived ?? false)
+        {
+            Wrapper.OnCheckInput = HandleInput;
+            return 0;
+        }
+
+        if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
+        {
+            if (id is RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN)
+            {
+                return 1;
+            }
+        }
+        
         return 0;
     }
 
