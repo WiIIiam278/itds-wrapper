@@ -11,7 +11,7 @@ namespace ITDSWrapper.Desktop.Steam;
 
 public static class SteamSaveManager
 {
-    private const string SaveFileName = "into-the-dream-spring.sav";
+    private const string SaveFileName = "itds-demo.sav";
     private static readonly string SaveDir = RetroWrapper.GetDirectoryForPlatform("saves");
     
     public static void UploadCloudSave()
