@@ -23,9 +23,12 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
             .UseReactiveUI()
             .AfterSetup(b =>
             {
+                IosControllerInputDriver inputDriver = new();
                 ((App)b.Instance!).AudioBackend = new AvFoundationAudioBackend();
                 ((App)b.Instance).PauseDriver = new(useActivatableLifetime: true);
                 ((App)b.Instance).HapticsBackend = new IosHapticsBackend();
+                ((App)b.Instance).InputDrivers = [inputDriver];
+                ((App)b.Instance).Updater = new IosUpdater(inputDriver);
                 ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(
                     CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
                     {

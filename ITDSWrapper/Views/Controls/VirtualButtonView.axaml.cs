@@ -21,8 +21,8 @@ public partial class VirtualButtonView : UserControl
             return;
         }
         
-        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire(true);
-        ((VirtualButtonViewModel)DataContext!).AssociatedInput?.Press((VirtualButtonViewModel)DataContext!);
+        ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(true);
+        ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Press((VirtualButtonViewModel)DataContext!);
         _held = true;
     }
 
@@ -33,8 +33,8 @@ public partial class VirtualButtonView : UserControl
             return;
         }
         
-        ((VirtualButtonViewModel)DataContext!).Haptics?.Fire(false);
-        ((VirtualButtonViewModel)DataContext!).AssociatedInput?.Release((VirtualButtonViewModel)DataContext!);
+        ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(false);
+        ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Release((VirtualButtonViewModel)DataContext!);
         _held = false;
     }
 }
