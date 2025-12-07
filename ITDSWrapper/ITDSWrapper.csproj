@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -11,15 +11,11 @@
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="..\itds.nds"/>
-        <EmbeddedResource Update="Assets\Strings.resx">
-          <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia"/>
-        <PackageReference Include="Avalonia.Skia" />
+        <PackageReference Include="Avalonia.Skia"/>
         <PackageReference Include="Avalonia.Themes.Fluent"/>
         <PackageReference Include="Avalonia.Fonts.Inter"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -28,34 +24,50 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI"/>
-        <PackageReference Include="LTRData.DiscUtils.Fat" />
-        <PackageReference Include="ReactiveUI.Fody" />
-        <PackageReference Include="Silk.NET.OpenAL" />
-        <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />
-        <PackageReference Include="Silk.NET.OpenAL.Soft.Native" />
-        <PackageReference Include="SkiaSharp" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+        <PackageReference Include="LTRData.DiscUtils.Fat"/>
+        <PackageReference Include="ReactiveUI.Fody"/>
+        <PackageReference Include="Silk.NET.OpenAL"/>
+        <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT"/>
+        <PackageReference Include="Silk.NET.OpenAL.Soft.Native"/>
+        <PackageReference Include="SkiaSharp"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj" />
+        <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Avalonia.Skia">
-        <HintPath>..\..\..\.nuget\packages\avalonia.skia\11.3.999-cibuild0058780-alpha\lib\net8.0\Avalonia.Skia.dll</HintPath>
-      </Reference>
+        <Reference Include="Avalonia.Skia">
+            <HintPath>..\..\..\.nuget\packages\avalonia.skia\11.3.999-cibuild0058780-alpha\lib\net8.0\Avalonia.Skia.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Views\Controls\VirtualButtonView.axaml" />
+        <AdditionalFiles Include="Views\Controls\VirtualButtonView.axaml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Assets\Strings.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Strings.resx</DependentUpon>
-      </Compile>
+        <AvaloniaResource Remove="Assets\Strings.ja.resx"/>
+        <AvaloniaResource Remove="Assets\Strings.resx"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Assets\Strings.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Strings.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Assets\Strings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <PublicClass>true</PublicClass>
+            <StronglyTypedFileName>Assets\Strings.Designer.cs</StronglyTypedFileName>
+            <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+            <StronglyTypedNamespace>ITDSWrapper.Assets</StronglyTypedNamespace>
+            <StronglyTypedClassName>Strings</StronglyTypedClassName>
+            <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
 </Project>
