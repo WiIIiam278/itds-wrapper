@@ -2,8 +2,8 @@
     <PropertyGroup>
         <OutputType Condition="'$(RuntimeIdentifier)'!='osx-arm64' And '$(RuntimeIdentifier)'!='osx-x64' And !$([System.OperatingSystem]::IsMacOs())">WinExe</OutputType>
         <OutputType Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">Exe</OutputType>
-        <TargetFramework Condition="'$(RuntimeIdentifier)'!='osx-arm64' And '$(RuntimeIdentifier)'!='osx-x64' And !$([System.OperatingSystem]::IsMacOs())">net9.0</TargetFramework>
-        <TargetFramework Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">net9.0-macos</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier)'!='osx-arm64' And '$(RuntimeIdentifier)'!='osx-x64' And !$([System.OperatingSystem]::IsMacOs())">net10.0</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">net10.0-macos</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <DefineConstants Condition="'$(RuntimeIdentifier)'=='linux-x64' Or $([System.OperatingSystem]::IsLinux())">IS_LINUX</DefineConstants>
