@@ -10,7 +10,7 @@ jobs:
       matrix:
         platform:
           - image: 'ubuntu-latest'
-            tfm: net9.0-android
+            tfm: net10.0-android
             rid: 'android-arm64'
             project: ITDSWrapper.Android
             melondsds_src: build/src/libretro/melondsds_libretro_android.so
@@ -21,7 +21,7 @@ jobs:
             artifact: com.intothedreamspring.itdswrapper-Signed.apk
             upload: com.intothedreamspring.itdswrapper.apk
           # - image: 'macos-latest'
-          #   tfm: net9.0-ios
+          #   tfm: net10.0-ios
           #   rid: 'ios-arm64'
           #   project: ITDSWrapper.iOS
           #   melondsds_src: melondsds_libretro-ios-Release/cores/melondsds_libretro.dylib
@@ -35,7 +35,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5.0.0
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '10.0.x'
     - name: 'Download ROM'
       uses: cloudflare/wrangler-action@v3
       with:
@@ -108,7 +108,7 @@ jobs:
       matrix:
         platform:
           - image: 'ubuntu-latest'
-            tfm: net9.0
+            tfm: net10.0
             rid: 'linux-x64'
             single-file: true
             melondsds_src: build/src/libretro/melondsds_libretro.so
@@ -117,7 +117,7 @@ jobs:
             shell: 'bash'
             artifact: 'publish'
           - image: 'macos-latest'
-            tfm: net9.0-macos
+            tfm: net10.0-macos
             rid: 'osx-x64'
             single-file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
@@ -126,7 +126,7 @@ jobs:
             shell: 'bash'
             artifact: 'ITDSWrapper.Desktop.app'
           - image: 'macos-latest'
-            tfm: net9.0-macos
+            tfm: net10.0-macos
             rid: 'osx-arm64'
             single-file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
@@ -135,7 +135,7 @@ jobs:
             shell: 'bash'
             artifact: 'ITDSWrapper.Desktop.app'
           - image: 'windows-latest'
-            tfm: net9.0
+            tfm: net10.0
             rid: 'win-x64'
             single-file: true
             melondsds_src: build/src/libretro/melondsds_libretro.dll
@@ -154,7 +154,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5.0.0
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '10.0.x'
     - name: 'Download ROM'
       uses: cloudflare/wrangler-action@v3
       with:
@@ -207,7 +207,7 @@ jobs:
 
     - name: Install macOS Workload
       run: dotnet workload install macos
-      if: ${{ matrix.platform.tfm == 'net9.0-macos' }}
+      if: ${{ matrix.platform.tfm == 'net10.0-macos' }}
     - name: Restore & Publish Wrapper
       run: |
         dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
