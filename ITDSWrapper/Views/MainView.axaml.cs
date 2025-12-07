@@ -96,7 +96,7 @@ public partial class MainView : UserControl
         }
         else if (!release)
         {
-            button.ReleaseButton();
+            button.ReleaseButton(softRelease: true);
         }
     }
 
