@@ -207,7 +207,7 @@ jobs:
     
     - name: 'ls'
       shell: pwsh
-      run: ls build/src/libretro/embedded/
+      run: ls melondsds/build/src/libretro/embedded/
       if: always()
 
     - name: Install macOS Workload
