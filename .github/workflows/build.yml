@@ -212,6 +212,10 @@ jobs:
     - name: Install macOS Workload
       run: dotnet workload install macos
       if: ${{ matrix.platform.tfm == 'net10.0-macos' }}
+    - name: Set Xcode version
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '26.1.1'
     - name: Restore & Publish Wrapper
       run: |
         dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
