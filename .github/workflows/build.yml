@@ -207,7 +207,7 @@ jobs:
     
     - name: 'find melondsds_vertex_shader.c'
       shell: pwsh
-      run: find melondsds/build -name 'melondsds_vertex_shader.c'
+      run: find melondsds/ -name 'melondsds_vertex_shader.c'
       if: always()
 
     - name: Install macOS Workload
