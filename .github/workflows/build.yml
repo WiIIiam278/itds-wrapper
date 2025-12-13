@@ -205,9 +205,9 @@ jobs:
         popd
         cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
     
-    - name: 'ls'
+    - name: 'find melondsds_vertex_shader.c'
       shell: pwsh
-      run: ls melondsds/build/src/libretro/embedded/
+      run: find melondsds/build -name 'melondsds_vertex_shader.c'
       if: always()
 
     - name: Install macOS Workload
