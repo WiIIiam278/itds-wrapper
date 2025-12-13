@@ -201,7 +201,6 @@ jobs:
       run: |
         pushd melondsds
         cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" ${{ matrix.platform.cmake_flags }}
-        cmake --build build --target libretro-assets
         cmake --build build
         popd
         cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
