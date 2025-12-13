@@ -204,6 +204,11 @@ jobs:
         cmake --build build -- -j1
         popd
         cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
+    
+    - name: 'ls'
+      shell: pwsh
+      run: ls melondsds/build/src/libretro/embedded/
+      if: always()
 
     - name: Install macOS Workload
       run: dotnet workload install macos
