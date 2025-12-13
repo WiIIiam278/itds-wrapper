@@ -206,7 +206,7 @@ jobs:
         cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
     
     - name: 'find melondsds_vertex_shader.c'
-      run: find melondsds/ -name 'melondsds_vertex_shader.c'
+      run: find melondsds/'
       if: always()
 
     - name: Install macOS Workload
