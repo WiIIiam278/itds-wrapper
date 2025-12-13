@@ -52,7 +52,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Condition="'$(TargetFramework)' == 'net9.0-macos'" Include="..\AvFoundationBackend\AvFoundationBackend.csproj" />
+        <ProjectReference Condition="'$(TargetFramework)' == 'net10.0-macos'" Include="..\AvFoundationBackend\AvFoundationBackend.csproj" />
         <ProjectReference Include="..\ITDSWrapper\ITDSWrapper.csproj"/>
     </ItemGroup>
 </Project>

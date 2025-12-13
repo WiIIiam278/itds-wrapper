@@ -4,6 +4,7 @@
         <TargetFramework Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">net10.0-macos</TargetFramework>
         <TargetFramework Condition="'$(RuntimeIdentifier)' == 'ios-arm64' Or '$(RuntimeIdentifier)' == 'iossimulator-arm64'">net10.0-ios</TargetFramework>
         <TargetFrameworks Condition="'$(RuntimeIdentifier)' == ''">net10.0-macos;net10.0-ios</TargetFrameworks>
+        <TargetPlatformVersion>26</TargetPlatformVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
