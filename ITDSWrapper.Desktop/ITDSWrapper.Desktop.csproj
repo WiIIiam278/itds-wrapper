@@ -20,6 +20,11 @@
         <AppIcon>AppIcon</AppIcon>
     </PropertyGroup>
     
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64'">
+        <CodesignKey>-</CodesignKey>
+        <EnableCodeSigning>false</EnableCodeSigning>
+    </PropertyGroup>
+    
     <ItemGroup Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">
         <PartialAppManifest Include="macos/Info.plist"/>
     </ItemGroup>
@@ -52,7 +57,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Condition="'$(TargetFramework)' == 'net9.0-macos'" Include="..\AvFoundationBackend\AvFoundationBackend.csproj" />
+        <ProjectReference Condition="'$(TargetFramework)' == 'net10.0-macos'" Include="..\AvFoundationBackend\AvFoundationBackend.csproj" />
         <ProjectReference Include="..\ITDSWrapper\ITDSWrapper.csproj"/>
     </ItemGroup>
 </Project>
