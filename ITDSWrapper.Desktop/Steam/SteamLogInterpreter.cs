@@ -1,17 +1,24 @@
 using System;
 using Avalonia.Threading;
 using ITDSWrapper.Core;
+using ITDSWrapper.Input;
+using Libretro.NET.Bindings;
 using Steamworks;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
+public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inputSwitcher) : LogInterpreter
 {
     private const string ActionSetVerb = "ACTION_SET";
     private const string CloudSaveVerb = "CLOUD_SAVE";
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
     private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
+    private const string InputChangeRequestVerb = "INPUT_CHANGE_REQUEST";
+    private const string InputChangeCompleteVerb = "INPUT_CHANGE_COMPLETE";
+
+    private int _remapInputsSent = 0;
+    private int _currentInputBit = 0;
 
     public override int InterpretLog(string log)
     {
@@ -35,6 +42,14 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
         {
             case ActionSetVerb:
                 inputDriver.SetActionSet(log[(endIndex + 2)..^1]);
+                inputSwitcher.SetInputDelegate((_, _, _, id) =>
+                {
+                    return id switch
+                    {
+                        RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN => 1,
+                        _ => 0,
+                    };
+                });
                 break;
 
             case CloudSaveVerb:
@@ -68,6 +83,53 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 break;
             
             case TimelineRangeEventVerb:
+                break;
+            
+            case InputChangeRequestVerb:
+                int glyphId = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
+                inputSwitcher.SetInputDelegate((port, device, index, id) =>
+                {
+                    switch (id)
+                    {
+                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
+                            if (_remapInputsSent == 1)
+                            {
+                                _remapInputsSent++;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                            return (glyphId & (0x1 << (6 - _currentInputBit))) != 0 ? (short)1 : (short)0;
+                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
+                            if (_remapInputsSent == 0)
+                            {
+                                _remapInputsSent++;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                            return (glyphId & (0x1 << (6 - _currentInputBit))) == 0 ? (short)1 : (short)0;
+                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
+                            if (_remapInputsSent == 1)
+                            {
+                                _remapInputsSent++;
+                                return 1;
+                            }
+                            if (_remapInputsSent == 2)
+                            {
+                                _remapInputsSent = 0;
+                                _currentInputBit++;
+                            }
+                            return 0;
+                    }
+                    return 0;
+                });
+                break;
+            
+            case InputChangeCompleteVerb:
+                inputSwitcher.ResetInputDelegate();
                 break;
         }
 

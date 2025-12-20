@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ITDSWrapper.Input;
@@ -71,6 +72,19 @@ public class SteamInputDriver : IInputDriver
             ]
         },
     };
+
+    private static readonly Dictionary<string, uint> ButtonNamesMap = new()
+    {
+        { "A", RetroBindings.RETRO_DEVICE_ID_JOYPAD_A },
+        { "B", RetroBindings.RETRO_DEVICE_ID_JOYPAD_B },
+        { "X", RetroBindings.RETRO_DEVICE_ID_JOYPAD_X },
+        { "Y", RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y },
+        { "L", RetroBindings.RETRO_DEVICE_ID_JOYPAD_L },
+        { "R", RetroBindings.RETRO_DEVICE_ID_JOYPAD_R },
+        { "DPad", RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP },
+    };
+    
+    private static readonly string[] Buttons = ["A", "B", "X", "Y", "L", "R", "DPad"];
 
     private string? _currentActionSet;
 
@@ -224,5 +238,37 @@ public class SteamInputDriver : IInputDriver
     public void DoRumble(ushort strength)
     {
         _controller.TriggerVibration(strength, strength);
+    }
+
+    public int GetActionGlyphId(string button)
+    {
+        if (string.IsNullOrEmpty(_currentActionSet))
+        {
+            return Buttons.IndexOf(button);
+        }
+
+        string? actionName = ActionSets[_currentActionSet]
+            .FirstOrDefault(a => a.RetroBindings.Contains(ButtonNamesMap[button]))?.ActionName;
+        if (string.IsNullOrEmpty(actionName))
+        {
+            return Buttons.IndexOf(button);
+        }
+        
+        string glyph = SteamInput.GetPngActionGlyph(_controller, actionName, GlyphSize.Small);
+        if (string.IsNullOrEmpty(glyph))
+        {
+            return Buttons.IndexOf(button);
+        }
+
+        if (glyph.Contains("button_a"))
+        {
+            return 0;
+        }
+        if (glyph.Contains("button_b"))
+        {
+            return 1;
+        }
+        
+        return Buttons.IndexOf(button);
     }
 }

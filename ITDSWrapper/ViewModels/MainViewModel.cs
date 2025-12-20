@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Avalonia;
@@ -43,10 +42,7 @@ public class MainViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _emuRenderWidth, value);
-            if (_pointerState is not null)
-            {
-                _pointerState.Width = value;
-            }
+            _pointerState?.Width = value;
         }
     }
 
@@ -56,10 +52,7 @@ public class MainViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _emuRenderHeight, value);
-            if (_pointerState is not null)
-            {
-                _pointerState.Height = value;
-            }
+            _pointerState?.Height = value;
         }
     }
 
@@ -102,6 +95,8 @@ public class MainViewModel : ViewModelBase
         }
     }
     private readonly PointerState? _pointerState;
+
+    private InputSwitcher? _inputSwitcher;
     
     private readonly IBatteryMonitor? _batteryMonitor;
     private System.Timers.Timer _batteryTimer;
@@ -182,6 +177,9 @@ public class MainViewModel : ViewModelBase
             AssignVirtualBindings();
         }
         
+        _inputSwitcher = ((App)Application.Current).InputSwitcher;
+        _inputSwitcher?.Wrapper = Wrapper;
+        
         _batteryMonitor = ((App)Application.Current).BatteryMonitor;
         Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
         _batteryTimer = new(TimeSpan.FromMinutes(1)) { AutoReset = true };
@@ -193,6 +191,7 @@ public class MainViewModel : ViewModelBase
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
+        _inputSwitcher?.SetDefaultInputDelegate(HandleInput);
         Wrapper.OnCheckInput = HandleStartupInput;
         Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
