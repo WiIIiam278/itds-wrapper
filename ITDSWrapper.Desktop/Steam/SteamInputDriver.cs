@@ -81,10 +81,8 @@ public class SteamInputDriver : IInputDriver
         { "Y", RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y },
         { "L", RetroBindings.RETRO_DEVICE_ID_JOYPAD_L },
         { "R", RetroBindings.RETRO_DEVICE_ID_JOYPAD_R },
-        { "DPad", RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP },
+        { "DPad", RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT },
     };
-    
-    private static readonly string[] Buttons = ["A", "B", "X", "Y", "L", "R", "DPad"];
 
     private string? _currentActionSet;
 
@@ -240,35 +238,83 @@ public class SteamInputDriver : IInputDriver
         _controller.TriggerVibration(strength, strength);
     }
 
-    public int GetActionGlyphId(string button)
+    public uint GetActionGlyphId(string button)
     {
         if (string.IsNullOrEmpty(_currentActionSet))
         {
-            return Buttons.IndexOf(button);
+            return ButtonNamesMap[button];
         }
 
         string? actionName = ActionSets[_currentActionSet]
             .FirstOrDefault(a => a.RetroBindings.Contains(ButtonNamesMap[button]))?.ActionName;
         if (string.IsNullOrEmpty(actionName))
         {
-            return Buttons.IndexOf(button);
+            return ButtonNamesMap[button];
         }
         
-        string glyph = SteamInput.GetPngActionGlyph(_controller, actionName, GlyphSize.Small);
+        string glyph = SteamInput.GetSvgActionGlyph(_controller, actionName);
         if (string.IsNullOrEmpty(glyph))
         {
-            return Buttons.IndexOf(button);
+            return ButtonNamesMap[button];
         }
 
-        if (glyph.Contains("button_a"))
+        if (glyph.EndsWith("button_a.svg"))
         {
-            return 0;
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_A;
         }
-        if (glyph.Contains("button_b"))
+
+        if (glyph.EndsWith("button_b.svg") && glyph.Contains("shared_"))
         {
-            return 1;
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_B;
+        }
+
+        if (glyph.EndsWith("button_x.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_X;
+        }
+
+        if (glyph.EndsWith("button_y.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y;
+        }
+
+        if (glyph.EndsWith("_l1.svg") || glyph.EndsWith("_l2.svg") || glyph.EndsWith("_l.svg") ||
+            glyph.EndsWith("_sl.svg") || glyph.EndsWith("_lb.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_L;
+        }
+
+        if (glyph.EndsWith("_r1.svg") || glyph.EndsWith("_r2.svg") || glyph.EndsWith("_r.svg") ||
+            glyph.EndsWith("_sr.svg") || glyph.EndsWith("_rb.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_R;
+        }
+
+        if (glyph.EndsWith("_dpad.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT;
+        }
+
+        if (glyph.EndsWith("button_triangle.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP;
+        }
+
+        if (glyph.EndsWith("button_square.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT;
+        }
+
+        if (glyph.EndsWith("button_x.svg") && glyph.Contains("ps_"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN;
+        }
+
+        if (glyph.EndsWith("button_circle.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT;
         }
         
-        return Buttons.IndexOf(button);
+        return ButtonNamesMap[button];
     }
 }

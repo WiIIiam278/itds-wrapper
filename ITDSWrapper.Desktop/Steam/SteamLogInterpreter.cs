@@ -17,9 +17,6 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
     private const string InputChangeRequestVerb = "INPUT_CHANGE_REQUEST";
     private const string InputChangeCompleteVerb = "INPUT_CHANGE_COMPLETE";
 
-    private int _remapInputsSent = 0;
-    private int _currentInputBit = 0;
-
     public override int InterpretLog(string log)
     {
         int wrapperPrefixLocation = base.InterpretLog(log);
@@ -86,46 +83,8 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
                 break;
             
             case InputChangeRequestVerb:
-                int glyphId = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
-                inputSwitcher.SetInputDelegate((port, device, index, id) =>
-                {
-                    switch (id)
-                    {
-                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
-                            if (_remapInputsSent == 1)
-                            {
-                                _remapInputsSent++;
-                            }
-                            else
-                            {
-                                return 0;
-                            }
-                            return (glyphId & (0x1 << (6 - _currentInputBit))) != 0 ? (short)1 : (short)0;
-                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
-                            if (_remapInputsSent == 0)
-                            {
-                                _remapInputsSent++;
-                            }
-                            else
-                            {
-                                return 0;
-                            }
-                            return (glyphId & (0x1 << (6 - _currentInputBit))) == 0 ? (short)1 : (short)0;
-                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
-                            if (_remapInputsSent == 1)
-                            {
-                                _remapInputsSent++;
-                                return 1;
-                            }
-                            if (_remapInputsSent == 2)
-                            {
-                                _remapInputsSent = 0;
-                                _currentInputBit++;
-                            }
-                            return 0;
-                    }
-                    return 0;
-                });
+                uint glyphAction = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
+                inputSwitcher.SetInputDelegate((_, _, _, id) => id == glyphAction ? (short)1 : (short)0);
                 break;
             
             case InputChangeCompleteVerb:
