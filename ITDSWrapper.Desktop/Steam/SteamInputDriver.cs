@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ITDSWrapper.Input;
@@ -10,13 +11,17 @@ public class SteamInputDriver : IInputDriver
 {
     private Controller _controller;
     private readonly Dictionary<uint, SteamControllerInput?> _actionsDictionary = [];
-    
+
     private static readonly Dictionary<string, SteamInputAction[]> ActionSets = new()
     {
-        { 
+        {
             "OverworldControls",
             [
-                new("Move", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP]),
+                new("Move",
+                [
+                    RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN,
+                    RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP
+                ]),
                 new("interact", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_A]),
                 new("cancel", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_B]),
                 new("pause_menu", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_START]),
@@ -63,13 +68,17 @@ public class SteamInputDriver : IInputDriver
                 new("pause_menu", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_START]),
             ]
         },
-        {
-            "DebugCameraControls",
-            [
-                new("camera_right", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_R]),
-                new("camera_left", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L]),
-            ]
-        },
+    };
+
+    private static readonly Dictionary<string, uint> ButtonNamesMap = new()
+    {
+        { "A", RetroBindings.RETRO_DEVICE_ID_JOYPAD_A },
+        { "B", RetroBindings.RETRO_DEVICE_ID_JOYPAD_B },
+        { "X", RetroBindings.RETRO_DEVICE_ID_JOYPAD_X },
+        { "Y", RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y },
+        { "L", RetroBindings.RETRO_DEVICE_ID_JOYPAD_L },
+        { "R", RetroBindings.RETRO_DEVICE_ID_JOYPAD_R },
+        { "DPad", RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT },
     };
 
     private string? _currentActionSet;
@@ -78,11 +87,10 @@ public class SteamInputDriver : IInputDriver
     {
         SteamInput.Init();
     }
-    
+
     public void SetController(Controller controller)
     {
         _controller = controller;
-        
     }
 
     public bool UpdateState()
@@ -90,6 +98,7 @@ public class SteamInputDriver : IInputDriver
         bool controllerUsed = false;
         if (!string.IsNullOrEmpty(_currentActionSet))
         {
+            _controller.ActionSet = _currentActionSet;
             foreach (SteamInputAction input in ActionSets[_currentActionSet])
             {
                 if (input.RetroBindings.Length > 1)
@@ -112,7 +121,7 @@ public class SteamInputDriver : IInputDriver
                         Release($"{input.ActionName}_RIGHT");
                         Release($"{input.ActionName}_LEFT");
                     }
-                    
+
                     if (state.Y < -0.05f)
                     {
                         controllerUsed = true;
@@ -161,7 +170,6 @@ public class SteamInputDriver : IInputDriver
 
     public void SetActionSet(string actionSet)
     {
-        _controller.ActionSet = actionSet;
         _currentActionSet = actionSet;
 
         _actionsDictionary.Clear();
@@ -224,5 +232,88 @@ public class SteamInputDriver : IInputDriver
     public void DoRumble(ushort strength)
     {
         _controller.TriggerVibration(strength, strength);
+    }
+
+    public uint GetActionGlyphId(string button)
+    {
+        if (string.IsNullOrEmpty(_currentActionSet))
+        {
+            return ButtonNamesMap[button];
+        }
+
+        string? actionName = ActionSets[_currentActionSet]
+            .FirstOrDefault(a =>
+                a.RetroBindings.Contains(ButtonNamesMap[button] == RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT
+                    ? RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP
+                    : ButtonNamesMap[button]))?.ActionName;
+        if (string.IsNullOrEmpty(actionName))
+        {
+            return ButtonNamesMap[button];
+        }
+
+        string glyph = SteamInput.GetSvgActionGlyph(_controller, actionName);
+        if (string.IsNullOrEmpty(glyph))
+        {
+            return ButtonNamesMap[button];
+        }
+
+        if (glyph.EndsWith("button_a.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_A;
+        }
+
+        if (glyph.EndsWith("button_b.svg") && glyph.Contains("shared_"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_B;
+        }
+
+        if (glyph.EndsWith("button_x.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_X;
+        }
+
+        if (glyph.EndsWith("button_y.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y;
+        }
+
+        if (glyph.EndsWith("_l1.svg") || glyph.EndsWith("_l2.svg") || glyph.EndsWith("_l.svg") ||
+            glyph.EndsWith("_sl.svg") || glyph.EndsWith("_lb.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_L;
+        }
+
+        if (glyph.EndsWith("_r1.svg") || glyph.EndsWith("_r2.svg") || glyph.EndsWith("_r.svg") ||
+            glyph.EndsWith("_sr.svg") || glyph.EndsWith("_rb.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_R;
+        }
+
+        if (glyph.EndsWith("_dpad.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT;
+        }
+
+        if (glyph.EndsWith("button_triangle.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP;
+        }
+
+        if (glyph.EndsWith("button_square.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT;
+        }
+
+        if (glyph.EndsWith("button_x.svg") && glyph.Contains("ps_"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN;
+        }
+
+        if (glyph.EndsWith("button_circle.svg"))
+        {
+            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT;
+        }
+
+        return ButtonNamesMap[button];
     }
 }

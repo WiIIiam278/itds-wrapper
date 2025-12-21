@@ -83,19 +83,6 @@
 				"pause_menu"	"#Action_ReturnToGame"
 			}
 		}
-		"DebugCameraControls"
-		{
-			"title"				"#Set_DebugCam"
-			"StickPadGyro"
-			{}
-			"AnalogTrigger"
-			{}
-			"Button"
-			{
-				"camera_right"	"#Action_Camera_Right"
-				"camera_left"	"#Action_Camera_Left"
-			}
-		}
 	}
 	"localization"
 	{
@@ -105,7 +92,6 @@
 			"Set_Battle"					"Battle Controls"
 			"Set_Script"					"Story Controls"
 			"Set_Menu"						"Menu Controls"
-			"Set_DebugCam"					"Debug Camera Controls"
 			"Action_Move"					"Movement"
 			"Action_Interact"				"Interact"
 			"Action_Cancel"					"Cancel"
@@ -126,8 +112,6 @@
 			"Action_Auto"					"Toggle Auto Advance"
 			"Action_Fast_Forward"			"Fast Forward"
 			"Action_ReturnToGame"			"Return to Game"
-			"Action_Camera_Right"			"Move Camera Right"
-			"Action_Camera_Left"			"Move Camera Left"
 		}
 	}
 }

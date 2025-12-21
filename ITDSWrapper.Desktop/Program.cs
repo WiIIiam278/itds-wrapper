@@ -65,7 +65,8 @@ sealed class Program
                         SteamInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
-                        SteamLogInterpreter logInterpreter = new(inputDriver)
+                        ((App)b.Instance).InputSwitcher = new();
+                        SteamLogInterpreter logInterpreter = new(inputDriver, ((App)b.Instance).InputSwitcher!)
                         {
                             AchievementManager = new SteamAchievementManager(),
                             WatchForSdCreate = SteamSaveManager.DownloadCloudSave(),

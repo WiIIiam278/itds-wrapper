@@ -10,10 +10,7 @@ public class VirtualButtonInput : IGameInput<VirtualButtonViewModel>
 
     public void SetInput(VirtualButtonViewModel? input)
     {
-        if (input is not null)
-        {
-            input.AssociatedInput = this;
-        }
+        input?.AssociatedInput = this;
     }
 
     public void Press(VirtualButtonViewModel? input)

@@ -22,6 +22,7 @@ public partial class App : Application
     public PauseDriver? PauseDriver { get; set; }
     public IBatteryMonitor? BatteryMonitor { get; set; }
     public IScreenReader? ScreenReader { get; set; }
+    public InputSwitcher? InputSwitcher { get; set; }
 
     public override void Initialize()
     {

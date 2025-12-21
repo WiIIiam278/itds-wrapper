@@ -1,17 +1,22 @@
 using System;
 using Avalonia.Threading;
 using ITDSWrapper.Core;
+using ITDSWrapper.Input;
+using Libretro.NET.Bindings;
 using Steamworks;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
+public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inputSwitcher) : LogInterpreter
 {
     private const string ActionSetVerb = "ACTION_SET";
     private const string CloudSaveVerb = "CLOUD_SAVE";
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
     private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
+    private const string InputChangeStartVerb = "INPUT_CHANGE_START";
+    private const string InputChangeRequestVerb = "INPUT_CHANGE_REQUEST";
+    private const string InputChangeCompleteVerb = "INPUT_CHANGE_COMPLETE";
 
     public override int InterpretLog(string log)
     {
@@ -68,6 +73,35 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver) : LogInterpreter
                 break;
             
             case TimelineRangeEventVerb:
+                break;
+            
+            case InputChangeStartVerb:
+                inputSwitcher.SetInputDelegate((_, _, _, id) =>
+                {
+                    return id switch
+                    {
+                        RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN => 1,
+                        _ => 0,
+                    };
+                });
+                break;
+            
+            case InputChangeRequestVerb:
+                uint glyphAction = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
+                int numInputs = 0;
+                inputSwitcher.SetInputDelegate((_, _, _, id) =>
+                {
+                    if (numInputs < 2 && id == glyphAction)
+                    {
+                        numInputs++;
+                        return  1;
+                    }
+                    return 0;
+                });
+                break;
+            
+            case InputChangeCompleteVerb:
+                inputSwitcher.ResetInputDelegate();
                 break;
         }
 
