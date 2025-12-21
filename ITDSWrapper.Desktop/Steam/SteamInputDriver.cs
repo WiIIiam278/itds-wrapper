@@ -98,6 +98,7 @@ public class SteamInputDriver : IInputDriver
         bool controllerUsed = false;
         if (!string.IsNullOrEmpty(_currentActionSet))
         {
+            _controller.ActionSet = _currentActionSet;
             foreach (SteamInputAction input in ActionSets[_currentActionSet])
             {
                 if (input.RetroBindings.Length > 1)
@@ -169,7 +170,6 @@ public class SteamInputDriver : IInputDriver
 
     public void SetActionSet(string actionSet)
     {
-        _controller.ActionSet = actionSet;
         _currentActionSet = actionSet;
 
         _actionsDictionary.Clear();
