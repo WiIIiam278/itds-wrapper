@@ -14,6 +14,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
     private const string TimelineRangeEventVerb = "TIMELINE_EVENT_R";
+    private const string InputChangeStartVerb = "INPUT_CHANGE_START";
     private const string InputChangeRequestVerb = "INPUT_CHANGE_REQUEST";
     private const string InputChangeCompleteVerb = "INPUT_CHANGE_COMPLETE";
 
@@ -39,14 +40,6 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
         {
             case ActionSetVerb:
                 inputDriver.SetActionSet(log[(endIndex + 2)..^1]);
-                inputSwitcher.SetInputDelegate((_, _, _, id) =>
-                {
-                    return id switch
-                    {
-                        RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN => 1,
-                        _ => 0,
-                    };
-                });
                 break;
 
             case CloudSaveVerb:
@@ -82,9 +75,29 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
             case TimelineRangeEventVerb:
                 break;
             
+            case InputChangeStartVerb:
+                inputSwitcher.SetInputDelegate((_, _, _, id) =>
+                {
+                    return id switch
+                    {
+                        RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN => 1,
+                        _ => 0,
+                    };
+                });
+                break;
+            
             case InputChangeRequestVerb:
                 uint glyphAction = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
-                inputSwitcher.SetInputDelegate((_, _, _, id) => id == glyphAction ? (short)1 : (short)0);
+                int numInputs = 0;
+                inputSwitcher.SetInputDelegate((_, _, _, id) =>
+                {
+                    if (numInputs < 2 && id == glyphAction)
+                    {
+                        numInputs++;
+                        return  1;
+                    }
+                    return 0;
+                });
                 break;
             
             case InputChangeCompleteVerb:
