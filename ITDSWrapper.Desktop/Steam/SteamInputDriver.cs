@@ -11,13 +11,17 @@ public class SteamInputDriver : IInputDriver
 {
     private Controller _controller;
     private readonly Dictionary<uint, SteamControllerInput?> _actionsDictionary = [];
-    
+
     private static readonly Dictionary<string, SteamInputAction[]> ActionSets = new()
     {
-        { 
+        {
             "OverworldControls",
             [
-                new("Move", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP]),
+                new("Move",
+                [
+                    RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN,
+                    RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP
+                ]),
                 new("interact", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_A]),
                 new("cancel", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_B]),
                 new("pause_menu", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_START]),
@@ -64,13 +68,6 @@ public class SteamInputDriver : IInputDriver
                 new("pause_menu", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_START]),
             ]
         },
-        {
-            "DebugCameraControls",
-            [
-                new("camera_right", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_R]),
-                new("camera_left", [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L]),
-            ]
-        },
     };
 
     private static readonly Dictionary<string, uint> ButtonNamesMap = new()
@@ -90,11 +87,10 @@ public class SteamInputDriver : IInputDriver
     {
         SteamInput.Init();
     }
-    
+
     public void SetController(Controller controller)
     {
         _controller = controller;
-        
     }
 
     public bool UpdateState()
@@ -124,7 +120,7 @@ public class SteamInputDriver : IInputDriver
                         Release($"{input.ActionName}_RIGHT");
                         Release($"{input.ActionName}_LEFT");
                     }
-                    
+
                     if (state.Y < -0.05f)
                     {
                         controllerUsed = true;
@@ -246,12 +242,15 @@ public class SteamInputDriver : IInputDriver
         }
 
         string? actionName = ActionSets[_currentActionSet]
-            .FirstOrDefault(a => a.RetroBindings.Contains(ButtonNamesMap[button]))?.ActionName;
+            .FirstOrDefault(a =>
+                a.RetroBindings.Contains(ButtonNamesMap[button] == RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT
+                    ? RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP
+                    : ButtonNamesMap[button]))?.ActionName;
         if (string.IsNullOrEmpty(actionName))
         {
             return ButtonNamesMap[button];
         }
-        
+
         string glyph = SteamInput.GetSvgActionGlyph(_controller, actionName);
         if (string.IsNullOrEmpty(glyph))
         {
@@ -314,7 +313,7 @@ public class SteamInputDriver : IInputDriver
         {
             return RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT;
         }
-        
+
         return ButtonNamesMap[button];
     }
 }
