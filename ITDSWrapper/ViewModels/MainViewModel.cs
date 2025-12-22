@@ -95,7 +95,6 @@ public class MainViewModel : ViewModelBase
         }
     }
     private readonly PointerState? _pointerState;
-    private int _requestInputUpdateTicks;
     
     private readonly IBatteryMonitor? _batteryMonitor;
     private System.Timers.Timer _batteryTimer;
@@ -255,7 +254,7 @@ public class MainViewModel : ViewModelBase
             {
                 if (nextInputDriver != _currentInputDriver)
                 {
-                    _requestInputUpdateTicks = 1;
+                    _inputDrivers[nextInputDriver].RequestInputUpdate = true;
                 }
                 CurrentInputDriver = nextInputDriver;
             }
@@ -300,9 +299,9 @@ public class MainViewModel : ViewModelBase
         if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
         {
             // Press the debug button when we've changed controller bindings
-            if (id == RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3 && _requestInputUpdateTicks > 0)
+            if (id == RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3 && _inputDrivers[CurrentInputDriver].RequestInputUpdate)
             {
-                _requestInputUpdateTicks--;
+                _inputDrivers[CurrentInputDriver].RequestInputUpdate = false;
                 return 1;
             }
             return _inputDrivers[CurrentInputDriver].QueryInput(id) ? (short)1 : (short)0;

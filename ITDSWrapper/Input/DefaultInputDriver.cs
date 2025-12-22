@@ -10,6 +10,8 @@ public class DefaultInputDriver : IInputDriver
 {
     private readonly Dictionary<uint, object?> _bindings;
 
+    public bool RequestInputUpdate { get; set; }
+
     public DefaultInputDriver(bool isMobile, Action openSettings)
     {
         if (isMobile)

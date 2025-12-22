@@ -83,6 +83,8 @@ public class SteamInputDriver : IInputDriver
 
     private string? _currentActionSet;
 
+    public bool RequestInputUpdate { get; set; }
+
     public SteamInputDriver()
     {
         SteamInput.Init();
@@ -90,6 +92,10 @@ public class SteamInputDriver : IInputDriver
 
     public void SetController(Controller controller)
     {
+        if (_controller != controller)
+        {
+            RequestInputUpdate = true;
+        }
         _controller = controller;
     }
 

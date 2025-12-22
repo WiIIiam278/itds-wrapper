@@ -13,6 +13,8 @@ public class IosControllerInputDriver : IInputDriver
     private CHHapticEngine? _hapticEngine;
     private readonly Dictionary<uint, IosControllerInput?> _actionsDictionary = [];
 
+    public bool RequestInputUpdate { get; set; }
+
     public void SetController(GCController controller)
     {
         _hapticEngine = Controller?.Haptics?.CreateEngine(GCHapticsLocality.Default);

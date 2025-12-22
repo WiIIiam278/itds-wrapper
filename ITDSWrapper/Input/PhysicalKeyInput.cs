@@ -20,8 +20,14 @@ public class PhysicalKeyInput(PhysicalKey physicalKey) : IGameInput<PhysicalKey>
     {
         if (_physicalKey == input)
         {
-            IsSet = true;
-            SpecialAction?.Invoke();
+            if (SpecialAction is null)
+            {
+                IsSet = true;
+            }
+            else
+            {
+                SpecialAction.Invoke();
+            }
         }
     }
 

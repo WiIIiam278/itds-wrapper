@@ -13,6 +13,8 @@ public class AndroidControllerInputDriver : IInputDriver
     public InputDevice? Controller { get; private set; }
     private readonly Dictionary<uint, AndroidControllerInput?> _inputDictionary = [];
 
+    public bool RequestInputUpdate { get; set; }
+
     public void SetController(InputDevice controller)
     {
         Controller = controller;
