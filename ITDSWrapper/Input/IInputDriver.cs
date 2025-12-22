@@ -2,6 +2,8 @@ namespace ITDSWrapper.Input;
 
 public interface IInputDriver
 {
+    public bool RequestInputUpdate { get; set; }
+
     public void Shutdown();
     public uint[] GetInputKeys();
     public void SetActionSet(string actionSet);

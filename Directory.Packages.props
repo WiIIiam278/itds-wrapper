@@ -6,18 +6,18 @@
   <ItemGroup>
     <!-- Avalonia packages -->
     <!-- Important: keep version in sync! -->
-    <PackageVersion Include="Avalonia" Version="11.3.9" />
-    <PackageVersion Include="Avalonia.Skia" Version="11.3.9" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.9" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.9" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.9" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.3.9" />
-    <PackageVersion Include="Avalonia.iOS" Version="11.3.6" />
-    <PackageVersion Include="Avalonia.Android" Version="11.3.9" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.8" />
+    <PackageVersion Include="Avalonia" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Skia" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.iOS" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Android" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.9" />
     <PackageVersion Include="Facepunch.Steamworks.Package" Version="1.0.6" />
-    <PackageVersion Include="Facepunch.Steamworks.Posix" Version="2.4.5" />
-    <PackageVersion Include="Facepunch.Steamworks.Win64" Version="2.4.5" />
+    <PackageVersion Include="Facepunch.Steamworks.Posix" Version="2.4.6" />
+    <PackageVersion Include="Facepunch.Steamworks.Win64" Version="2.4.6" />
     <PackageVersion Include="Hardware.Info" Version="101.1.0.1" />
     <PackageVersion Include="LTRData.DiscUtils.Fat" Version="1.0.72" />
     <PackageVersion Include="NAudio" Version="2.2.1" />
@@ -34,6 +34,6 @@
     <PackageVersion Include="Xamarin.GooglePlayServices.Games" Version="124.0.0" />
     <PackageVersion Include="System.Reflection.DispatchProxy" Version="4.8.2" />
     <PackageVersion Include="System.Reflection.Emit" Version="4.7.0" />
-    <PackageVersion Include="System.Speech" Version="10.0.0" />
+    <PackageVersion Include="System.Speech" Version="10.0.1" />
   </ItemGroup>
 </Project>
