@@ -95,8 +95,7 @@ public class MainViewModel : ViewModelBase
         }
     }
     private readonly PointerState? _pointerState;
-
-    private InputSwitcher? _inputSwitcher;
+    private int _requestInputUpdateTicks;
     
     private readonly IBatteryMonitor? _batteryMonitor;
     private System.Timers.Timer _batteryTimer;
@@ -177,8 +176,8 @@ public class MainViewModel : ViewModelBase
             AssignVirtualBindings();
         }
         
-        _inputSwitcher = ((App)Application.Current).InputSwitcher;
-        _inputSwitcher?.Wrapper = Wrapper;
+        InputSwitcher? inputSwitcher = ((App)Application.Current).InputSwitcher;
+        inputSwitcher?.Wrapper = Wrapper;
         
         _batteryMonitor = ((App)Application.Current).BatteryMonitor;
         Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
@@ -191,7 +190,7 @@ public class MainViewModel : ViewModelBase
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
-        _inputSwitcher?.SetDefaultInputDelegate(HandleInput);
+        inputSwitcher?.SetDefaultInputDelegate(HandleInput);
         Wrapper.OnCheckInput = HandleStartupInput;
         Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
@@ -254,6 +253,10 @@ public class MainViewModel : ViewModelBase
             int nextInputDriver = updater?.Update() ?? -1;
             if (nextInputDriver >= 0)
             {
+                if (nextInputDriver != _currentInputDriver)
+                {
+                    _requestInputUpdateTicks = 1;
+                }
                 CurrentInputDriver = nextInputDriver;
             }
             
@@ -296,6 +299,12 @@ public class MainViewModel : ViewModelBase
     {
         if (device == RetroBindings.RETRO_DEVICE_JOYPAD)
         {
+            // Press the debug button when we've changed controller bindings
+            if (id == RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3 && _requestInputUpdateTicks > 0)
+            {
+                _requestInputUpdateTicks--;
+                return 1;
+            }
             return _inputDrivers[CurrentInputDriver].QueryInput(id) ? (short)1 : (short)0;
         }
 
