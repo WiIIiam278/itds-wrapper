@@ -29,6 +29,10 @@
         <PartialAppManifest Include="macos/Info.plist"/>
     </ItemGroup>
     
+    <Target Name="CopySteamAppId" AfterTargets="Build" Condition="('$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64') And '$(_IsPublishing)'!='true'">
+        <Copy SourceFiles="$(OutputPath)/steam_appid.txt" DestinationFolder="$(OutputPath)/ITDSWrapper.Desktop.app/Contents/MacOS"/>
+    </Target>
+    
     <ItemGroup>
         <None Condition="'$(RuntimeIdentifier)'=='linux-x64' Or $([System.OperatingSystem]::IsLinux())" Include="melondsds_libretro.so"
               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always"/>

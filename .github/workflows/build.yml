@@ -281,11 +281,11 @@ jobs:
       shell: pwsh
     - name: Construct macOS app bundle
       run: |
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.ARM64.app/Contents/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.X64.app/
+        mkdir -p steam/macos/Into\ the\ Dream\ Spring.ARM64.app/
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/ITDSWrapper
-        cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.X64.app/Contents/
-        cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.ARM64.app/Contents/
+        cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.X64.app/
+        cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.ARM64.app/
       shell: bash
     - name: Deploy to Steam
       uses: game-ci/steam-deploy@v3

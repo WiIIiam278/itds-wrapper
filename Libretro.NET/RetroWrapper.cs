@@ -294,7 +294,7 @@ namespace Libretro.NET
             return OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() ?
                 Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", dirName) :
                 OperatingSystem.IsMacOS() ?
-                    Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName)!.FullName, dirName) :
+                    Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName, dirName) :
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dirName);
         }
 
