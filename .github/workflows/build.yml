@@ -186,7 +186,7 @@ jobs:
       with:
         msystem: MINGW64
         update: true
-        install: git pkgconf mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+        install: git pkgconf mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-cmake
     - name: Install CCache
       uses: hendrikmuhs/ccache-action@53911442209d5c18de8a31615e0923161e435875
       if: ${{ matrix.platform.image == 'windows-latest' }}
