@@ -87,14 +87,15 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
                 break;
             
             case InputChangeRequestVerb:
-                uint glyphAction = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
+                uint[] glyphAction = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
                 int numInputs = 0;
+                int numInputsToSend = glyphAction.Length * 2;
                 inputSwitcher.SetInputDelegate((_, _, _, id) =>
                 {
-                    if (numInputs < 2 && id == glyphAction)
+                    if (numInputs < numInputsToSend && id == glyphAction[numInputs / 2])
                     {
                         numInputs++;
-                        return  1;
+                        return 1;
                     }
                     return 0;
                 });

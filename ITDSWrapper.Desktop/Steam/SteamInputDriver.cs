@@ -78,7 +78,9 @@ public class SteamInputDriver : IInputDriver
         { "Y", RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y },
         { "L", RetroBindings.RETRO_DEVICE_ID_JOYPAD_L },
         { "R", RetroBindings.RETRO_DEVICE_ID_JOYPAD_R },
-        { "DPad", RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT },
+        { "DPad", RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP },
+        { "Start", RetroBindings.RETRO_DEVICE_ID_JOYPAD_START },
+        { "Select", RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT },
     };
 
     private string? _currentActionSet;
@@ -96,6 +98,7 @@ public class SteamInputDriver : IInputDriver
         {
             RequestInputUpdate = true;
         }
+
         _controller = controller;
     }
 
@@ -240,86 +243,131 @@ public class SteamInputDriver : IInputDriver
         _controller.TriggerVibration(strength, strength);
     }
 
-    public uint GetActionGlyphId(string button)
+    public uint[] GetActionGlyphId(string button)
     {
         if (string.IsNullOrEmpty(_currentActionSet))
         {
-            return ButtonNamesMap[button];
+            return [ButtonNamesMap[button]];
         }
 
         string? actionName = ActionSets[_currentActionSet]
-            .FirstOrDefault(a =>
-                a.RetroBindings.Contains(ButtonNamesMap[button] == RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT
-                    ? RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP
-                    : ButtonNamesMap[button]))?.ActionName;
+            .FirstOrDefault(a => a.RetroBindings.Contains(ButtonNamesMap[button]))?.ActionName;
         if (string.IsNullOrEmpty(actionName))
         {
-            return ButtonNamesMap[button];
+            return [ButtonNamesMap[button]];
         }
 
         string glyph = SteamInput.GetSvgActionGlyph(_controller, actionName);
         if (string.IsNullOrEmpty(glyph))
         {
-            return ButtonNamesMap[button];
+            return [ButtonNamesMap[button]];
         }
 
         if (glyph.EndsWith("button_a.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_A;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_A];
         }
 
         if (glyph.EndsWith("button_b.svg") && glyph.Contains("shared_"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_B;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_B];
         }
 
         if (glyph.EndsWith("button_x.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_X;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_X];
         }
 
         if (glyph.EndsWith("button_y.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y];
         }
 
-        if (glyph.EndsWith("_l1.svg") || glyph.EndsWith("_l2.svg") || glyph.EndsWith("_l.svg") ||
-            glyph.EndsWith("_sl.svg") || glyph.EndsWith("_lb.svg"))
+        if (glyph.EndsWith("_l1.svg") || glyph.EndsWith("_sl.svg") || glyph.EndsWith("_lb.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_L;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L];
         }
 
-        if (glyph.EndsWith("_r1.svg") || glyph.EndsWith("_r2.svg") || glyph.EndsWith("_r.svg") ||
-            glyph.EndsWith("_sr.svg") || glyph.EndsWith("_rb.svg"))
+        if (glyph.EndsWith("_r1.svg") || glyph.EndsWith("_sr.svg") || glyph.EndsWith("_rb.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_R;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_R];
+        }
+
+        if (glyph == "xbox360_button_start.svg")
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_START];
+        }
+
+        if (glyph == "xbox360_button_select.svg")
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT];
         }
 
         if (glyph.EndsWith("_dpad.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP];
         }
 
         if (glyph.EndsWith("button_triangle.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y];
         }
 
         if (glyph.EndsWith("button_square.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_X];
         }
 
         if (glyph.EndsWith("button_x.svg") && glyph.Contains("ps_"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_B];
         }
 
         if (glyph.EndsWith("button_circle.svg"))
         {
-            return RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT;
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_A];
         }
 
-        return ButtonNamesMap[button];
+        if (glyph.EndsWith("_lt.svg") || glyph.EndsWith("_l2.svg") || glyph.EndsWith("_l.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_L];
+        }
+
+        if (glyph.EndsWith("_rt.svg") || glyph.EndsWith("_r2.svg") || glyph.EndsWith("_r.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_R];
+        }
+
+        if (glyph.EndsWith("_plus.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_START];
+        }
+
+        if (glyph.EndsWith("_minus.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT];
+        }
+
+        if (glyph.EndsWith("_share.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP];
+        }
+
+        if (glyph.EndsWith("_options.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT];
+        }
+
+        if (glyph.EndsWith("_select.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN];
+        }
+
+        if (glyph.EndsWith("_start.svg"))
+        {
+            return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_L3, RetroBindings.RETRO_DEVICE_ID_JOYPAD_START];
+        }
+
+        return [ButtonNamesMap[button]];
     }
 }
