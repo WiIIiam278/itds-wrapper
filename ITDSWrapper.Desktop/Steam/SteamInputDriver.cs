@@ -298,7 +298,7 @@ public class SteamInputDriver : IInputDriver
             return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_START];
         }
 
-        if (glyph == "xbox360_button_select.sv")
+        if (glyph == "xbox360_button_select.svg")
         {
             return [RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT];
         }
