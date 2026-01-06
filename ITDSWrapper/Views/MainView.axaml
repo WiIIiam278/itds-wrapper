@@ -8,13 +8,14 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ITDSWrapper.Views.MainView"
              x:DataType="vm:MainViewModel"
+             TopLevel.AutoSafeAreaPadding="False"
              Name="View">
     
-    <Grid RowDefinitions="Auto,*,Auto" PointerPressed="MainScreen_OnPointerPressed">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" PointerPressed="MainScreen_OnPointerPressed">
         
-        <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding CurrentBorder}"
+        <Image Grid.Row="0" Grid.RowSpan="4" Stretch="UniformToFill" Source="{Binding CurrentBorder}"
                Opacity="{Binding CurrentBorderOpacity}"/>
-        <Image Grid.Row="0" Grid.RowSpan="3" Stretch="UniformToFill" Source="{Binding NextBorder}"
+        <Image Grid.Row="0" Grid.RowSpan="4" Stretch="UniformToFill" Source="{Binding NextBorder}"
                Opacity="{Binding NextBorderOpacity}"/>
         
         <StackPanel Grid.Row="0" MinHeight="{Binding TopPadding}"/>
@@ -31,11 +32,14 @@
         </Grid>
         
         <Grid Grid.Row="2" Name="OnScreenControls" IsVisible="{Binding DisplayVirtualControls}"
-              RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10" PointerMoved="OnScreenControls_OnPointerMoved"
+              RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="5" PointerMoved="OnScreenControls_OnPointerMoved"
               IsHitTestVisible="True">
-            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*" Height="50" HorizontalAlignment="Center">
-                <c:VirtualButtonView Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding LButton}" />
-                <c:VirtualButtonView Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding RButton}" />
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*,*,*,*" Height="45" HorizontalAlignment="Center">
+                <c:VirtualButtonView Grid.Column="0" VerticalAlignment="Center" Margin="0 0 10 0" DataContext="{Binding LButton}" />
+                <c:VirtualButtonView Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding SelectButton}" />
+                <c:VirtualButtonView Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding SettingsButton}" />
+                <c:VirtualButtonView Grid.Column="3" VerticalAlignment="Center" DataContext="{Binding StartButton}" />
+                <c:VirtualButtonView Grid.Column="4" VerticalAlignment="Center" Margin="10 0 0 0" DataContext="{Binding RButton}" />
             </Grid>
             <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
                 <c:VirtualMultiButtonView Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding UpLeftButton}" />
@@ -53,12 +57,9 @@
                 <c:VirtualButtonView Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding AButton}" />
                 <c:VirtualButtonView Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding BButton}" />
             </Grid>
-            <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="Auto,Auto" HorizontalAlignment="Center">
-                <c:VirtualButtonView Grid.Row="0" VerticalAlignment="Center" DataContext="{Binding StartButton}" />
-                <c:VirtualButtonView Grid.Row="1" VerticalAlignment="Center" DataContext="{Binding SelectButton}" />
-            </Grid>
-            <c:VirtualButtonView Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding SettingsButton}" HorizontalAlignment="Center"/>
         </Grid>
+        
+        <StackPanel Grid.Row="3" MinHeight="{Binding BottomPadding}"/>
         
         <Grid Grid.Row="1" Grid.RowSpan="2" Name="SettingsOverlay" IsVisible="{Binding DisplaySettingsOverlay}">
             <TextBlock>Settings!</TextBlock>

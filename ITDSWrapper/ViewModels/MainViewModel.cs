@@ -56,7 +56,8 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    public int TopPadding => IsMobile ? 10 : 0;
+    public int TopPadding => IsMobile ? 45 : 0;
+    public int BottomPadding => IsMobile ? 10 : 0;
     public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == 0;
 
     [Reactive]
@@ -490,32 +491,32 @@ public class MainViewModel : ViewModelBase
                     YButton = new("Y", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_L:
-                    LButton = new("L", button, 75, 40, _hapticsBackend);
+                    LButton = new("L", button, 67, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R:
-                    RButton = new("R", button, 75, 40, _hapticsBackend);
+                    RButton = new("R", button, 67, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
-                    UpButton = new("・", button, 25, 50, _hapticsBackend);
+                    UpButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
-                    RightButton = new("・", button, 50, 25, _hapticsBackend);
+                    RightButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
-                    DownButton = new("・", button, 25, 50, _hapticsBackend);
+                    DownButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT:
-                    LeftButton = new("・", button, 50, 25, _hapticsBackend);
+                    LeftButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_START:
-                    StartButton = new("START", button, 50, 25, _hapticsBackend);
+                    StartButton = new("START", button, 65, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT:
-                    SelectButton = new("SELECT", button, 50, 25, _hapticsBackend);
+                    SelectButton = new("SELECT", button, 65, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2:
                     button.SpecialAction = OpenSettings;
-                    SettingsButton = new("*", button, 25, 25, _hapticsBackend);
+                    SettingsButton = new("MENU", button, 65, 40, _hapticsBackend);
                     break;
                 default:
                     button = null;
@@ -525,19 +526,19 @@ public class MainViewModel : ViewModelBase
             // Multi buttons
             if (UpButton is not null && LeftButton is not null)
             {
-                UpLeftButton = new VirtualMultiButtonViewModel("・", [UpButton, LeftButton], 25, 50, _hapticsBackend);
+                UpLeftButton = new VirtualMultiButtonViewModel("・", [UpButton, LeftButton], 50, 50, _hapticsBackend);
             }
             if (UpButton is not null && RightButton is not null)
             {
-                UpRightButton = new VirtualMultiButtonViewModel("・", [UpButton, RightButton], 25, 50, _hapticsBackend);
+                UpRightButton = new VirtualMultiButtonViewModel("・", [UpButton, RightButton], 50, 50, _hapticsBackend);
             }
             if (DownButton is not null && LeftButton is not null)
             {
-                DownLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, LeftButton], 25, 50, _hapticsBackend);
+                DownLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, LeftButton], 50, 50, _hapticsBackend);
             }
             if (DownButton is not null && RightButton is not null)
             {
-                UpLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, RightButton], 25, 50, _hapticsBackend);
+                DownRightButton = new VirtualMultiButtonViewModel("・", [DownButton, RightButton], 50, 50, _hapticsBackend);
             }
             
             _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);

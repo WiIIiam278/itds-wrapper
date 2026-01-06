@@ -3,7 +3,7 @@ using ITDSWrapper.ViewModels.Controls;
 
 namespace ITDSWrapper.Views.Controls;
 
-public partial class VirtualButtonView : UserControl
+public partial class VirtualButtonView : UserControl, IPressableButtonView
 {
     private const int HoldTimerStart = 5;
     
