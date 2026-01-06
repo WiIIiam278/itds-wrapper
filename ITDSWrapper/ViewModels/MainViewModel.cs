@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -56,8 +57,20 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    public int TopPadding => IsMobile ? 45 : 0;
-    public int BottomPadding => IsMobile ? 10 : 0;
+    public int TopPadding
+    {
+        get => IsMobile ? field : 0;
+        set;
+    } = 45;
+
+    public int BottomPadding
+    {
+        get => IsMobile ? field : 0;
+        set;
+    } = 10;
+    
+    public int MenuMargins => IsMobile ? 30 : 50;
+
     public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == 0;
 
     [Reactive]
@@ -100,6 +113,7 @@ public class MainViewModel : ViewModelBase
     private readonly IBatteryMonitor? _batteryMonitor;
     private System.Timers.Timer _batteryTimer;
 
+    public ICommand CloseMenuOverlay { get; }
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
     public VirtualButtonViewModel? XButton { get; set; }
@@ -118,7 +132,8 @@ public class MainViewModel : ViewModelBase
     public VirtualButtonViewModel? StartButton { get; set; }
     public VirtualButtonViewModel? SelectButton { get; set; }
     public VirtualButtonViewModel? SettingsButton { get; set; }
-
+    
+    [Reactive]
     public bool DisplaySettingsOverlay { get; set; }
     [Reactive]
     public IEffect? ScreenEffect { get; set; }
@@ -192,7 +207,8 @@ public class MainViewModel : ViewModelBase
             Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
         };
         _batteryTimer.Start();
-        
+
+        CloseMenuOverlay = ReactiveCommand.Create(OpenSettings);
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
         inputSwitcher?.SetDefaultInputDelegate(HandleInput);
@@ -268,6 +284,7 @@ public class MainViewModel : ViewModelBase
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
+                
                 while (DateTime.Now < nextTick)
                 {
                     TimeSpan sleep = nextTick - DateTime.Now;
@@ -404,7 +421,7 @@ public class MainViewModel : ViewModelBase
     {
         DisplaySettingsOverlay = !DisplaySettingsOverlay;
         _pauseDriver.PushPauseState(DisplaySettingsOverlay);
-        ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
+        ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 50 } : null;
     }
     
     private void StartScreenReader()

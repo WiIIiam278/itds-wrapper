@@ -14,4 +14,28 @@
     <data name="GameTitle" xml:space="preserve">
         <value>夢泉へ</value>
     </data>
+    <data name="Settings" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="BackToGame" xml:space="preserve">
+        <value>Back to Game</value>
+    </data>
+    <data name="Menu" xml:space="preserve">
+        <value>Menu</value>
+    </data>
+    <data name="Controls" xml:space="preserve">
+        <value>Controls</value>
+    </data>
+    <data name="Discord" xml:space="preserve">
+        <value>Discord</value>
+    </data>
+    <data name="Legal" xml:space="preserve">
+        <value>Legal</value>
+    </data>
+    <data name="Website" xml:space="preserve">
+        <value>Website</value>
+    </data>
+    <data name="PlayerSurvey" xml:space="preserve">
+        <value>Player Survey</value>
+    </data>
 </root>

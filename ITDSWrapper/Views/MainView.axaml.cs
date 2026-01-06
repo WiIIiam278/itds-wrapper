@@ -21,6 +21,12 @@ public partial class MainView : UserControl
     {
         ((MainViewModel)DataContext!).EmuRenderWidth = Math.Min(e.NewSize.Width, e.NewSize.Height * (256.0 / 384.0));
         ((MainViewModel)DataContext).EmuRenderHeight = Math.Min(e.NewSize.Height, e.NewSize.Width * (384.0 / 256.0));
+        
+        var insetsManager = TopLevel.GetTopLevel(this)?.InsetsManager;
+        insetsManager?.DisplayEdgeToEdgePreference = true;
+        insetsManager?.IsSystemBarVisible = false;
+        ((MainViewModel) DataContext!).TopPadding = (int?)insetsManager?.SafeAreaPadding.Top ?? 0;
+        ((MainViewModel) DataContext).BottomPadding = (int?)insetsManager?.SafeAreaPadding.Bottom ?? 0;
     }
 
     private void DsScreen_OnPointerPressed(object? sender, PointerPressedEventArgs e)

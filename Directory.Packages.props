@@ -29,6 +29,8 @@
     <PackageVersion Include="Silk.NET.OpenAL.Soft.Native" Version="1.23.1" />
     <PackageVersion Include="SkiaSharp" Version="3.119.1" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" />
+    <PackageVersion Include="Svg.Controls.Skia.Avalonia" Version="11.3.9.1" />
+    <PackageVersion Include="Svg.Skia" Version="3.4.0" />
     <PackageVersion Include="Xamarin.Android.Google.BillingClient" Version="8.1.0" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0" />
     <PackageVersion Include="Xamarin.GooglePlayServices.Games" Version="124.0.0" />

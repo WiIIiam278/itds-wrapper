@@ -8,5 +8,5 @@
              x:Class="ITDSWrapper.Views.Controls.VirtualMultiButtonView">
     <Button Content="{Binding Label}"
             Width="{Binding Width}" Height="{Binding Height}"
-            Name="InputButton"/>
+            Name="InputButton" Opacity="0" />
 </UserControl>
