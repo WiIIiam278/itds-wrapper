@@ -38,10 +38,14 @@
                 <c:VirtualButtonView Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding RButton}" />
             </Grid>
             <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
+                <c:VirtualMultiButtonView Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding UpLeftButton}" />
                 <c:VirtualButtonView Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding UpButton}" />
+                <c:VirtualMultiButtonView Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding UpRightButton}" />
                 <c:VirtualButtonView Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding LeftButton}" />
                 <c:VirtualButtonView Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding RightButton}" />
+                <c:VirtualMultiButtonView Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding DownLeftButton}" />
                 <c:VirtualButtonView Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding DownButton}" />
+                <c:VirtualMultiButtonView Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding DownRightButton}" />
             </Grid>
             <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
                 <c:VirtualButtonView Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding XButton}" />

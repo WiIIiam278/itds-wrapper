@@ -109,6 +109,11 @@ public class MainViewModel : ViewModelBase
     public VirtualButtonViewModel? RightButton { get; set; }
     public VirtualButtonViewModel? DownButton { get; set; }
     public VirtualButtonViewModel? LeftButton { get; set; }
+    public VirtualMultiButtonViewModel? UpLeftButton { get; set; }
+    public VirtualMultiButtonViewModel? UpRightButton { get; set; }
+    public VirtualMultiButtonViewModel? DownLeftButton { get; set; }
+    public VirtualMultiButtonViewModel? DownRightButton { get; set; }
+    
     public VirtualButtonViewModel? StartButton { get; set; }
     public VirtualButtonViewModel? SelectButton { get; set; }
     public VirtualButtonViewModel? SettingsButton { get; set; }
@@ -400,7 +405,7 @@ public class MainViewModel : ViewModelBase
         _pauseDriver.PushPauseState(DisplaySettingsOverlay);
         ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
     }
-
+    
     private void StartScreenReader()
     {
         _logInterpreter!.ScreenReader = ((App)Application.Current!).LogInterpreter?.ScreenReader;
@@ -516,6 +521,25 @@ public class MainViewModel : ViewModelBase
                     button = null;
                     break;
             }
+
+            // Multi buttons
+            if (UpButton is not null && LeftButton is not null)
+            {
+                UpLeftButton = new VirtualMultiButtonViewModel("・", [UpButton, LeftButton], 25, 50, _hapticsBackend);
+            }
+            if (UpButton is not null && RightButton is not null)
+            {
+                UpRightButton = new VirtualMultiButtonViewModel("・", [UpButton, RightButton], 25, 50, _hapticsBackend);
+            }
+            if (DownButton is not null && LeftButton is not null)
+            {
+                DownLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, LeftButton], 25, 50, _hapticsBackend);
+            }
+            if (DownButton is not null && RightButton is not null)
+            {
+                UpLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, RightButton], 25, 50, _hapticsBackend);
+            }
+            
             _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);
         }
     }
