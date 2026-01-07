@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Input;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -29,7 +31,15 @@ public class MainViewModel : ViewModelBase
     public RetroWrapper Wrapper { get; }
     [Reactive]
     public EmuImageSource? CurrentFrame { get; set; }
-
+    
+    [Reactive] 
+    public bool DisplaySettingsMenuOpen { get; set; }
+    [Reactive] 
+    public bool ControllerSettingsMenuOpen { get; set; }
+    [Reactive]
+    public bool LegalMenuOpen { get; set; }
+    public bool ShowSidebar => !(IsMobile && (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || LegalMenuOpen));
+    
     private readonly Settings _settings;
     private int _currentLangBit;
     private int _langInputsSent;
@@ -114,6 +124,13 @@ public class MainViewModel : ViewModelBase
     private System.Timers.Timer _batteryTimer;
 
     public ICommand CloseMenuOverlay { get; }
+    public ICommand OpenDisplaySettingsMenu { get; }
+    public ICommand OpenControllerSettingsMenu { get; }
+    public ICommand OpenSurveyURL { get; }
+    public ICommand OpenLegalMenu { get; }
+    public ICommand OpenDiscordURL { get; }
+    public ICommand QuitToDesktop { get; }
+    
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
     public VirtualButtonViewModel? XButton { get; set; }
@@ -189,7 +206,7 @@ public class MainViewModel : ViewModelBase
         _pauseDriver.AudioBackend = _audioBackend;
 
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
-        _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, OpenSettings));
+        _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, ToggleMenuOverlay));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
@@ -208,13 +225,57 @@ public class MainViewModel : ViewModelBase
         };
         _batteryTimer.Start();
 
-        CloseMenuOverlay = ReactiveCommand.Create(OpenSettings);
+        CloseMenuOverlay = ReactiveCommand.Create(ToggleMenuOverlay);
+        OpenDisplaySettingsMenu = ReactiveCommand.Create(OpenDisplaySettings);
+        OpenControllerSettingsMenu = ReactiveCommand.Create(OpenControllerSettings);
+        OpenSurveyURL = ReactiveCommand.Create(() => OpenUrl("https://google.com"));
+        OpenLegalMenu = ReactiveCommand.Create(OpenLegal);
+        OpenDiscordURL = ReactiveCommand.Create(() => OpenUrl("https://discord.com"));
+        QuitToDesktop = ReactiveCommand.Create(CloseApplication);
+        
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
         inputSwitcher?.SetDefaultInputDelegate(HandleInput);
         Wrapper.OnCheckInput = HandleStartupInput;
         Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
+    }
+
+    private void CloseApplication()
+    {
+        // todo a modal warning?
+        Environment.Exit(0);
+    }
+
+    private void OpenDisplaySettings()
+    {
+        DisplaySettingsMenuOpen = true;
+        LegalMenuOpen = ControllerSettingsMenuOpen = false;
+    }
+    private void OpenControllerSettings()
+    {
+        ControllerSettingsMenuOpen = true;
+        LegalMenuOpen = DisplaySettingsMenuOpen = false;
+    }
+    private void OpenLegal()
+    {
+        LegalMenuOpen = true;
+        DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = false;
+    }
+
+    private void ToggleMenuOverlay()
+    {
+        DisplaySettingsOverlay = !DisplaySettingsOverlay;
+        _pauseDriver.PushPauseState(DisplaySettingsOverlay);
+        DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = LegalMenuOpen = false;
+        ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 50 } : null;
+    }
+
+    private void OpenUrl(string url)
+    {
+        // var launcher = TopLevel.GetTopLevel().Launcher;
+        // launcher.LaunchUriAsync(uri)
+        // umm how do we get the control lmao
     }
 
     public void HandleKey<T>(T input, bool pressed)
@@ -416,13 +477,6 @@ public class MainViewModel : ViewModelBase
     {
         _logInterpreter?.InterpretLog(line);
     }
-
-    private void OpenSettings()
-    {
-        DisplaySettingsOverlay = !DisplaySettingsOverlay;
-        _pauseDriver.PushPauseState(DisplaySettingsOverlay);
-        ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 50 } : null;
-    }
     
     private void StartScreenReader()
     {
@@ -472,7 +526,7 @@ public class MainViewModel : ViewModelBase
 
     private void FadeBorder()
     {
-        if (CurrentBorderOpacity < 0.01)
+        if (CurrentBorderOpacity < 0.02)
         {
             CurrentBorder = NextBorder;
             NextBorder = null;
@@ -485,8 +539,8 @@ public class MainViewModel : ViewModelBase
             return;
         }
 
-        CurrentBorderOpacity -= 0.01;
-        NextBorderOpacity += 0.01;
+        CurrentBorderOpacity -= 0.02;
+        NextBorderOpacity += 0.02;
     }
 
     private void AssignVirtualBindings()
@@ -534,7 +588,7 @@ public class MainViewModel : ViewModelBase
                     SelectButton = new("SELECT", button, 65, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2:
-                    button.SpecialAction = OpenSettings;
+                    button.SpecialAction = ToggleMenuOverlay;
                     SettingsButton = new("MENU", button, 65, 40, _hapticsBackend);
                     break;
                 default:

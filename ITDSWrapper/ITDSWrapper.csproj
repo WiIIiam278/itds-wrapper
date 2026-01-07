@@ -46,6 +46,10 @@
         <AvaloniaResource Remove="Assets\Strings.ja.resx" />
         <AvaloniaResource Remove="Assets\Strings.resx" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <AvaloniaResource Include="Assets/Fonts/*.ttf" />
+    </ItemGroup>
 
     <ItemGroup>
         <Compile Update="Assets\Strings.Designer.cs">
