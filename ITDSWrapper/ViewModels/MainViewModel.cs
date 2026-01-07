@@ -82,10 +82,10 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public double NextBorderOpacity { get; set; }
     private System.Timers.Timer? _borderTimer;
-    private string _currentBorder = "TITLE_BG";
+    private string _currentBorder = "BLACK_BG";
     private int _currentBorderFrame;
     private string _nextBorder = string.Empty;
-    private int _nextBorderFrame;
+    private int _nextBorderFrame = 0;
     
     public bool Closing { get; set; }
     
@@ -478,6 +478,8 @@ public class MainViewModel : ViewModelBase
             NextBorder = null;
             CurrentBorderOpacity = 1.0;
             NextBorderOpacity = 0.0;
+            _currentBorder = _nextBorder;
+            _currentBorderFrame = _nextBorderFrame;
             _nextBorder = string.Empty;
             _nextBorderFrame = 0;
             return;

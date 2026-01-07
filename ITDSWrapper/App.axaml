@@ -11,6 +11,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        
         <OnPlatform>
             <On Options="Android, iOS">
                 <Styles>
@@ -40,8 +41,11 @@
                     </Style>
                 </Styles>
             </On>
-            <!-- <On Options="Default"> -->
-            <!-- </On> -->
+            <On Options="Default">
+                <Styles>
+                    
+                </Styles>
+            </On>
         </OnPlatform>
     </Application.Styles>
              
