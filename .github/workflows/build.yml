@@ -42,7 +42,7 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object get into-the-dream-spring-builds/itds.nds
+        command: r2 object get --remote into-the-dream-spring-builds/itds.nds
       
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -99,7 +99,7 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.upload }} --file ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }}
+        command: r2 object put --remote into-the-dream-spring-wrapper/${{ matrix.platform.upload }} --file ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }}
 
 
   build-steam-wrappers:
@@ -161,7 +161,7 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object get into-the-dream-spring-builds/itds.nds
+        command: r2 object get --remote into-the-dream-spring-builds/itds.nds
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -231,7 +231,7 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.rid }}.zip --file publish.zip
+        command: r2 object put --remote into-the-dream-spring-wrapper/${{ matrix.platform.rid }}.zip --file publish.zip
 
   upload-to-steam:
     runs-on: ubuntu-latest
@@ -250,28 +250,28 @@ jobs:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object get into-the-dream-spring-wrapper/linux-x64.zip
+        command: r2 object get --remote into-the-dream-spring-wrapper/linux-x64.zip
     - name: 'Download macOS x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object get into-the-dream-spring-wrapper/osx-x64.zip
+        command: r2 object get --remote into-the-dream-spring-wrapper/osx-x64.zip
     - name: 'Download macOS ARM64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object get into-the-dream-spring-wrapper/osx-arm64.zip
+        command: r2 object get --remote into-the-dream-spring-wrapper/osx-arm64.zip
     - name: 'Download Windows x64 Wrapper'
       uses: cloudflare/wrangler-action@v3
       with:
         accountId: ${{ secrets.R2_ACCOUNT_ID }}
         apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
         wranglerVersion: "4.57.0"
-        command: r2 object get into-the-dream-spring-wrapper/win-x64.zip
+        command: r2 object get --remote into-the-dream-spring-wrapper/win-x64.zip
     - name: Unzip Wrappers
       run: |
         Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
