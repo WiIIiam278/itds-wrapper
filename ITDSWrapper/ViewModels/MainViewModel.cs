@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -56,7 +57,20 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    public int TopPadding => IsMobile ? 10 : 0;
+    public int TopPadding
+    {
+        get => IsMobile ? field : 0;
+        set;
+    } = 45;
+
+    public int BottomPadding
+    {
+        get => IsMobile ? field : 0;
+        set;
+    } = 10;
+    
+    public int MenuMargins => IsMobile ? 30 : 50;
+
     public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == 0;
 
     [Reactive]
@@ -99,6 +113,7 @@ public class MainViewModel : ViewModelBase
     private readonly IBatteryMonitor? _batteryMonitor;
     private System.Timers.Timer _batteryTimer;
 
+    public ICommand CloseMenuOverlay { get; }
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
     public VirtualButtonViewModel? XButton { get; set; }
@@ -109,10 +124,16 @@ public class MainViewModel : ViewModelBase
     public VirtualButtonViewModel? RightButton { get; set; }
     public VirtualButtonViewModel? DownButton { get; set; }
     public VirtualButtonViewModel? LeftButton { get; set; }
+    public VirtualMultiButtonViewModel? UpLeftButton { get; set; }
+    public VirtualMultiButtonViewModel? UpRightButton { get; set; }
+    public VirtualMultiButtonViewModel? DownLeftButton { get; set; }
+    public VirtualMultiButtonViewModel? DownRightButton { get; set; }
+    
     public VirtualButtonViewModel? StartButton { get; set; }
     public VirtualButtonViewModel? SelectButton { get; set; }
     public VirtualButtonViewModel? SettingsButton { get; set; }
-
+    
+    [Reactive]
     public bool DisplaySettingsOverlay { get; set; }
     [Reactive]
     public IEffect? ScreenEffect { get; set; }
@@ -186,7 +207,8 @@ public class MainViewModel : ViewModelBase
             Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
         };
         _batteryTimer.Start();
-        
+
+        CloseMenuOverlay = ReactiveCommand.Create(OpenSettings);
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
         inputSwitcher?.SetDefaultInputDelegate(HandleInput);
@@ -262,6 +284,7 @@ public class MainViewModel : ViewModelBase
             if (!_pauseDriver.IsPaused())
             {
                 Wrapper.Run();
+                
                 while (DateTime.Now < nextTick)
                 {
                     TimeSpan sleep = nextTick - DateTime.Now;
@@ -398,9 +421,9 @@ public class MainViewModel : ViewModelBase
     {
         DisplaySettingsOverlay = !DisplaySettingsOverlay;
         _pauseDriver.PushPauseState(DisplaySettingsOverlay);
-        ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 30 } : null;
+        ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 50 } : null;
     }
-
+    
     private void StartScreenReader()
     {
         _logInterpreter!.ScreenReader = ((App)Application.Current!).LogInterpreter?.ScreenReader;
@@ -485,37 +508,56 @@ public class MainViewModel : ViewModelBase
                     YButton = new("Y", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_L:
-                    LButton = new("L", button, 75, 40, _hapticsBackend);
+                    LButton = new("L", button, 67, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R:
-                    RButton = new("R", button, 75, 40, _hapticsBackend);
+                    RButton = new("R", button, 67, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
-                    UpButton = new("・", button, 25, 50, _hapticsBackend);
+                    UpButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
-                    RightButton = new("・", button, 50, 25, _hapticsBackend);
+                    RightButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
-                    DownButton = new("・", button, 25, 50, _hapticsBackend);
+                    DownButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT:
-                    LeftButton = new("・", button, 50, 25, _hapticsBackend);
+                    LeftButton = new("・", button, 50, 50, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_START:
-                    StartButton = new("START", button, 50, 25, _hapticsBackend);
+                    StartButton = new("START", button, 65, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT:
-                    SelectButton = new("SELECT", button, 50, 25, _hapticsBackend);
+                    SelectButton = new("SELECT", button, 65, 40, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2:
                     button.SpecialAction = OpenSettings;
-                    SettingsButton = new("*", button, 25, 25, _hapticsBackend);
+                    SettingsButton = new("MENU", button, 65, 40, _hapticsBackend);
                     break;
                 default:
                     button = null;
                     break;
             }
+
+            // Multi buttons
+            if (UpButton is not null && LeftButton is not null)
+            {
+                UpLeftButton = new VirtualMultiButtonViewModel("・", [UpButton, LeftButton], 50, 50, _hapticsBackend);
+            }
+            if (UpButton is not null && RightButton is not null)
+            {
+                UpRightButton = new VirtualMultiButtonViewModel("・", [UpButton, RightButton], 50, 50, _hapticsBackend);
+            }
+            if (DownButton is not null && LeftButton is not null)
+            {
+                DownLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, LeftButton], 50, 50, _hapticsBackend);
+            }
+            if (DownButton is not null && RightButton is not null)
+            {
+                DownRightButton = new VirtualMultiButtonViewModel("・", [DownButton, RightButton], 50, 50, _hapticsBackend);
+            }
+            
             _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);
         }
     }

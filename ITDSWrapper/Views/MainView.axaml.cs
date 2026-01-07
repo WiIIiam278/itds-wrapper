@@ -21,6 +21,12 @@ public partial class MainView : UserControl
     {
         ((MainViewModel)DataContext!).EmuRenderWidth = Math.Min(e.NewSize.Width, e.NewSize.Height * (256.0 / 384.0));
         ((MainViewModel)DataContext).EmuRenderHeight = Math.Min(e.NewSize.Height, e.NewSize.Width * (384.0 / 256.0));
+        
+        var insetsManager = TopLevel.GetTopLevel(this)?.InsetsManager;
+        insetsManager?.DisplayEdgeToEdgePreference = true;
+        insetsManager?.IsSystemBarVisible = false;
+        ((MainViewModel) DataContext!).TopPadding = (int?)insetsManager?.SafeAreaPadding.Top ?? 0;
+        ((MainViewModel) DataContext).BottomPadding = (int?)insetsManager?.SafeAreaPadding.Bottom ?? 0;
     }
 
     private void DsScreen_OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -68,35 +74,37 @@ public partial class MainView : UserControl
             if (control is Grid subGrid)
             {
                 Point pos = e.GetPosition(subGrid);
-                foreach (VirtualButtonView button in subGrid.Children.Cast<VirtualButtonView>())
+                foreach (var button in subGrid.Children.Cast<IPressableButtonView>())
                 {
                     CheckButtonPressed(pos, button, release);
                 }
             }
-            else if (control is VirtualButtonView button)
+            else if (control is IPressableButtonView button)
             {
                 CheckButtonPressed(e.GetPosition(grid), button, release);
             }
         }
     }
+    
+    
 
-    private void CheckButtonPressed(Point pos, VirtualButtonView button, bool release)
+    private void CheckButtonPressed(Point pos, IPressableButtonView view, bool release)
     {
-        if (pos.X >= button.Bounds.Left && pos.Y >= button.Bounds.Top && pos.X <= button.Bounds.Right &&
-            pos.Y <= button.Bounds.Bottom)
+        if (pos.X >= view.Bounds.Left && pos.Y >= view.Bounds.Top && pos.X <= view.Bounds.Right &&
+            pos.Y <= view.Bounds.Bottom)
         {
             if (release)
             {
-                button.ReleaseButton();
+                view.ReleaseButton();
             }
             else
             {
-                button.PressButton();
+                view.PressButton();
             }
         }
         else if (!release)
         {
-            button.ReleaseButton(softRelease: true);
+            view.ReleaseButton(softRelease: true);
         }
     }
 

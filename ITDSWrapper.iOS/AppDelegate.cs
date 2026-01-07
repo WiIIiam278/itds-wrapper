@@ -4,7 +4,6 @@ using Avalonia;
 using Avalonia.iOS;
 using Avalonia.ReactiveUI;
 using AvFoundationBackend;
-using ITDSWrapper.Core;
 
 namespace ITDSWrapper.iOS;
 

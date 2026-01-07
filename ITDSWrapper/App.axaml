@@ -11,5 +11,38 @@
 
     <Application.Styles>
         <FluentTheme />
+        <OnPlatform>
+            <On Options="Android, iOS">
+                <Styles>
+                    <Style Selector="Label.header">
+                        <Setter Property="FontSize" Value="40" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="Margin" Value="16, 30, 16, 10" />
+                        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                    </Style>
+
+                    <Style Selector="Button.menuitem">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                        <Setter Property="FontSize" Value="18" />
+                        <Setter Property="Margin" Value="16, 1, 16, 1" />
+                        <Setter Property="Padding" Value="16, 20" />
+                        <Setter Property="CornerRadius" Value="10" />
+                        <Setter Property="BorderThickness" Value="0" />
+                    </Style>
+                    
+                    <Style Selector="Window">
+                        <Setter Property="FontFamily" Value="SF Pro, -apple-system, Helvetica Neue" />
+                    </Style>
+                
+                    <Style Selector="Button.menuitem:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+                    </Style>
+                </Styles>
+            </On>
+            <!-- <On Options="Default"> -->
+            <!-- </On> -->
+        </OnPlatform>
     </Application.Styles>
+             
 </Application>

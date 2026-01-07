@@ -3,20 +3,20 @@ using ITDSWrapper.ViewModels.Controls;
 
 namespace ITDSWrapper.Views.Controls;
 
-public partial class VirtualButtonView : UserControl, IPressableButtonView
+public partial class VirtualMultiButtonView : UserControl, IPressableButtonView
 {
     private const int HoldTimerStart = 5;
-    
+
     private bool _held;
     private int _holdTimer = HoldTimerStart;
-    
-    public VirtualButtonView()
+
+    public VirtualMultiButtonView()
     {
         Focusable = false;
 
         InitializeComponent();
     }
-    
+
     public void PressButton()
     {
         if (_held)
@@ -24,9 +24,13 @@ public partial class VirtualButtonView : UserControl, IPressableButtonView
             _holdTimer = HoldTimerStart;
             return;
         }
-        
-        ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(true);
-        ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Press((VirtualButtonViewModel)DataContext!);
+
+        var ctx = (VirtualMultiButtonViewModel)DataContext!;
+        ctx.Haptics?.Fire(false);
+        foreach (var button in ctx.Buttons)
+        {
+            button.AssociatedInput?.Press(button);
+        }
         _held = true;
         _holdTimer = HoldTimerStart;
     }
@@ -44,8 +48,12 @@ public partial class VirtualButtonView : UserControl, IPressableButtonView
             return;
         }
 
-        ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(false);
-        ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Release((VirtualButtonViewModel)DataContext!);
+        var ctx = (VirtualMultiButtonViewModel)DataContext!;
+        ctx.Haptics?.Fire(false);
+        foreach (var button in ctx.Buttons)
+        {
+            button.AssociatedInput?.Release(button);
+        }
         _held = false;
         _holdTimer = HoldTimerStart;
     }

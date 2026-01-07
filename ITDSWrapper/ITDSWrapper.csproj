@@ -7,43 +7,44 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**"/>
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="..\itds.nds"/>
+        <EmbeddedResource Include="..\itds.nds" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia"/>
-        <PackageReference Include="Avalonia.Skia"/>
-        <PackageReference Include="Avalonia.Themes.Fluent"/>
-        <PackageReference Include="Avalonia.Fonts.Inter"/>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Skia" />
+        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Avalonia.Fonts.Inter" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Include="Avalonia.Diagnostics">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Avalonia.ReactiveUI"/>
-        <PackageReference Include="LTRData.DiscUtils.Fat"/>
-        <PackageReference Include="ReactiveUI.Fody"/>
-        <PackageReference Include="Silk.NET.OpenAL"/>
-        <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT"/>
-        <PackageReference Include="Silk.NET.OpenAL.Soft.Native"/>
-        <PackageReference Include="SkiaSharp"/>
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux"/>
+        <PackageReference Include="Avalonia.ReactiveUI" />
+        <PackageReference Include="LTRData.DiscUtils.Fat" />
+        <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="Silk.NET.OpenAL" />
+        <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />
+        <PackageReference Include="Silk.NET.OpenAL.Soft.Native" />
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+        <PackageReference Include="Svg.Controls.Skia.Avalonia" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj"/>
+        <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Views\Controls\VirtualButtonView.axaml"/>
+        <AdditionalFiles Include="Views\Controls\VirtualButtonView.axaml" />
     </ItemGroup>
 
     <ItemGroup>
-        <AvaloniaResource Remove="Assets\Strings.ja.resx"/>
-        <AvaloniaResource Remove="Assets\Strings.resx"/>
+        <AvaloniaResource Remove="Assets\Strings.ja.resx" />
+        <AvaloniaResource Remove="Assets\Strings.resx" />
     </ItemGroup>
 
     <ItemGroup>
