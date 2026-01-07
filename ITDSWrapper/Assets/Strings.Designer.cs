@@ -67,11 +67,11 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Controls.
+        ///   Looks up a localized string similar to Controller Settings.
         /// </summary>
-        public static string Controls {
+        public static string ControllerSettings {
             get {
-                return ResourceManager.GetString("Controls", resourceCulture);
+                return ResourceManager.GetString("ControllerSettings", resourceCulture);
             }
         }
         
@@ -81,6 +81,15 @@ namespace ITDSWrapper.Assets {
         public static string Discord {
             get {
                 return ResourceManager.GetString("Discord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Display Settings.
+        /// </summary>
+        public static string DisplaySettings {
+            get {
+                return ResourceManager.GetString("DisplaySettings", resourceCulture);
             }
         }
         
@@ -121,11 +130,11 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Settings.
+        ///   Looks up a localized string similar to Quit to Desktop.
         /// </summary>
-        public static string Settings {
+        public static string QuitToDesktop {
             get {
-                return ResourceManager.GetString("Settings", resourceCulture);
+                return ResourceManager.GetString("QuitToDesktop", resourceCulture);
             }
         }
         

@@ -21,8 +21,8 @@
     <data name="GameTitle" xml:space="preserve">
         <value>Into the Dream Spring</value>
     </data>
-    <data name="Settings" xml:space="preserve">
-        <value>Settings</value>
+    <data name="DisplaySettings" xml:space="preserve">
+        <value>Display Settings</value>
     </data>
     <data name="BackToGame" xml:space="preserve">
         <value>Back to Game</value>
@@ -30,8 +30,8 @@
     <data name="Menu" xml:space="preserve">
         <value>Menu</value>
     </data>
-    <data name="Controls" xml:space="preserve">
-        <value>Controls</value>
+    <data name="ControllerSettings" xml:space="preserve">
+        <value>Controller Settings</value>
     </data>
     <data name="Legal" xml:space="preserve">
         <value>Legal</value>
@@ -44,5 +44,8 @@
     </data>
     <data name="PlayerSurvey" xml:space="preserve">
         <value>Player Survey</value>
+    </data>
+    <data name="QuitToDesktop" xml:space="preserve">
+        <value>Quit to Desktop</value>
     </data>
 </root>
