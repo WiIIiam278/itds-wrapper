@@ -169,9 +169,9 @@ jobs:
       run: |
         pip install s3cmd
         Set-Content "$env:APPDATA\s3cmd.ini" '[default]`naccess_key = ${{ secrets.R2_ACCESS_KEY }}`nsecret_key = ${{ secrets.R2_SECRET_KEY }}`nwebsite_endpoint = https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com'
+        $env:PATH += ";$(python -c 'import os,sysconfig;print(sysconfig.get_path("scripts",f"{os.name}_user"))')"
       shell: pwsh
       if: ${{ matrix.platform.image == 'windows-latest' }}
-      
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -206,7 +206,7 @@ jobs:
         # Using sccache on Windows due to https://github.com/hendrikmuhs/ccache-action/issues/112
         verbose: 2
         evict-old-files: job
-        
+
     - name: 'Download ROM'
       run: s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
 
