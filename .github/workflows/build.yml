@@ -36,13 +36,16 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
-    - name: 'Download ROM'
-      uses: cloudflare/wrangler-action@v3
+    - name: Set up S3cmd cli tool
+      uses: s3-actions/s3cmd@v2.0.1
       with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object get --remote into-the-dream-spring-builds/itds.nds
+        provider: cloudflare
+        access_key: ${{ secrets.R2_ACCESS_KEY }}
+        secret_key: ${{ secrets.R2_SECRET_KEY }}
+        account_id: ${{ secrets.R2_ACCOUNT_ID }}
+    - name: 'Download ROM'
+      run: |
+        s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
       
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -94,13 +97,8 @@ jobs:
         dotnet restore ${{ matrix.platform.project }} -r ${{ matrix.platform.rid }}
         dotnet publish ${{ matrix.platform.project }}/${{ matrix.platform.project }}.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
     - name: 'Upload wrappers to bucket'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object put --remote into-the-dream-spring-wrapper/${{ matrix.platform.upload }} --file ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }}
-
+      run: |
+        command: s3 put ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
 
   build-steam-wrappers:
     strategy:
@@ -155,13 +153,16 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
-    - name: 'Download ROM'
-      uses: cloudflare/wrangler-action@v3
+    - name: Set up S3cmd cli tool
+      uses: s3-actions/s3cmd@v2.0.1
       with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object get --remote into-the-dream-spring-builds/itds.nds
+        provider: cloudflare
+        access_key: ${{ secrets.R2_ACCESS_KEY }}
+        secret_key: ${{ secrets.R2_SECRET_KEY }}
+        account_id: ${{ secrets.R2_ACCOUNT_ID }}
+    - name: 'Download ROM'
+      run: |
+        s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -226,12 +227,9 @@ jobs:
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
       shell: pwsh
     - name: 'Upload wrappers to bucket'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object put --remote into-the-dream-spring-wrapper/${{ matrix.platform.rid }}.zip --file publish.zip
+      run: |
+        mv publish.zip ${{ matrix.platform.rid }}.zip
+        s3cmd put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper
 
   upload-to-steam:
     runs-on: ubuntu-latest
@@ -242,36 +240,27 @@ jobs:
       with:
         path: itds-wrapper
         clean: false
+    - name: Set up S3cmd cli tool
+      uses: s3-actions/s3cmd@v2.0.1
+      with:
+        provider: cloudflare
+        access_key: ${{ secrets.R2_ACCESS_KEY }}
+        secret_key: ${{ secrets.R2_SECRET_KEY }}
+        account_id: ${{ secrets.R2_ACCOUNT_ID }}
     - name: Make steam dir
       run: mkdir -p steam/macos
     - name: 'Download Linux x64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object get --remote into-the-dream-spring-wrapper/linux-x64.zip
+      run: |
+        s3cmd get s3://into-the-dream-spring-wrapper/linux-x64.zip ./linux-x64.zip
     - name: 'Download macOS x64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object get --remote into-the-dream-spring-wrapper/osx-x64.zip
+      run: |
+        s3cmd get s3://into-the-dream-spring-wrapper/osx-x64.zip ./osx-x64.zip
     - name: 'Download macOS ARM64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object get --remote into-the-dream-spring-wrapper/osx-arm64.zip
+      run: |
+        s3cmd get s3://into-the-dream-spring-wrapper/osx-arm64.zip ./osx-arm64.zip
     - name: 'Download Windows x64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "4.57.0"
-        command: r2 object get --remote into-the-dream-spring-wrapper/win-x64.zip
+      run: |
+        s3cmd get s3://into-the-dream-spring-wrapper/win-x64.zip ./win-x64.zip
     - name: Unzip Wrappers
       run: |
         Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
