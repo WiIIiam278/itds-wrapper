@@ -98,7 +98,7 @@ jobs:
         dotnet publish ${{ matrix.platform.project }}/${{ matrix.platform.project }}.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
     - name: 'Upload wrappers to bucket'
       run: |
-        command: s3 put ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
+        s3cmd put ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
 
   build-steam-wrappers:
     strategy:
@@ -153,6 +153,32 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
+    - name: Set up S3cmd cli tool
+      uses: s3-actions/s3cmd@v2.0.1
+      with:
+        provider: cloudflare
+        access_key: ${{ secrets.R2_ACCESS_KEY }}
+        secret_key: ${{ secrets.R2_SECRET_KEY }}
+        account_id: ${{ secrets.R2_ACCOUNT_ID }}
+      if: ${{ matrix.platform.image != 'windows-latest' }}
+    - name: 'Download ROM'
+      run: |
+        s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
+      if: ${{ matrix.platform.image != 'windows-latest' }}
+
+    - name: 'Setup S3cmd'
+      run: |
+        mkdir ./.s3
+        Set-Content -Path "./.s3/.s3cfg" -Value "[default]`naccess_key = ${{ secrets.R2_ACCESS_KEY }}`nsecret_key = ${{ secrets.R2_SECRET_KEY }}`nwebsite_endpoint = https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
+      shell: pwsh
+      if: ${{ matrix.platform.image == 'windows-latest' }}
+    - name: 'Download ROM'
+      uses: addnab/docker-run-action@v3
+      with:
+        image: d3fk/s3cmd:latest
+        options: '-v ${{ github.workspace }}:/s3 -v ${{ github.workspace }}/.s3'
+        run: s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
+      if: ${{ matrix.platform.image == 'windows-latest' }}
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -188,17 +214,6 @@ jobs:
         verbose: 2
         evict-old-files: job
 
-    - name: Set up S3cmd cli tool
-      uses: s3-actions/s3cmd@v2.0.1
-      with:
-        provider: cloudflare
-        access_key: ${{ secrets.R2_ACCESS_KEY }}
-        secret_key: ${{ secrets.R2_SECRET_KEY }}
-        account_id: ${{ secrets.R2_ACCOUNT_ID }}
-    - name: 'Download ROM'
-      run: |
-        s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
-
     - name: 'Build melonDS DS'
       run: |
         pushd melondsds
@@ -223,10 +238,18 @@ jobs:
     - name: Zip wrapper
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
       shell: pwsh
+    - name: 'Rename artifact for upload'
+      run: mv publish.zip ${{ matrix.platform.rid }}.zip
     - name: 'Upload wrappers to bucket'
-      run: |
-        mv publish.zip ${{ matrix.platform.rid }}.zip
-        s3cmd put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper
+      run: s3cmd put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper
+      if: ${{ matrix.platform.image != 'windows-latest' }}
+    - name: 'Upload wrappers to bucket'
+      uses: addnab/docker-run-action@v3
+      with:
+        image: d3fk/s3cmd:latest
+        options: '-v ${{ github.workspace }}:/s3 -v ${{ github.workspace }}/.s3'
+        run: s3cmd put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper
+      if: ${{ matrix.platform.image == 'windows-latest' }}
 
   upload-to-steam:
     runs-on: ubuntu-latest
