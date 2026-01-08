@@ -153,17 +153,6 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
-    - name: Set up S3cmd cli tool
-      uses: s3-actions/s3cmd@v2.0.1
-      with:
-        provider: cloudflare
-        access_key: ${{ secrets.R2_ACCESS_KEY }}
-        secret_key: ${{ secrets.R2_SECRET_KEY }}
-        account_id: ${{ secrets.R2_ACCOUNT_ID }}
-    - name: 'Download ROM'
-      run: |
-        s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
-      shell: pwsh
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -198,6 +187,18 @@ jobs:
         # Using sccache on Windows due to https://github.com/hendrikmuhs/ccache-action/issues/112
         verbose: 2
         evict-old-files: job
+        
+    - name: Set up S3cmd cli tool
+      uses: s3-actions/s3cmd@v2.0.1
+      with:
+        provider: cloudflare
+        access_key: ${{ secrets.R2_ACCESS_KEY }}
+        secret_key: ${{ secrets.R2_SECRET_KEY }}
+        account_id: ${{ secrets.R2_ACCOUNT_ID }}
+    - name: 'Download ROM'
+      run: |
+        s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
+      shell: pwsh
 
     - name: 'Build melonDS DS'
       run: |
