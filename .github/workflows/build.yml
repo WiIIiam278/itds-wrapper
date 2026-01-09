@@ -211,7 +211,7 @@ jobs:
       run: 'Invoke-Expression "$env:S3CMD get s3://into-the-dream-spring-builds/itds.nds ./itds.nds"'
       shell: pwsh
       env:
-        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'C:\s3cmd\s3cmd' || 's3cmd' }}
+        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python $($env:pythonLocation)/Scripts/s3cmd' || 's3cmd' }}
 
     - name: 'Build melonDS DS'
       run: |
@@ -243,7 +243,7 @@ jobs:
         Invoke-Expression "$env:S3CMD put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper"
       shell: pwsh
       env:
-        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'C:\s3cmd\s3cmd' || 's3cmd' }}
+        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python $($env:pythonLocation)/Scripts/s3cmd' || 's3cmd' }}
 
   upload-to-steam:
     runs-on: ubuntu-latest
