@@ -208,7 +208,7 @@ jobs:
         evict-old-files: job
 
     - name: 'Download ROM'
-      run: '& "$env:S3CMD get s3://into-the-dream-spring-builds/itds.nds ./itds.nds"'
+      run: 'Invoke-Expression "$env:S3CMD get s3://into-the-dream-spring-builds/itds.nds ./itds.nds"'
       shell: pwsh
       env:
         S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python s3cmd' || 's3cmd' }}
@@ -240,7 +240,7 @@ jobs:
     - name: 'Upload wrappers to bucket'
       run: |
         mv publish.zip ${{ matrix.platform.rid }}.zip
-        & "$env:S3CMD put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper"
+        Invoke-Expression "$env:S3CMD put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper"
       shell: pwsh
       env:
         S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python s3cmd' || 's3cmd' }}
