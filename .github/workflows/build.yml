@@ -36,16 +36,17 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
-    - name: Set up S3cmd cli tool
-      uses: s3-actions/s3cmd@v2.0.1
+    - name: Set-up s5cmd
+      uses: peak/action-setup-s5cmd@main
       with:
-        provider: cloudflare
-        access_key: ${{ secrets.R2_ACCESS_KEY }}
-        secret_key: ${{ secrets.R2_SECRET_KEY }}
-        account_id: ${{ secrets.R2_ACCOUNT_ID }}
+        version: v2.0.0
     - name: 'Download ROM'
       run: |
-        s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
+        s5cmd get s3://into-the-dream-spring-builds/itds.nds ./
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
       
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -97,7 +98,7 @@ jobs:
         dotnet restore ${{ matrix.platform.project }} -r ${{ matrix.platform.rid }}
         dotnet publish ${{ matrix.platform.project }}/${{ matrix.platform.project }}.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
     - name: 'Upload wrappers to bucket'
-      run: s3cmd put ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
+      run: s5cmd cp ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
 
   build-steam-wrappers:
     strategy:
@@ -152,26 +153,10 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
-    - name: Set up S3cmd CLI tool
-      uses: s3-actions/s3cmd@v2.0.1
+    - name: Set-up s5cmd
+      uses: peak/action-setup-s5cmd@main
       with:
-        provider: cloudflare
-        access_key: ${{ secrets.R2_ACCESS_KEY }}
-        secret_key: ${{ secrets.R2_SECRET_KEY }}
-        account_id: ${{ secrets.R2_ACCOUNT_ID }}
-      if: ${{ matrix.platform.image != 'windows-latest' }}
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.13' 
-      if: ${{ matrix.platform.image == 'windows-latest' }}
-    - name: Set up S3cmd CLI tool
-      run: |
-        pip install s3cmd
-        Set-Content "$env:APPDATA\s3cmd.ini" '[default]`naccess_key = ${{ secrets.R2_ACCESS_KEY }}`nsecret_key = ${{ secrets.R2_SECRET_KEY }}`nwebsite_endpoint = https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com'
-        $env:PATH += ";$(python -c 'import os,sysconfig;print(sysconfig.get_path("scripts",f"{os.name}_user"))')"
-      shell: pwsh
-      if: ${{ matrix.platform.image == 'windows-latest' }}
+        version: v2.0.0
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -208,10 +193,11 @@ jobs:
         evict-old-files: job
 
     - name: 'Download ROM'
-      run: 'Invoke-Expression "$env:S3CMD get s3://into-the-dream-spring-builds/itds.nds ./itds.nds"'
-      shell: pwsh
+      run: s5cmd cp s3://into-the-dream-spring-builds/itds.nds ./
       env:
-        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python $($env:pythonLocation)/Scripts/s3cmd' || 's3cmd' }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
 
     - name: 'Build melonDS DS'
       run: |
@@ -240,10 +226,11 @@ jobs:
     - name: 'Upload wrappers to bucket'
       run: |
         mv publish.zip ${{ matrix.platform.rid }}.zip
-        Invoke-Expression "$env:S3CMD put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper"
-      shell: pwsh
+        s5cmd CP ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper/
       env:
-        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python $($env:pythonLocation)/Scripts/s3cmd' || 's3cmd' }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
 
   upload-to-steam:
     runs-on: ubuntu-latest
@@ -254,27 +241,19 @@ jobs:
       with:
         path: itds-wrapper
         clean: false
-    - name: Set up S3cmd cli tool
-      uses: s3-actions/s3cmd@v2.0.1
+    - name: Set-up s5cmd
+      uses: peak/action-setup-s5cmd@main
       with:
-        provider: cloudflare
-        access_key: ${{ secrets.R2_ACCESS_KEY }}
-        secret_key: ${{ secrets.R2_SECRET_KEY }}
-        account_id: ${{ secrets.R2_ACCOUNT_ID }}
+        version: v2.0.0
     - name: Make steam dir
       run: mkdir -p steam/macos
-    - name: 'Download Linux x64 Wrapper'
+    - name: 'Download Wrappers'
       run: |
-        s3cmd get s3://into-the-dream-spring-wrapper/linux-x64.zip ./linux-x64.zip
-    - name: 'Download macOS x64 Wrapper'
-      run: |
-        s3cmd get s3://into-the-dream-spring-wrapper/osx-x64.zip ./osx-x64.zip
-    - name: 'Download macOS ARM64 Wrapper'
-      run: |
-        s3cmd get s3://into-the-dream-spring-wrapper/osx-arm64.zip ./osx-arm64.zip
-    - name: 'Download Windows x64 Wrapper'
-      run: |
-        s3cmd get s3://into-the-dream-spring-wrapper/win-x64.zip ./win-x64.zip
+        s5cmd cp s3://into-the-dream-spring-wrapper/*.zip ./
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
     - name: Unzip Wrappers
       run: |
         Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
