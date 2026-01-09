@@ -154,7 +154,7 @@ jobs:
       with:
         dotnet-version: '10.0.x'
     - name: Set-up s5cmd
-      uses: peak/action-setup-s5cmd@main
+      uses: michaelherger/action-setup-s5cmd@main
       with:
         version: v2.0.0
 
