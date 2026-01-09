@@ -193,7 +193,7 @@ jobs:
         evict-old-files: job
 
     - name: 'Download ROM'
-      run: ${{ matrix.platform.image == 'windows-latest' && 'D:\a\_temp/s5cmd-assets/s5cmd.exe' || 's5cmd' }} cp s3://into-the-dream-spring-builds/itds.nds ./
+      run: s5cmd cp s3://into-the-dream-spring-builds/itds.nds ./
       shell: pwsh
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
@@ -227,7 +227,7 @@ jobs:
     - name: 'Upload wrappers to bucket'
       run: |
         mv publish.zip ${{ matrix.platform.rid }}.zip
-        ${{ matrix.platform.image == 'windows-latest' && 'D:\a\_temp\s5cmd-bin\s5cmd.exe' || 's5cmd' }} cp ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper/
+        s5cmd cp ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper/
       shell: pwsh
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
