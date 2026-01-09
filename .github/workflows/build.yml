@@ -36,13 +36,17 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
-    - name: 'Download ROM'
-      uses: cloudflare/wrangler-action@v3
+    - name: Set-up s5cmd
+      uses: peak/action-setup-s5cmd@main
       with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-builds/itds.nds
+        version: v2.3.0
+    - name: 'Download ROM'
+      run: |
+        s5cmd cp s3://into-the-dream-spring-builds/itds.nds ./
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
       
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -94,13 +98,7 @@ jobs:
         dotnet restore ${{ matrix.platform.project }} -r ${{ matrix.platform.rid }}
         dotnet publish ${{ matrix.platform.project }}/${{ matrix.platform.project }}.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
     - name: 'Upload wrappers to bucket'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.upload }} --file ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }}
-
+      run: s5cmd cp ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
 
   build-steam-wrappers:
     strategy:
@@ -155,13 +153,17 @@ jobs:
       uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '10.0.x'
-    - name: 'Download ROM'
-      uses: cloudflare/wrangler-action@v3
+    - name: Set-up s5cmd
+      uses: michaelherger/action-setup-s5cmd@windows
       with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_BUILDS_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-builds/itds.nds
+        version: v2.3.0
+    - name: 'Download ROM'
+      run: s5cmd cp s3://into-the-dream-spring-builds/itds.nds ./
+      shell: pwsh
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -204,10 +206,6 @@ jobs:
         cmake --build build
         popd
         cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
-    
-    - name: 'find melondsds_vertex_shader.c'
-      run: find melondsds/
-      if: always()
 
     - name: Install macOS Workload
       run: dotnet workload install macos
@@ -226,12 +224,14 @@ jobs:
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
       shell: pwsh
     - name: 'Upload wrappers to bucket'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object put into-the-dream-spring-wrapper/${{ matrix.platform.rid }}.zip --file publish.zip
+      run: |
+        mv publish.zip ${{ matrix.platform.rid }}.zip
+        s5cmd cp ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper/
+      shell: pwsh
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
 
   upload-to-steam:
     runs-on: ubuntu-latest
@@ -242,36 +242,19 @@ jobs:
       with:
         path: itds-wrapper
         clean: false
+    - name: Set-up s5cmd
+      uses: peak/action-setup-s5cmd@main
+      with:
+        version: v2.3.0
     - name: Make steam dir
       run: mkdir -p steam/macos
-    - name: 'Download Linux x64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/linux-x64.zip
-    - name: 'Download macOS x64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/osx-x64.zip
-    - name: 'Download macOS ARM64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/osx-arm64.zip
-    - name: 'Download Windows x64 Wrapper'
-      uses: cloudflare/wrangler-action@v3
-      with:
-        accountId: ${{ secrets.R2_ACCOUNT_ID }}
-        apiToken: ${{ secrets.R2_WRAPPER_TOKEN }}
-        wranglerVersion: "2.20.0"
-        command: r2 object get into-the-dream-spring-wrapper/win-x64.zip
+    - name: 'Download Wrappers'
+      run: |
+        s5cmd cp s3://into-the-dream-spring-wrapper/*.zip ./
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
     - name: Unzip Wrappers
       run: |
         Expand-Archive -Path linux-x64.zip -DestinationPath steam/linux-x64
