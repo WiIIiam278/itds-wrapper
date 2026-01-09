@@ -208,7 +208,10 @@ jobs:
         evict-old-files: job
 
     - name: 'Download ROM'
-      run: s3cmd get s3://into-the-dream-spring-builds/itds.nds ./itds.nds
+      run: '& $env:S3CMD get s3://into-the-dream-spring-builds/itds.nds ./itds.nds'
+      shell: pwsh
+      env:
+        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python s3cmd' || 's3cmd' }}
 
     - name: 'Build melonDS DS'
       run: |
@@ -237,7 +240,10 @@ jobs:
     - name: 'Upload wrappers to bucket'
       run: |
         mv publish.zip ${{ matrix.platform.rid }}.zip
-        s3cmd put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper
+        & $env:S3CMD put ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper
+      shell: pwsh
+      env:
+        S3CMD: ${{ matrix.platform.image == 'windows-latest' && 'python s3cmd' || 's3cmd' }}
 
   upload-to-steam:
     runs-on: ubuntu-latest
