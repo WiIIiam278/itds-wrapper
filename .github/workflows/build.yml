@@ -39,7 +39,7 @@ jobs:
     - name: Set-up s5cmd
       uses: peak/action-setup-s5cmd@main
       with:
-        version: v2.0.0
+        version: v2.3.0
     - name: 'Download ROM'
       run: |
         s5cmd cp s3://into-the-dream-spring-builds/itds.nds ./
@@ -156,7 +156,7 @@ jobs:
     - name: Set-up s5cmd
       uses: michaelherger/action-setup-s5cmd@windows
       with:
-        version: v2.0.0
+        version: v2.3.0
 
     - name: 'Checkout melonDS DS'
       uses: actions/checkout@v5
@@ -194,6 +194,7 @@ jobs:
 
     - name: 'Download ROM'
       run: ${{ matrix.platform.image == 'windows-latest' && 'D:\a\_temp/s5cmd-assets/s5cmd.exe' || 's5cmd' }} cp s3://into-the-dream-spring-builds/itds.nds ./
+      shell: pwsh
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
@@ -226,7 +227,8 @@ jobs:
     - name: 'Upload wrappers to bucket'
       run: |
         mv publish.zip ${{ matrix.platform.rid }}.zip
-        ${{ matrix.platform.image == 'windows-latest' && 'D:\a\_temp/s5cmd-assets/s5cmd.exe' || 's5cmd' }} cp ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper/
+        ${{ matrix.platform.image == 'windows-latest' && 'D:\a\_temp\s5cmd-bin\s5cmd.exe' || 's5cmd' }} cp ${{ matrix.platform.rid }}.zip s3://into-the-dream-spring-wrapper/
+      shell: pwsh
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
@@ -244,7 +246,7 @@ jobs:
     - name: Set-up s5cmd
       uses: peak/action-setup-s5cmd@main
       with:
-        version: v2.0.0
+        version: v2.3.0
     - name: Make steam dir
       run: mkdir -p steam/macos
     - name: 'Download Wrappers'
