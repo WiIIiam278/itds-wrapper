@@ -67,6 +67,7 @@
             <StronglyTypedNamespace>ITDSWrapper.Assets</StronglyTypedNamespace>
             <StronglyTypedClassName>Strings</StronglyTypedClassName>
             <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+            <LogicalName>ITDSWrapper.Assets.Strings.resources</LogicalName>
         </EmbeddedResource>
     </ItemGroup>
 </Project>
