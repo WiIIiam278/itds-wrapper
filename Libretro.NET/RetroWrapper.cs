@@ -286,7 +286,7 @@ namespace Libretro.NET
 
         private void Time(long usec)
         {
-            //Nothing relevant to do yet...
+            // Nothing relevant to do yet...
         }
 
         public static string GetDirectoryForPlatform(string dirName)

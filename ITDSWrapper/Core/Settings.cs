@@ -11,8 +11,8 @@ public class Settings
     public bool ScreenReaderEnabled { get; set; } = false;
     public string LanguageCode { get; set; } = "en";
 
-    private static string[] LangCodeArray = ["en", "ja"];
-    public byte LanguageIndex => (byte)LangCodeArray.IndexOf(LanguageCode);
+    private static string[] _langCodeArray = ["en", "ja"];
+    public byte LanguageIndex => (byte)_langCodeArray.IndexOf(LanguageCode);
 
     public void Save(string path)
     {
