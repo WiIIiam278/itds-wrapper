@@ -32,5 +32,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ITDSWrapper\ITDSWrapper.csproj"/>
+        <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj" />
     </ItemGroup>
 </Project>
