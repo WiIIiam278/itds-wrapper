@@ -155,11 +155,7 @@ public class MainViewModel : ViewModelBase
     
     public MainViewModel()
     {
-        _settings = Settings.Load(IsMobile
-            ? Environment.GetFolderPath(Environment.SpecialFolder.Personal)
-            : OperatingSystem.IsMacOS()
-                ? Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName)!.FullName
-                : AppDomain.CurrentDomain.BaseDirectory);
+        _settings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
         
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
