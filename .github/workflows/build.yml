@@ -4,6 +4,42 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-upload-melondsds:
+    strategy:
+      matrix:
+        platform: 
+        - name: x64
+          image: 'ubuntu-latest'
+        - name: arm64
+          image: 'ubuntu-24.04-arm'
+    runs-on: ${{ matrix.platform.image }}
+    steps:
+    - name: 'Checkout melonDS DS'
+      uses: actions/checkout@v5
+      with:
+        repository: jonko0493/melonds-ds
+        ref: use-my-fork
+        path: melondsds
+        clean: false
+    - name: Install Dependencies (Linux)
+      uses: awalsh128/cache-apt-pkgs-action@v1.4.3
+      with:
+        packages: ccache cmake libepoxy-dev libopengl0 libopengl-dev ninja-build p7zip-full x11-xserver-utils xdg-utils xvfb
+        version: 1.2
+    - name: 'Build melonDS DS'
+      run: |
+        pushd melondsds
+        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release"
+        cmake --build build
+        popd
+        cp melondsds/build/src/libretro/melondsds_libretro.so ./melondsds-${{ matrix.platform.name }}.so
+    - name: Set-up s5cmd
+      uses: peak/action-setup-s5cmd@main
+      with:
+        version: v2.3.0
+    - name: 'Upload melonds-ds to bucket'
+      run: s5cmd cp ./melondsds-${{ matrix.platform.name }}.so s3://into-the-dream-spring-builds/
+
   build-mobile-wrappers:
     strategy:
       fail-fast: false
