@@ -35,7 +35,7 @@ jobs:
         popd
         cp melondsds/build/src/libretro/melondsds_libretro.so ./melondsds-${{ matrix.platform.name }}.so
     - name: Set-up s5cmd
-      uses: peak/action-setup-s5cmd@main
+      uses: jonko0493/action-setup-s5cmd@windows-and-noflaky
       with:
         version: v2.3.0
     - name: 'Upload test melonds-ds to bucket'
@@ -78,7 +78,7 @@ jobs:
       with:
         dotnet-version: '10.0.x'
     - name: Set-up s5cmd
-      uses: peak/action-setup-s5cmd@main
+      uses: jonko0493/action-setup-s5cmd@windows-and-noflaky
       with:
         version: v2.3.0
     - name: 'Download ROM'
@@ -195,7 +195,7 @@ jobs:
       with:
         dotnet-version: '10.0.x'
     - name: Set-up s5cmd
-      uses: michaelherger/action-setup-s5cmd@windows
+      uses: jonko0493/action-setup-s5cmd@windows-and-noflaky
       with:
         version: v2.3.0
     - name: 'Download ROM'
@@ -284,7 +284,7 @@ jobs:
         path: itds-wrapper
         clean: false
     - name: Set-up s5cmd
-      uses: peak/action-setup-s5cmd@main
+      uses: jonko0493/action-setup-s5cmd@windows-and-noflaky
       with:
         version: v2.3.0
     - name: Make steam dir
