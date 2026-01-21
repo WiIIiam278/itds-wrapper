@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-upload-melondsds:
+  build-upload-melondsds-test:
     strategy:
       fail-fast: false
       matrix:
@@ -30,7 +30,7 @@ jobs:
     - name: 'Build melonDS DS'
       run: |
         pushd melondsds
-        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" -DENABLE_CCACHE=OFF
+        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" -DENABLE_CCACHE=OFF -DENABLE_OGLRENDERER=OFF
         cmake --build build
         popd
         cp melondsds/build/src/libretro/melondsds_libretro.so ./melondsds-${{ matrix.platform.name }}.so
@@ -38,7 +38,7 @@ jobs:
       uses: peak/action-setup-s5cmd@main
       with:
         version: v2.3.0
-    - name: 'Upload melonds-ds to bucket'
+    - name: 'Upload test melonds-ds to bucket'
       run: s5cmd cp ./melondsds-${{ matrix.platform.name }}.so s3://into-the-dream-spring-builds/
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
