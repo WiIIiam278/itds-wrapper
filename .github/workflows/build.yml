@@ -140,6 +140,10 @@ jobs:
         dotnet publish ${{ matrix.platform.project }}/${{ matrix.platform.project }}.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
     - name: 'Upload wrappers to bucket'
       run: s5cmd cp ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
 
   build-steam-wrappers:
     strategy:
