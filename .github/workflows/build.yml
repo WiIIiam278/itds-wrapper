@@ -12,7 +12,7 @@ jobs:
         - name: x64
           image: 'ubuntu-latest'
         - name: arm64
-          image: 'ubuntu-24.04-arm'
+          image: 'ubuntu-22.04-arm'
     runs-on: ${{ matrix.platform.image }}
     steps:
     - name: 'Checkout melonDS DS'
@@ -30,7 +30,7 @@ jobs:
     - name: 'Build melonDS DS'
       run: |
         pushd melondsds
-        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" -DENABLE_CCACHE=OFF -DENABLE_OGLRENDERER=OFF
+        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" -DENABLE_CCACHE=OFF
         cmake --build build
         popd
         cp melondsds/build/src/libretro/melondsds_libretro.so ./melondsds-${{ matrix.platform.name }}.so
