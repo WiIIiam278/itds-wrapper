@@ -6,6 +6,7 @@ on:
 jobs:
   build-upload-melondsds:
     strategy:
+      fail-fast: false
       matrix:
         platform: 
         - name: x64
@@ -39,6 +40,10 @@ jobs:
         version: v2.3.0
     - name: 'Upload melonds-ds to bucket'
       run: s5cmd cp ./melondsds-${{ matrix.platform.name }}.so s3://into-the-dream-spring-builds/
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
+        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
 
   build-mobile-wrappers:
     strategy:
