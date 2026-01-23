@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libretro.NET", "Libretro.NE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvFoundationBackend", "AvFoundationBackend\AvFoundationBackend.csproj", "{886D1F65-0FDB-43F7-BA9D-600926E8E451}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamworksHelper", "SteamworksHelper\SteamworksHelper.csproj", "{308936DE-A8D5-47C4-BFE6-27C8DAF212D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{886D1F65-0FDB-43F7-BA9D-600926E8E451}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{886D1F65-0FDB-43F7-BA9D-600926E8E451}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{886D1F65-0FDB-43F7-BA9D-600926E8E451}.Release|Any CPU.Build.0 = Release|Any CPU
+		{308936DE-A8D5-47C4-BFE6-27C8DAF212D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{308936DE-A8D5-47C4-BFE6-27C8DAF212D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{308936DE-A8D5-47C4-BFE6-27C8DAF212D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{308936DE-A8D5-47C4-BFE6-27C8DAF212D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

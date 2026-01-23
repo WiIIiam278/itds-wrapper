@@ -1,19 +1,20 @@
-using System.Collections.Generic;
-using Steamworks;
 using ITDSWrapper.Core;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamUpdater(SteamInputDriver inputDriver) : IUpdater
+public class SteamUpdater(SteamInputDriver inputDriver, SteamHelperIpc ipc) : IUpdater
 {
-    private readonly List<Controller> _controllers = [];
-
     public int Update()
     {
-        SteamInput.GetControllerNoAlloc(_controllers);
-        if (_controllers.Count > 0)
+        ipc.SendCommand("INPUT_POLL_CONTROLLERS");
+        byte[] receipt = ipc.ReceiveResponse();
+        if (receipt.Length > 0 && receipt[0] == 1)
         {
-            inputDriver.SetController(_controllers[0]);
+            if (receipt[1] == 1)
+            {
+                inputDriver.RequestInputUpdate = true;
+            }
+            
             if (inputDriver.UpdateState())
             {
                 return 1;

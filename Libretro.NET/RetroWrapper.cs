@@ -21,7 +21,7 @@ namespace Libretro.NET
 
         public uint Width { get; private set; }
         public uint Height { get; private set; }
-        public double FPS { get; private set; }
+        public double Fps { get; private set; }
         public double SampleRate { get; private set; }
         public uint BatteryLevel { get; set; } = 100;
         public static retro_pixel_format PixelFormat { get; private set; }
@@ -81,7 +81,7 @@ namespace Libretro.NET
 
             Width = av.geometry.base_width;
             Height = av.geometry.base_height;
-            FPS = av.timing.fps;
+            Fps = av.timing.fps;
             SampleRate = av.timing.sample_rate;
 
             return result == 1;

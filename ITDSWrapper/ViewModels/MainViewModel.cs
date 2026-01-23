@@ -320,7 +320,7 @@ public class MainViewModel : ViewModelBase
 
     private void Run()
     {
-        TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.FPS);
+        TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.Fps);
         DateTime nextTick = DateTime.Now + interval;
         IUpdater? updater = ((App)Application.Current!).Updater;
         

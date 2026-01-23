@@ -3,11 +3,10 @@ using Avalonia.Threading;
 using ITDSWrapper.Core;
 using ITDSWrapper.Input;
 using Libretro.NET.Bindings;
-using Steamworks;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inputSwitcher) : LogInterpreter
+public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inputSwitcher, SteamHelperIpc ipc) : LogInterpreter
 {
     private const string ActionSetVerb = "ACTION_SET";
     private const string CloudSaveVerb = "CLOUD_SAVE";
@@ -28,7 +27,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
         if (wrapperPrefixLocation == 0 && WatchForSdCreate)
         {
             WatchForSdCreate = false;
-            SteamSaveManager.DownloadCloudSave();
+            SteamSaveManager.DownloadCloudSave(ipc);
             return -1;
         }
 
@@ -43,15 +42,14 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
                 break;
 
             case CloudSaveVerb:
-                Dispatcher.UIThread.InvokeAsync(SteamSaveManager.UploadCloudSave);
+                Dispatcher.UIThread.InvokeAsync(() => SteamSaveManager.UploadCloudSave(ipc));
                 break;
             
             case RichPresenceVerb:
                 try
                 {
                     string[] rpSplit = log[(endIndex + 2)..^1].Split('|');
-                    SteamFriends.SetRichPresence(rpSplit[0], rpSplit[1]);
-                    SteamFriends.SetRichPresence("steam_display", "#Status");
+                    ipc.SendCommand($"RICH_PRESENCE {rpSplit[0]} {rpSplit[1]}");
                 }
                 catch (Exception ex)
                 {
@@ -63,8 +61,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
                 try
                 {
                     string[] timelineSplit = log[(endIndex + 2)..^1].Split('|');
-                    SteamTimeline.AddInstantaneousTimelineEvent(timelineSplit[0], timelineSplit[1], timelineSplit[2],
-                        uint.Parse(timelineSplit[3]), float.Parse(timelineSplit[4]), TimelineEventClipPriority.Standard);
+                    ipc.SendCommand($"TIMELINE_INST {timelineSplit[0]} {timelineSplit[1]} {timelineSplit[2]} {timelineSplit[3]}");
                 }
                 catch (Exception ex)
                 {
