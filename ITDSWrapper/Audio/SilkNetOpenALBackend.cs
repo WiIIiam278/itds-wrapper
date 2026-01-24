@@ -79,10 +79,12 @@ public class SilkNetOpenALBackend : IAudioBackend
         if (_paused)
         {
             _paused = false;
+            Al!.SetSourceProperty(_alSource, SourceFloat.Gain, 1f);
         }
         else
         {
             _paused = true;
+            Al!.SetSourceProperty(_alSource, SourceFloat.Gain, 0f);
             Al!.SourcePause(_alSource);
             Al.SourceUnqueueBuffers(_alSource, _alBuffers);
         }
