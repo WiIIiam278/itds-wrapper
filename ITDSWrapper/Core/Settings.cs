@@ -19,6 +19,10 @@ public class Settings
 
     public void Save(string path)
     {
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
         File.WriteAllText(Path.Combine(path, "settings.json"), JsonSerializer.Serialize(this));
     }
 

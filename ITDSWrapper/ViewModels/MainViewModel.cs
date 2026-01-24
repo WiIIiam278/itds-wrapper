@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -240,6 +241,8 @@ public class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         WrapperSettings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
+        WindowingModeIdx = (int)WrapperSettings.WindowingMode;
+        TargetScreenLayoutIdx = (int)WrapperSettings.CurrentScreenLayout;
         
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
@@ -317,7 +320,7 @@ public class MainViewModel : ViewModelBase
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
         _inputSwitcher.SetDefaultInputDelegate(HandleInput);
-        Wrapper.OnCheckInput = HandleStartupInput;
+        _inputSwitcher.SetInputDelegate(new("startup", HandleStartupInput));
         Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
     }
@@ -350,11 +353,16 @@ public class MainViewModel : ViewModelBase
         _pauseDriver.PushPauseState(DisplaySettingsOverlay);
         DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = LegalMenuOpen = false;
         ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 50 } : null;
-        foreach (Setting setting in _settingsChangesBuffer.Keys)
+
+        if (!DisplaySettingsOverlay)
         {
-            _settingsChangesBuffer[setting].Invoke();
+            foreach (Setting setting in _settingsChangesBuffer.Keys)
+            {
+                _settingsChangesBuffer[setting].Invoke();
+            }
+            _settingsChangesBuffer.Clear();
+            WrapperSettings.Save(RetroWrapper.GetDirectoryForPlatform("settings"));
         }
-        _settingsChangesBuffer.Clear();
     }
 
     private void OpenUrl(string url)
@@ -396,55 +404,65 @@ public class MainViewModel : ViewModelBase
                 int numPresses = TargetScreenLayoutIdx - (int)WrapperSettings.CurrentScreenLayout;
                 numPresses = numPresses < 0 ? Enum.GetValues<ScreenLayout>().Length + numPresses : numPresses;
 
-                WrapperSettings.CurrentScreenLayout = (ScreenLayout)TargetScreenLayoutIdx;
-                switch (WrapperSettings.CurrentScreenLayout)
-                {
-                    default:
-                    case ScreenLayout.TOP_BOTTOM:
-                        CurrentFrame = new(CurrentFrame?.Frame ?? [], 256, 384);
-                        EmuRenderRatio = 256.0 / 384.0;
-                        break;
-                        
-                    case ScreenLayout.LEFT_RIGHT:
-                    case ScreenLayout.RIGHT_LEFT:
-                        CurrentFrame = new(CurrentFrame?.Frame ?? [], 512, 192);
-                        EmuRenderRatio = 512.0 / 192.0;
-                        break;
-                }
-                ResizeEmuScreen(Top?.Bounds.Width ?? 0, Top?.Bounds.Height ?? 0);
-
-                int currentPress = 0;
-                bool pressed = false;
-                _inputSwitcher.SetInputDelegate(new(nameof(ChangeScreenLayout), (_, _, _, id) =>
-                {
-                    if (currentPress == numPresses)
-                    {
-                        _inputSwitcher.ResetInputDelegate();
-                        return 0;
-                    }
-                    switch (id)
-                    {
-                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3:
-                        {
-                            if (!pressed)
-                            {
-                                pressed = true;
-                                return 1;
-                            }
-                            else
-                            {
-                                pressed = false;
-                                currentPress++;
-                            }
-
-                            break;
-                        }
-                    }
-
-                    return 0;
-                }));
+                ChangeEmulatedScreenLayout();
+                SendLayoutChangeToCore(numPresses);
             };
         }
+    }
+
+    public void ChangeEmulatedScreenLayout()
+    {
+        WrapperSettings.CurrentScreenLayout = (ScreenLayout)TargetScreenLayoutIdx;
+        switch (WrapperSettings.CurrentScreenLayout)
+        {
+            default:
+            case ScreenLayout.TOP_BOTTOM:
+                CurrentFrame = new(CurrentFrame?.Frame ?? [], 256, 384);
+                EmuRenderRatio = 256.0 / 384.0;
+                break;
+                        
+            case ScreenLayout.LEFT_RIGHT:
+            case ScreenLayout.RIGHT_LEFT:
+                CurrentFrame = new(CurrentFrame?.Frame ?? [], 512, 192);
+                EmuRenderRatio = 512.0 / 192.0;
+                break;
+        }
+        ResizeEmuScreen(Top?.Bounds.Width ?? 0, Top?.Bounds.Height ?? 0);
+    }
+
+    public void SendLayoutChangeToCore(int numPresses)
+    {
+        int currentPress = 0;
+        bool pressed = false;
+        _inputSwitcher.SetInputDelegate(new(nameof(ChangeScreenLayout), (_, _, _, id) =>
+        {
+            if (currentPress == numPresses)
+            {
+                _inputSwitcher.ResetInputDelegate();
+                return 0;
+            }
+
+            switch (id)
+            {
+                case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3:
+                {
+                    if (!pressed)
+                    {
+                        pressed = true;
+                        return 1;
+                    }
+                    else
+                    {
+                        pressed = false;
+                        currentPress++;
+                    }
+
+                    break;
+                }
+            }
+
+            return 0;
+        }));
     }
 
     public void ResizeEmuScreen(double width, double height)
@@ -627,7 +645,7 @@ public class MainViewModel : ViewModelBase
         
         if (_logInterpreter?.LangReceived ?? false)
         {
-            Wrapper.OnCheckInput = HandleInput;
+            _inputSwitcher.ResetInputDelegate();
             return 0;
         }
 
