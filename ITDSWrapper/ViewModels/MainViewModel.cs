@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Input;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -24,6 +25,8 @@ namespace ITDSWrapper.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    public Control Top { get; set; }
+    
     public static bool IsMobile => OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
     
     public RetroWrapper Wrapper { get; }
@@ -267,9 +270,7 @@ public class MainViewModel : ViewModelBase
 
     private void OpenUrl(string url)
     {
-        // var launcher = TopLevel.GetTopLevel().Launcher;
-        // launcher.LaunchUriAsync(uri)
-        // umm how do we get the control lmao
+        TopLevel.GetTopLevel(Top)?.Launcher?.LaunchUriAsync(new(url));
     }
 
     public void HandleKey<T>(T input, bool pressed)
@@ -320,7 +321,7 @@ public class MainViewModel : ViewModelBase
 
     private void Run()
     {
-        TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.FPS);
+        TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.Fps);
         DateTime nextTick = DateTime.Now + interval;
         IUpdater? updater = ((App)Application.Current!).Updater;
         
