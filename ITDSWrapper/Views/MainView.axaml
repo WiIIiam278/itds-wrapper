@@ -123,9 +123,11 @@
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.DisplaySettings}" />
                     <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto"
                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <Button Grid.Row="0" Grid.Column="0" Content="&lt;" Command="{Binding ChangeWindowingSettingsCommand}" CommandParameter="{x:False}"/>
-                        <Label Grid.Row="0" Grid.Column="1" Content="{Binding WindowingModeDesc}"/>
-                        <Button Grid.Row="0" Grid.Column="2" Content=">" Command="{Binding ChangeWindowingSettingsCommand}" CommandParameter="{x:True}"/>
+                        <Button Grid.Row="0" Grid.Column="0" Content="&lt;" Command="{Binding ChangeWindowingSettingsCommand}"
+                                CommandParameter="{x:False}" IsVisible="{Binding !IsMobile}"/>
+                        <Label Grid.Row="0" Grid.Column="1" Content="{Binding WindowingModeDesc}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="0" Grid.Column="2" Content=">" Command="{Binding ChangeWindowingSettingsCommand}"
+                                CommandParameter="{x:True}" IsVisible="{Binding !IsMobile}"/>
                     </Grid>
                 </Grid>
                 <Grid IsVisible="{Binding ControllerSettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"

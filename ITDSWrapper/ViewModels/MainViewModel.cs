@@ -18,6 +18,7 @@ using ITDSWrapper.Graphics;
 using ITDSWrapper.Haptics;
 using ITDSWrapper.Input;
 using ITDSWrapper.ViewModels.Controls;
+using ITDSWrapper.Views;
 using Libretro.NET;
 using Libretro.NET.Bindings;
 using ReactiveUI;
@@ -42,15 +43,16 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public string WindowingModeDesc { get; set; } = Strings.WindowStateFullScreen;
 
-    public enum WindowingMode
+    private enum WindowingMode
     {
         FULL_SCREEN,
         BORDERLESS,
         WINDOWED,
     }
+    
     public int WindowingModeIdx
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -63,6 +65,12 @@ public class MainViewModel : ViewModelBase
             {
                 default:
                 case WindowingMode.FULL_SCREEN:
+                    var window = (MainWindow?)Top;
+                    Screen? currentScreen = window?.Screens.ScreenFromWindow(window);
+                    if (currentScreen is not null)
+                    {
+                        window?.Position = new(currentScreen.WorkingArea.X, currentScreen.WorkingArea.Y);
+                    }
                     WindowState = WindowState.FullScreen;
                     break;
                 
@@ -82,7 +90,7 @@ public class MainViewModel : ViewModelBase
             }
         }
     }
-    
+
     public RetroWrapper Wrapper { get; }
     [Reactive]
     public EmuImageSource? CurrentFrame { get; set; }
