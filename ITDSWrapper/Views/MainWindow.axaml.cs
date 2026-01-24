@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using ITDSWrapper.ViewModels;
@@ -9,6 +10,13 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+    }
+
+    protected override void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+        ((MainViewModel)DataContext!).ChangeEmulatedScreenLayout();
+        ((MainViewModel)DataContext).SendLayoutChangeToCore(((MainViewModel)DataContext).TargetScreenLayoutIdx);
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)

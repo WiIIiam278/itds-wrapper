@@ -21,31 +21,88 @@
     <data name="GameTitle" xml:space="preserve">
         <value>Into the Dream Spring</value>
     </data>
-    <data name="DisplaySettings" xml:space="preserve">
+    <data name="SettingsDisplay" xml:space="preserve">
         <value>Display Settings</value>
     </data>
-    <data name="BackToGame" xml:space="preserve">
+    <data name="SettingsBackToGame" xml:space="preserve">
         <value>Back to Game</value>
     </data>
     <data name="Menu" xml:space="preserve">
         <value>Menu</value>
     </data>
-    <data name="ControllerSettings" xml:space="preserve">
+    <data name="SettingsController" xml:space="preserve">
         <value>Controller Settings</value>
     </data>
-    <data name="Legal" xml:space="preserve">
+    <data name="SettingsLegal" xml:space="preserve">
         <value>Legal</value>
     </data>
-    <data name="Website" xml:space="preserve">
+    <data name="SettingsWebsite" xml:space="preserve">
         <value>Website</value>
     </data>
-    <data name="Discord" xml:space="preserve">
+    <data name="SettingsDiscord" xml:space="preserve">
         <value>Discord</value>
     </data>
-    <data name="PlayerSurvey" xml:space="preserve">
+    <data name="SettingsPlayerSurvey" xml:space="preserve">
         <value>Player Survey</value>
     </data>
-    <data name="QuitToDesktop" xml:space="preserve">
+    <data name="SettingsQuitToDesktop" xml:space="preserve">
         <value>Quit to Desktop</value>
+    </data>
+    <data name="WindowStateFullScreen" xml:space="preserve">
+        <value>Full Screen</value>
+    </data>
+    <data name="WindowStateWindowed" xml:space="preserve">
+        <value>Windowed</value>
+    </data>
+    <data name="WindowStateBorderless" xml:space="preserve">
+        <value>Borderless</value>
+    </data>
+    <data name="WindowStateSettingsLabel" xml:space="preserve">
+        <value>Windowing Mode</value>
+    </data>
+    <data name="ScreenLayoutTopBottom" xml:space="preserve">
+        <value>Vertical</value>
+    </data>
+    <data name="ScreenLayoutLeftRight" xml:space="preserve">
+        <value>Horizontal (Bottom on Right)</value>
+    </data>
+    <data name="ScreenLayoutRightLeft" xml:space="preserve">
+        <value>Horizontal (Bottom on Left)</value>
+    </data>
+    <data name="SettingsGeneral" xml:space="preserve">
+        <value>General Settings</value>
+    </data>
+    <data name="SettingsAccessibility" xml:space="preserve">
+        <value>Accessibility Settings</value>
+    </data>
+    <data name="SettingsControllerHeader" xml:space="preserve">
+        <value>Controller</value>
+    </data>
+    <data name="SettingsAccessibilityHeader" xml:space="preserve">
+        <value>Accessibility</value>
+    </data>
+    <data name="SettingsDisplayHeader" xml:space="preserve">
+        <value>Display</value>
+    </data>
+    <data name="SettingSwitchOff" xml:space="preserve">
+        <value>Off</value>
+    </data>
+    <data name="SettingSwitchOn" xml:space="preserve">
+        <value>On</value>
+    </data>
+    <data name="SettingSwitchEnabled" xml:space="preserve">
+        <value>Enabled</value>
+    </data>
+    <data name="SettingSwitchDisabled" xml:space="preserve">
+        <value>Disabled</value>
+    </data>
+    <data name="SettingsScreenReader" xml:space="preserve">
+        <value>Screen Reader</value>
+    </data>
+    <data name="SettingsScreenLayout" xml:space="preserve">
+        <value>Screen Layout</value>
+    </data>
+    <data name="SettingsBorders" xml:space="preserve">
+        <value>Screen Borders</value>
     </data>
 </root>

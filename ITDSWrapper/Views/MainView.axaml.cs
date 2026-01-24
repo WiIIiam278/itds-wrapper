@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -16,11 +15,10 @@ public partial class MainView : UserControl
         OnScreenControls.AddHandler(PointerPressedEvent, OnScreenControls_OnPointerPressed, handledEventsToo: true);
         OnScreenControls.AddHandler(PointerReleasedEvent, OnScreenControls_OnPointerReleased, handledEventsToo: true);
     }
-
+    
     private void ScreenGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        ((MainViewModel)DataContext!).EmuRenderWidth = Math.Min(e.NewSize.Width, e.NewSize.Height * (256.0 / 384.0));
-        ((MainViewModel)DataContext).EmuRenderHeight = Math.Min(e.NewSize.Height, e.NewSize.Width * (384.0 / 256.0));
+        ((MainViewModel)DataContext!).ResizeEmuScreen(e.NewSize.Width, e.NewSize.Height);
         
         var insetsManager = TopLevel.GetTopLevel(this)?.InsetsManager;
         insetsManager?.DisplayEdgeToEdgePreference = true;
@@ -85,8 +83,6 @@ public partial class MainView : UserControl
             }
         }
     }
-    
-    
 
     private void CheckButtonPressed(Point pos, IPressableButtonView view, bool release)
     {

@@ -1,3 +1,5 @@
+using ITDSWrapper.Core;
+
 namespace ITDSWrapper.Input;
 
 public class PointerState(double width, double height)
@@ -10,9 +12,35 @@ public class PointerState(double width, double height)
     public short RetroX => (short)((32767 * 2.0 + 1) / Width * X - 0x7FFF);
     public short RetroY => (short)((32767 * 2.0 + 1) / Height * Y - 0x7FFF);
 
-    public void Press(double x, double y)
+    public void Press(double x, double y, ScreenLayout layout)
     {
-        Pressed = y > Height / 2 && y <= Height && x >= 0 && x <= Width;
+        double xMin, xMax, yMin, yMax;
+        switch (layout)
+        {
+            default:
+            case ScreenLayout.TOP_BOTTOM:
+                xMin = 0;
+                xMax = Width;
+                yMin = Height / 2;
+                yMax = Height;
+                break;
+            
+            case ScreenLayout.LEFT_RIGHT:
+                xMin = Width / 2;
+                xMax = Width;
+                yMin = 0;
+                yMax = Height;
+                break;
+            
+            case ScreenLayout.RIGHT_LEFT:
+                xMin = 0;
+                xMax = Width / 2;
+                yMin = 0;
+                yMax = Height;
+                break;
+        }
+
+        Pressed = y > yMin && y <= yMax && x >= xMin && x <= xMax;
         if (Pressed)
         {
             X = x;

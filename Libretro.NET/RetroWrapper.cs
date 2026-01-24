@@ -21,7 +21,7 @@ namespace Libretro.NET
 
         public uint Width { get; private set; }
         public uint Height { get; private set; }
-        public double FPS { get; private set; }
+        public double Fps { get; private set; }
         public double SampleRate { get; private set; }
         public uint BatteryLevel { get; set; } = 100;
         public static retro_pixel_format PixelFormat { get; private set; }
@@ -81,7 +81,7 @@ namespace Libretro.NET
 
             Width = av.geometry.base_width;
             Height = av.geometry.base_height;
-            FPS = av.timing.fps;
+            Fps = av.timing.fps;
             SampleRate = av.timing.sample_rate;
 
             return result == 1;
@@ -142,6 +142,34 @@ namespace Libretro.NET
                             {
                                 key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
                                 value = (sbyte*)Marshal.StringToHGlobalAnsi("rumble-pak"),
+                            };
+                            break;
+                        case "melonds_number_of_screen_layouts":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("3"),
+                            };
+                            break;
+                        case "melonds_screen_layout1":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("top-bottom"),
+                            };
+                            break;
+                        case "melonds_screen_layout2":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("left-right"),
+                            };
+                            break;
+                        case "melonds_screen_layout3":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("right-left"),
                             };
                             break;
                     }

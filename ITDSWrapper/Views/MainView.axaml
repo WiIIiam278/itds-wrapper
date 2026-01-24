@@ -75,31 +75,34 @@
               XYFocus.RightNavigationStrategy="Projection">
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" MinHeight="{Binding TopPadding}"/>
             <Grid Grid.Row="1" IsVisible="{Binding ShowSidebar}" Grid.Column="0" Classes="menu" RowDefinitions="Auto,*,Auto">
-                <Grid Classes="menucontainer" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="{Binding MenuMargins}" RowSpacing="20">
+                <Grid Classes="menucontainer" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="{Binding MenuMargins}" RowSpacing="20">
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.Menu}" />
                     <Button Grid.Row="1" Classes="menuitem" x:Name="FirstMenuItem"
-                            Command="{Binding CloseMenuOverlay}" 
-                            Content="{x:Static assets:Strings.BackToGame}" 
+                            Command="{Binding CloseMenuOverlayCommand}"
+                            Content="{x:Static assets:Strings.SettingsBackToGame}" 
                             XYFocus.Up="{Binding #LastMenuItem}" />
                     <Button Grid.Row="2" Classes="menuitem" 
-                            Command="{Binding OpenDisplaySettingsMenu}"
-                            Content="{x:Static assets:Strings.DisplaySettings}" />
+                            Command="{Binding OpenDisplaySettingsMenuCommand}"
+                            Content="{x:Static assets:Strings.SettingsDisplay}" />
                     <Button Grid.Row="3" Classes="menuitem" 
-                            Command="{Binding OpenControllerSettingsMenu}"
-                            Content="{x:Static assets:Strings.ControllerSettings}" />
-                    <Button Grid.Row="5" Classes="menuitem" 
-                            Command="{Binding OpenLegalMenu}"
-                            Content="{x:Static assets:Strings.Legal}" />
-                    <Button Grid.Row="4" Classes="menuitem"
-                            Command="{Binding OpenSurveyURL}"
-                            Content="{x:Static assets:Strings.PlayerSurvey}" />
+                            Command="{Binding OpenControllerSettingsMenuCommand}"
+                            Content="{x:Static assets:Strings.SettingsController}" />
+                    <Button Grid.Row="4" Classes="menuitem" 
+                            Command="{Binding OpenAccessibilitySettingsMenuCommand}"
+                            Content="{x:Static assets:Strings.SettingsAccessibility}" />
+                    <Button Grid.Row="5" Classes="menuitem"
+                            Command="{Binding OpenSurveyUrlCommand}"
+                            Content="{x:Static assets:Strings.SettingsPlayerSurvey}" />
                     <Button Grid.Row="6" Classes="menuitem" 
-                            Command="{Binding OpenDiscordURL}" 
-                            Content="{x:Static assets:Strings.Discord}" />
-                    <Button Grid.Row="7" Classes="menuitem" x:Name="LastMenuItem"
-                            Command="{Binding QuitToDesktop}" 
+                            Command="{Binding OpenLegalMenuCommand}"
+                            Content="{x:Static assets:Strings.SettingsLegal}" />
+                    <Button Grid.Row="7" Classes="menuitem" 
+                            Command="{Binding OpenDiscordUrlCommand}" 
+                            Content="{x:Static assets:Strings.SettingsDiscord}" />
+                    <Button Grid.Row="8" Classes="menuitem" x:Name="LastMenuItem"
+                            Command="{Binding QuitToDesktopCommand}" 
                             IsVisible="{Binding !IsMobile}"
-                            Content="{x:Static assets:Strings.QuitToDesktop}"
+                            Content="{x:Static assets:Strings.SettingsQuitToDesktop}"
                             XYFocus.Down="{Binding #FirstMenuItem}" />
                 </Grid>
             </Grid>
@@ -109,6 +112,7 @@
                     <MultiBinding Converter="{x:Static BoolConverters.Or}">
                         <Binding Path="DisplaySettingsMenuOpen" />
                         <Binding Path="ControllerSettingsMenuOpen" />
+                        <Binding Path="AccessibilitySettingsMenuOpen" />
                         <Binding Path="LegalMenuOpen" />
                     </MultiBinding>
                 </Grid.IsVisible>
@@ -119,16 +123,48 @@
                     </LinearGradientBrush>
                 </Grid.Background>
                 <Grid IsVisible="{Binding DisplaySettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
-                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                    <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.DisplaySettings}" />
+                      RowSpacing="5" ColumnSpacing="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsDisplayHeader}" />
+                    <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto,Auto"
+                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Label Grid.Row="0" Grid.Column="0" Content="{x:Static assets:Strings.WindowStateSettingsLabel}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="0" Grid.Column="1" Content="&lt;" Command="{Binding ChangeWindowingSettingsCommand}"
+                                CommandParameter="{x:False}" IsVisible="{Binding !IsMobile}"/>
+                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding WindowingModeDesc}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="0" Grid.Column="3" Content=">" Command="{Binding ChangeWindowingSettingsCommand}"
+                                CommandParameter="{x:True}" IsVisible="{Binding !IsMobile}"/>
+                        
+                        <Label Grid.Row="1" Grid.Column="0" Content="{x:Static assets:Strings.ScreenLayoutLeftRight}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="1" Grid.Column="1" Content="&lt;" Command="{Binding ChangeScreenLayoutCommand}"
+                                CommandParameter="{x:False}" IsVisible="{Binding !IsMobile}"/>
+                        <Label Grid.Row="1" Grid.Column="2" Content="{Binding TargetScreenLayoutDesc}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="1" Grid.Column="3" Content=">" Command="{Binding ChangeScreenLayoutCommand}"
+                                CommandParameter="{x:True}" IsVisible="{Binding !IsMobile}"/>
+                        
+                        <Label Grid.Row="2" Grid.Column="0" Content="{x:Static assets:Strings.SettingsBorders}"/>
+                        <Button Grid.Row="2" Grid.Column="1" Content="&lt;" Command="{Binding ChangeBorderSettingsCommand}"/>
+                        <Label Grid.Row="2" Grid.Column="2" Content="{Binding BordersSettingDesc}"/>
+                        <Button Grid.Row="2" Grid.Column="3" Content=">" Command="{Binding ChangeBorderSettingsCommand}"/>
+                    </Grid>
                 </Grid>
                 <Grid IsVisible="{Binding ControllerSettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                    <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.ControllerSettings}" />
+                    <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsControllerHeader}" />
+                </Grid>
+                <Grid IsVisible="{Binding AccessibilitySettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
+                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsAccessibilityHeader}" />
+                    <Grid Grid.Row="1" RowDefinitions="Auto" ColumnDefinitions="Auto,Auto,Auto,Auto"
+                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Label Grid.Row="0" Grid.Column="0" Content="{x:Static assets:Strings.SettingsScreenReader}"/>
+                        <Button Grid.Row="0" Grid.Column="1" Content="&lt;" Command="{Binding ChangeScreenReaderSettingsCommand}"/>
+                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding ScreenReaderSettingDesc}"/>
+                        <Button Grid.Row="0" Grid.Column="3" Content=">" Command="{Binding ChangeScreenReaderSettingsCommand}"/>
+                    </Grid>
                 </Grid>
                 <Grid IsVisible="{Binding LegalMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                    <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.Legal}" />
+                    <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsLegal}" />
                 </Grid>
             </Grid>
             <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" MinHeight="{Binding BottomPadding}"/>
