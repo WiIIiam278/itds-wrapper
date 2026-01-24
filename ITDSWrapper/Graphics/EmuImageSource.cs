@@ -11,13 +11,13 @@ namespace ITDSWrapper.Graphics;
 
 public class EmuImageSource : IImage, IDisposable
 {
-    private byte[] _frame;
+    public byte[] Frame { get; }
     private EmuDrawOperation? _drawOperation;
     public Size Size { get; }
 
     public EmuImageSource(byte[] frame, uint width, uint height)
     {
-        _frame = frame;
+        Frame = frame;
         Size = new(width, height);
     }
 
@@ -25,7 +25,7 @@ public class EmuImageSource : IImage, IDisposable
     {
         _drawOperation ??= new()
         {
-            Frame = _frame,
+            Frame = Frame,
             Width = (int)Size.Width,
             Height = (int)Size.Height,
             Bounds = destRect,
@@ -36,7 +36,7 @@ public class EmuImageSource : IImage, IDisposable
 
     public void SetFrame(byte[] frame)
     {
-        Array.Copy(frame, _frame, _frame.Length);
+        Array.Copy(frame, Frame, Frame.Length);
     }
 
     public void Dispose()

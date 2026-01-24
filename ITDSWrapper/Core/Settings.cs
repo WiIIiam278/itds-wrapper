@@ -13,6 +13,9 @@ public class Settings
 
     private static string[] _langCodeArray = ["en", "ja"];
     public byte LanguageIndex => (byte)_langCodeArray.IndexOf(LanguageCode);
+    
+    public WindowingMode WindowingMode { get; set; } = WindowingMode.FULL_SCREEN;
+    public ScreenLayout CurrentScreenLayout { get; set; } = ScreenLayout.TOP_BOTTOM;
 
     public void Save(string path)
     {
@@ -25,4 +28,18 @@ public class Settings
             ? JsonSerializer.Deserialize<Settings>(File.ReadAllText(Path.Combine(path, "settings.json"))) ?? new()
             : new();
     }
+}
+
+public enum WindowingMode
+{
+    FULL_SCREEN,
+    BORDERLESS,
+    WINDOWED,
+}
+
+public enum ScreenLayout
+{
+    TOP_BOTTOM,
+    LEFT_RIGHT,
+    RIGHT_LEFT,
 }

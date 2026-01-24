@@ -10,7 +10,6 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using DiscUtils.Streams;
 using ITDSWrapper.Assets;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
@@ -31,6 +30,11 @@ public class MainViewModel : ViewModelBase
     public static bool IsMobile => OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
     
     public Control? Top { get; set; }
+
+    public enum Setting
+    {
+        SCREEN_LAYOUT,
+    }
     
     [Reactive]
     public WindowState WindowState { get; set; } = WindowState.FullScreen;
@@ -43,25 +47,18 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public string WindowingModeDesc { get; set; } = Strings.WindowStateFullScreen;
 
-    private enum WindowingMode
-    {
-        FULL_SCREEN,
-        BORDERLESS,
-        WINDOWED,
-    }
-    
     public int WindowingModeIdx
     {
-        get;
+        get => (int)WrapperSettings.WindowingMode;
         set
         {
-            field = value;
-            if (value is >= 0 and < 3)
+            WrapperSettings.WindowingMode = (WindowingMode)value;
+            if (value >= 0 && value < Enum.GetNames<WindowingMode>().Length)
             {
                 WindowingModeDesc = new[] { Strings.WindowStateFullScreen, Strings.WindowStateBorderless, Strings.WindowStateWindowed }[value];
             }
 
-            switch ((WindowingMode)WindowingModeIdx)
+            switch (WrapperSettings.WindowingMode)
             {
                 default:
                 case WindowingMode.FULL_SCREEN:
@@ -69,6 +66,7 @@ public class MainViewModel : ViewModelBase
                     Screen? currentScreen = window?.Screens.ScreenFromWindow(window);
                     if (currentScreen is not null)
                     {
+                        // Keeps us on the right screen when we're full screening
                         window?.Position = new(currentScreen.WorkingArea.X, currentScreen.WorkingArea.Y);
                     }
                     WindowState = WindowState.FullScreen;
@@ -90,6 +88,24 @@ public class MainViewModel : ViewModelBase
             }
         }
     }
+    
+    [Reactive]
+    public string TargetScreenLayoutDesc { get; set; } = Strings.ScreenLayoutTopBottom;
+
+    public int TargetScreenLayoutIdx
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value >= 0 && value < Enum.GetNames<ScreenLayout>().Length)
+            {
+                TargetScreenLayoutDesc = new[] { Strings.ScreenLayoutTopBottom, Strings.ScreenLayoutLeftRight, Strings.ScreenLayoutRightLeft }[value];
+            }
+        }
+    }
+
+    private readonly Dictionary<Setting, Action> _settingsChangesBuffer = [];
 
     public RetroWrapper Wrapper { get; }
     [Reactive]
@@ -102,10 +118,12 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public bool LegalMenuOpen { get; set; }
     public bool ShowSidebar => !(IsMobile && (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || LegalMenuOpen));
-    
-    private readonly Settings _settings;
+
+    public Settings WrapperSettings { get; }
     private int _currentLangBit;
     private int _langInputsSent;
+
+    public double EmuRenderRatio { get; private set; } = 256.0 / 384.0;
 
     public double EmuRenderWidth
     {
@@ -139,7 +157,7 @@ public class MainViewModel : ViewModelBase
         set;
     } = 10;
     
-    public int MenuMargins => IsMobile ? 30 : 50;
+    public static int MenuMargins => IsMobile ? 30 : 50;
 
     public bool DisplayVirtualControls => IsMobile && CurrentInputDriver == 0;
 
@@ -180,6 +198,8 @@ public class MainViewModel : ViewModelBase
     }
     private readonly PointerState? _pointerState;
 
+    private readonly InputSwitcher _inputSwitcher;
+
     private readonly System.Timers.Timer _batteryTimer;
 
     public ICommand CloseMenuOverlayCommand { get; }
@@ -191,6 +211,7 @@ public class MainViewModel : ViewModelBase
     public ICommand QuitToDesktopCommand { get; }
     
     public ICommand ChangeWindowingSettingsCommand { get; }
+    public ICommand ChangeScreenLayoutCommand { get; }
     
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
@@ -218,7 +239,7 @@ public class MainViewModel : ViewModelBase
     
     public MainViewModel()
     {
-        _settings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
+        WrapperSettings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
         
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
@@ -227,7 +248,7 @@ public class MainViewModel : ViewModelBase
             _nextBorder = border;
             SetNextBorder();
         };
-        if (_settings.ScreenReaderEnabled)
+        if (WrapperSettings.ScreenReaderEnabled)
         {
             StartScreenReader();
         }
@@ -238,7 +259,7 @@ public class MainViewModel : ViewModelBase
         ndsStream.ReadExactly(data);
         Wrapper.LoadGame(data);
 
-        if (_settings.BordersEnabled)
+        if (WrapperSettings.BordersEnabled)
         {
             StartBorder();
         }
@@ -270,8 +291,8 @@ public class MainViewModel : ViewModelBase
             AssignVirtualBindings();
         }
         
-        InputSwitcher? inputSwitcher = ((App)Application.Current).InputSwitcher;
-        inputSwitcher?.Wrapper = Wrapper;
+        _inputSwitcher = ((App)Application.Current).InputSwitcher ?? new();
+        _inputSwitcher.Wrapper = Wrapper;
         
         IBatteryMonitor? batteryMonitor = ((App)Application.Current).BatteryMonitor;
         Wrapper.BatteryLevel = batteryMonitor?.GetBatteryLevel() ?? 100;
@@ -291,10 +312,11 @@ public class MainViewModel : ViewModelBase
         QuitToDesktopCommand = ReactiveCommand.Create(CloseApplication);
         
         ChangeWindowingSettingsCommand = ReactiveCommand.Create<bool>(ChangeWindowingSettings);
+        ChangeScreenLayoutCommand = ReactiveCommand.Create<bool>(ChangeScreenLayout);
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
-        inputSwitcher?.SetDefaultInputDelegate(HandleInput);
+        _inputSwitcher.SetDefaultInputDelegate(HandleInput);
         Wrapper.OnCheckInput = HandleStartupInput;
         Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
@@ -328,6 +350,11 @@ public class MainViewModel : ViewModelBase
         _pauseDriver.PushPauseState(DisplaySettingsOverlay);
         DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = LegalMenuOpen = false;
         ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 50 } : null;
+        foreach (Setting setting in _settingsChangesBuffer.Keys)
+        {
+            _settingsChangesBuffer[setting].Invoke();
+        }
+        _settingsChangesBuffer.Clear();
     }
 
     private void OpenUrl(string url)
@@ -345,6 +372,85 @@ public class MainViewModel : ViewModelBase
         {
             WindowingModeIdx = (WindowingModeIdx + (forward ? 1 : -1)) % 3;
         }
+    }
+
+    private void ChangeScreenLayout(bool forward)
+    {
+        if (!forward && TargetScreenLayoutIdx == 0)
+        {
+            TargetScreenLayoutIdx = Enum.GetValues<ScreenLayout>().Length - 1;
+        }
+        else
+        {
+            TargetScreenLayoutIdx = (TargetScreenLayoutIdx + (forward ? 1 : -1)) % Enum.GetValues<ScreenLayout>().Length;
+        }
+
+        if (TargetScreenLayoutIdx == (int)WrapperSettings.CurrentScreenLayout)
+        {
+            _settingsChangesBuffer.Remove(Setting.SCREEN_LAYOUT);
+        }
+        else
+        {
+            _settingsChangesBuffer[Setting.SCREEN_LAYOUT] = () =>
+            {
+                int numPresses = TargetScreenLayoutIdx - (int)WrapperSettings.CurrentScreenLayout;
+                numPresses = numPresses < 0 ? Enum.GetValues<ScreenLayout>().Length + numPresses : numPresses;
+
+                WrapperSettings.CurrentScreenLayout = (ScreenLayout)TargetScreenLayoutIdx;
+                switch (WrapperSettings.CurrentScreenLayout)
+                {
+                    default:
+                    case ScreenLayout.TOP_BOTTOM:
+                        CurrentFrame = new(CurrentFrame?.Frame ?? [], 256, 384);
+                        EmuRenderRatio = 256.0 / 384.0;
+                        break;
+                        
+                    case ScreenLayout.LEFT_RIGHT:
+                    case ScreenLayout.RIGHT_LEFT:
+                        CurrentFrame = new(CurrentFrame?.Frame ?? [], 512, 192);
+                        EmuRenderRatio = 512.0 / 192.0;
+                        break;
+                }
+                ResizeEmuScreen(Top?.Bounds.Width ?? 0, Top?.Bounds.Height ?? 0);
+
+                int currentPress = 0;
+                bool pressed = false;
+                _inputSwitcher.SetInputDelegate(new(nameof(ChangeScreenLayout), (_, _, _, id) =>
+                {
+                    if (currentPress == numPresses)
+                    {
+                        _inputSwitcher.ResetInputDelegate();
+                        return 0;
+                    }
+                    switch (id)
+                    {
+                        case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R3:
+                        {
+                            if (!pressed)
+                            {
+                                pressed = true;
+                                return 1;
+                            }
+                            else
+                            {
+                                pressed = false;
+                                currentPress++;
+                            }
+
+                            break;
+                        }
+                    }
+
+                    return 0;
+                }));
+            };
+        }
+    }
+
+    public void ResizeEmuScreen(double width, double height)
+    {
+        EmuRenderWidth = Math.Min(width, height * EmuRenderRatio);
+        EmuRenderHeight = Math.Min(height, 1 / (EmuRenderRatio / width));
     }
 
     public void HandleKey<T>(T input, bool pressed)
@@ -380,7 +486,7 @@ public class MainViewModel : ViewModelBase
         if (pressedArgs is not null)
         {
             Point pos = pressedArgs.GetCurrentPoint(relativeTo).Position;
-            _pointerState?.Press(pos.X, pos.Y);
+            _pointerState?.Press(pos.X, pos.Y, WrapperSettings.CurrentScreenLayout);
         }
         else if (releasedArgs is not null)
         {
@@ -389,7 +495,7 @@ public class MainViewModel : ViewModelBase
         else if (movedArgs is not null && (_pointerState?.Pressed ?? false))
         {
             Point pos = movedArgs.GetCurrentPoint(relativeTo).Position;
-            _pointerState.Press(pos.X, pos.Y);
+            _pointerState.Press(pos.X, pos.Y, WrapperSettings.CurrentScreenLayout);
         }
     }
 
@@ -493,7 +599,7 @@ public class MainViewModel : ViewModelBase
                     {
                         return 0;
                     }
-                    return (_settings.LanguageIndex & (0x1 << (6 - _currentLangBit))) != 0 ? (short)1 : (short)0;
+                    return (WrapperSettings.LanguageIndex & (0x1 << (6 - _currentLangBit))) != 0 ? (short)1 : (short)0;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
                     if (_langInputsSent < 4)
                     {
@@ -503,7 +609,7 @@ public class MainViewModel : ViewModelBase
                     {
                         return 0;
                     }
-                    return (_settings.LanguageIndex & (0x1 << (6 - _currentLangBit))) == 0 ? (short)1 : (short)0;
+                    return (WrapperSettings.LanguageIndex & (0x1 << (6 - _currentLangBit))) == 0 ? (short)1 : (short)0;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
                     if (_langInputsSent is >= 4 and < 6)
                     {

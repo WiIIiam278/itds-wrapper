@@ -119,7 +119,7 @@
                     </LinearGradientBrush>
                 </Grid.Background>
                 <Grid IsVisible="{Binding DisplaySettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
-                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                      RowSpacing="5" ColumnSpacing="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.DisplaySettings}" />
                     <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto"
                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -127,6 +127,12 @@
                                 CommandParameter="{x:False}" IsVisible="{Binding !IsMobile}"/>
                         <Label Grid.Row="0" Grid.Column="1" Content="{Binding WindowingModeDesc}" IsVisible="{Binding !IsMobile}"/>
                         <Button Grid.Row="0" Grid.Column="2" Content=">" Command="{Binding ChangeWindowingSettingsCommand}"
+                                CommandParameter="{x:True}" IsVisible="{Binding !IsMobile}"/>
+                        
+                        <Button Grid.Row="1" Grid.Column="0" Content="&lt;" Command="{Binding ChangeScreenLayoutCommand}"
+                                CommandParameter="{x:False}" IsVisible="{Binding !IsMobile}"/>
+                        <Label Grid.Row="1" Grid.Column="1" Content="{Binding TargetScreenLayoutDesc}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="1" Grid.Column="2" Content=">" Command="{Binding ChangeScreenLayoutCommand}"
                                 CommandParameter="{x:True}" IsVisible="{Binding !IsMobile}"/>
                     </Grid>
                 </Grid>

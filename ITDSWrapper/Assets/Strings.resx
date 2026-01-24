@@ -60,4 +60,13 @@
     <data name="WindowStateSettingsLabel" xml:space="preserve">
         <value>Windowing Mode</value>
     </data>
+    <data name="ScreenLayoutTopBottom" xml:space="preserve">
+        <value>Vertical</value>
+    </data>
+    <data name="ScreenLayoutLeftRight" xml:space="preserve">
+        <value>Horizontal (Bottom on Right)</value>
+    </data>
+    <data name="ScreenLayoutRightLeft" xml:space="preserve">
+        <value>Horizontal (Bottom on Left)</value>
+    </data>
 </root>

@@ -139,6 +139,33 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Horizontal (Bottom on Right).
+        /// </summary>
+        public static string ScreenLayoutLeftRight {
+            get {
+                return ResourceManager.GetString("ScreenLayoutLeftRight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Horizontal (Bottom on Left).
+        /// </summary>
+        public static string ScreenLayoutRightLeft {
+            get {
+                return ResourceManager.GetString("ScreenLayoutRightLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vertical.
+        /// </summary>
+        public static string ScreenLayoutTopBottom {
+            get {
+                return ResourceManager.GetString("ScreenLayoutTopBottom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Website.
         /// </summary>
         public static string Website {
