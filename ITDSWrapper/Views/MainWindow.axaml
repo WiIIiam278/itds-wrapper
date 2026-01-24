@@ -7,8 +7,12 @@
         xmlns:assets="using:ITDSWrapper.Assets"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ITDSWrapper.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        WindowState="FullScreen"
+        SystemDecorations="{Binding Decorations}"
+        ExtendClientAreaToDecorationsHint="{Binding ExtendClientArea}"
+        ExtendClientAreaChromeHints="{Binding ChromeHints}"
+        WindowState="{Binding WindowState}"
         Title="{x:Static assets:Strings.GameTitle}">
         <views:MainView Name="View" />
 </Window>

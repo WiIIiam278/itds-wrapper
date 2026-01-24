@@ -10,6 +10,8 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using DiscUtils.Streams;
+using ITDSWrapper.Assets;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
 using ITDSWrapper.Graphics;
@@ -25,9 +27,61 @@ namespace ITDSWrapper.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public Control Top { get; set; }
-    
     public static bool IsMobile => OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
+    
+    public Control? Top { get; set; }
+    
+    [Reactive]
+    public WindowState WindowState { get; set; } = WindowState.FullScreen;
+    [Reactive]
+    public SystemDecorations Decorations { get; set; } = SystemDecorations.Full;
+    [Reactive]
+    public ExtendClientAreaChromeHints ChromeHints { get; set; } = ExtendClientAreaChromeHints.Default;
+    [Reactive] 
+    public bool ExtendClientArea { get; set; } = false;
+    [Reactive]
+    public string WindowingModeDesc { get; set; } = Strings.WindowStateFullScreen;
+
+    public enum WindowingMode
+    {
+        FULL_SCREEN,
+        BORDERLESS,
+        WINDOWED,
+    }
+    public int WindowingModeIdx
+    {
+        get => field;
+        set
+        {
+            field = value;
+            if (value is >= 0 and < 3)
+            {
+                WindowingModeDesc = new[] { Strings.WindowStateFullScreen, Strings.WindowStateBorderless, Strings.WindowStateWindowed }[value];
+            }
+
+            switch ((WindowingMode)WindowingModeIdx)
+            {
+                default:
+                case WindowingMode.FULL_SCREEN:
+                    WindowState = WindowState.FullScreen;
+                    break;
+                
+                case WindowingMode.BORDERLESS:
+                    WindowState = WindowState.Maximized;
+                    Decorations = SystemDecorations.None;
+                    ChromeHints = ExtendClientAreaChromeHints.NoChrome;
+                    ExtendClientArea = true;
+                    break;
+                
+                case WindowingMode.WINDOWED:
+                    WindowState = WindowState.Maximized;
+                    Decorations = SystemDecorations.Full;
+                    ChromeHints = ExtendClientAreaChromeHints.Default;
+                    ExtendClientArea = false;
+                    break;
+            }
+        }
+    }
     
     public RetroWrapper Wrapper { get; }
     [Reactive]
@@ -45,28 +99,25 @@ public class MainViewModel : ViewModelBase
     private int _currentLangBit;
     private int _langInputsSent;
 
-    private double _emuRenderWidth = 256;
-    private double _emuRenderHeight = 384;
-
     public double EmuRenderWidth
     {
-        get => _emuRenderWidth;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _emuRenderWidth, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             _pointerState?.Width = value;
         }
-    }
+    } = 256;
 
     public double EmuRenderHeight
     {
-        get => _emuRenderHeight;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _emuRenderHeight, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             _pointerState?.Height = value;
         }
-    }
+    } = 384;
 
     public int TopPadding
     {
@@ -120,17 +171,18 @@ public class MainViewModel : ViewModelBase
         }
     }
     private readonly PointerState? _pointerState;
-    
-    private readonly IBatteryMonitor? _batteryMonitor;
-    private System.Timers.Timer _batteryTimer;
 
-    public ICommand CloseMenuOverlay { get; }
-    public ICommand OpenDisplaySettingsMenu { get; }
-    public ICommand OpenControllerSettingsMenu { get; }
-    public ICommand OpenSurveyURL { get; }
-    public ICommand OpenLegalMenu { get; }
-    public ICommand OpenDiscordURL { get; }
-    public ICommand QuitToDesktop { get; }
+    private readonly System.Timers.Timer _batteryTimer;
+
+    public ICommand CloseMenuOverlayCommand { get; }
+    public ICommand OpenDisplaySettingsMenuCommand { get; }
+    public ICommand OpenControllerSettingsMenuCommand { get; }
+    public ICommand OpenSurveyUrlCommand { get; }
+    public ICommand OpenLegalMenuCommand { get; }
+    public ICommand OpenDiscordUrlCommand { get; }
+    public ICommand QuitToDesktopCommand { get; }
+    
+    public ICommand ChangeWindowingSettingsCommand { get; }
     
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
@@ -213,22 +265,24 @@ public class MainViewModel : ViewModelBase
         InputSwitcher? inputSwitcher = ((App)Application.Current).InputSwitcher;
         inputSwitcher?.Wrapper = Wrapper;
         
-        _batteryMonitor = ((App)Application.Current).BatteryMonitor;
-        Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
+        IBatteryMonitor? batteryMonitor = ((App)Application.Current).BatteryMonitor;
+        Wrapper.BatteryLevel = batteryMonitor?.GetBatteryLevel() ?? 100;
         _batteryTimer = new(TimeSpan.FromMinutes(1)) { AutoReset = true };
         _batteryTimer.Elapsed += (_, _) =>
         {
-            Wrapper.BatteryLevel = _batteryMonitor?.GetBatteryLevel() ?? 100;
+            Wrapper.BatteryLevel = batteryMonitor?.GetBatteryLevel() ?? 100;
         };
         _batteryTimer.Start();
 
-        CloseMenuOverlay = ReactiveCommand.Create(ToggleMenuOverlay);
-        OpenDisplaySettingsMenu = ReactiveCommand.Create(OpenDisplaySettings);
-        OpenControllerSettingsMenu = ReactiveCommand.Create(OpenControllerSettings);
-        OpenSurveyURL = ReactiveCommand.Create(() => OpenUrl("https://google.com"));
-        OpenLegalMenu = ReactiveCommand.Create(OpenLegal);
-        OpenDiscordURL = ReactiveCommand.Create(() => OpenUrl("https://discord.com"));
-        QuitToDesktop = ReactiveCommand.Create(CloseApplication);
+        CloseMenuOverlayCommand = ReactiveCommand.Create(ToggleMenuOverlay);
+        OpenDisplaySettingsMenuCommand = ReactiveCommand.Create(OpenDisplaySettings);
+        OpenControllerSettingsMenuCommand = ReactiveCommand.Create(OpenControllerSettings);
+        OpenSurveyUrlCommand = ReactiveCommand.Create(() => OpenUrl("https://google.com"));
+        OpenLegalMenuCommand = ReactiveCommand.Create(OpenLegal);
+        OpenDiscordUrlCommand = ReactiveCommand.Create(() => OpenUrl("https://discord.com"));
+        QuitToDesktopCommand = ReactiveCommand.Create(CloseApplication);
+        
+        ChangeWindowingSettingsCommand = ReactiveCommand.Create<bool>(ChangeWindowingSettings);
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
@@ -270,7 +324,19 @@ public class MainViewModel : ViewModelBase
 
     private void OpenUrl(string url)
     {
-        TopLevel.GetTopLevel(Top)?.Launcher?.LaunchUriAsync(new(url));
+        TopLevel.GetTopLevel(Top)?.Launcher.LaunchUriAsync(new(url));
+    }
+
+    private void ChangeWindowingSettings(bool forward)
+    {
+        if (!forward && WindowingModeIdx == 0)
+        {
+            WindowingModeIdx = 2;
+        }
+        else
+        {
+            WindowingModeIdx = (WindowingModeIdx + (forward ? 1 : -1)) % 3;
+        }
     }
 
     public void HandleKey<T>(T input, bool pressed)

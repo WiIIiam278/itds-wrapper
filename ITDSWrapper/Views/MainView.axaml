@@ -78,26 +78,26 @@
                 <Grid Classes="menucontainer" Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="{Binding MenuMargins}" RowSpacing="20">
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.Menu}" />
                     <Button Grid.Row="1" Classes="menuitem" x:Name="FirstMenuItem"
-                            Command="{Binding CloseMenuOverlay}" 
+                            Command="{Binding CloseMenuOverlayCommand}"
                             Content="{x:Static assets:Strings.BackToGame}" 
                             XYFocus.Up="{Binding #LastMenuItem}" />
                     <Button Grid.Row="2" Classes="menuitem" 
-                            Command="{Binding OpenDisplaySettingsMenu}"
+                            Command="{Binding OpenDisplaySettingsMenuCommand}"
                             Content="{x:Static assets:Strings.DisplaySettings}" />
                     <Button Grid.Row="3" Classes="menuitem" 
-                            Command="{Binding OpenControllerSettingsMenu}"
+                            Command="{Binding OpenControllerSettingsMenuCommand}"
                             Content="{x:Static assets:Strings.ControllerSettings}" />
                     <Button Grid.Row="5" Classes="menuitem" 
-                            Command="{Binding OpenLegalMenu}"
+                            Command="{Binding OpenLegalMenuCommand}"
                             Content="{x:Static assets:Strings.Legal}" />
                     <Button Grid.Row="4" Classes="menuitem"
-                            Command="{Binding OpenSurveyURL}"
+                            Command="{Binding OpenSurveyUrlCommand}"
                             Content="{x:Static assets:Strings.PlayerSurvey}" />
                     <Button Grid.Row="6" Classes="menuitem" 
-                            Command="{Binding OpenDiscordURL}" 
+                            Command="{Binding OpenDiscordUrlCommand}" 
                             Content="{x:Static assets:Strings.Discord}" />
                     <Button Grid.Row="7" Classes="menuitem" x:Name="LastMenuItem"
-                            Command="{Binding QuitToDesktop}" 
+                            Command="{Binding QuitToDesktopCommand}" 
                             IsVisible="{Binding !IsMobile}"
                             Content="{x:Static assets:Strings.QuitToDesktop}"
                             XYFocus.Down="{Binding #FirstMenuItem}" />
@@ -121,6 +121,12 @@
                 <Grid IsVisible="{Binding DisplaySettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.DisplaySettings}" />
+                    <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto"
+                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Button Grid.Row="0" Grid.Column="0" Content="&lt;" Command="{Binding ChangeWindowingSettingsCommand}" CommandParameter="{x:False}"/>
+                        <Label Grid.Row="0" Grid.Column="1" Content="{Binding WindowingModeDesc}"/>
+                        <Button Grid.Row="0" Grid.Column="2" Content=">" Command="{Binding ChangeWindowingSettingsCommand}" CommandParameter="{x:True}"/>
+                    </Grid>
                 </Grid>
                 <Grid IsVisible="{Binding ControllerSettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">

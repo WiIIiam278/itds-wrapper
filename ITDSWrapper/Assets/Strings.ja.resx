@@ -41,4 +41,16 @@
     <data name="QuitToDesktop" xml:space="preserve">
         <value>Quit to Desktop</value>
     </data>
+    <data name="WindowStateFullScreen" xml:space="preserve">
+        <value>Full Screen</value>
+    </data>
+    <data name="WindowStateWindowed" xml:space="preserve">
+        <value>Windowed</value>
+    </data>
+    <data name="WindowStateBorderless" xml:space="preserve">
+        <value>Borderless</value>
+    </data>
+    <data name="WindowStateSettingsLabel" xml:space="preserve">
+        <value>Windowing Mode</value>
+    </data>
 </root>

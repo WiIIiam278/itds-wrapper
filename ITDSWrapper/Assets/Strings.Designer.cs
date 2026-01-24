@@ -146,5 +146,41 @@ namespace ITDSWrapper.Assets {
                 return ResourceManager.GetString("Website", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Borderless.
+        /// </summary>
+        public static string WindowStateBorderless {
+            get {
+                return ResourceManager.GetString("WindowStateBorderless", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Screen.
+        /// </summary>
+        public static string WindowStateFullScreen {
+            get {
+                return ResourceManager.GetString("WindowStateFullScreen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windowing Mode.
+        /// </summary>
+        public static string WindowStateSettingsLabel {
+            get {
+                return ResourceManager.GetString("WindowStateSettingsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windowed.
+        /// </summary>
+        public static string WindowStateWindowed {
+            get {
+                return ResourceManager.GetString("WindowStateWindowed", resourceCulture);
+            }
+        }
     }
 }
