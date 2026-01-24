@@ -58,42 +58,6 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Back to Game.
-        /// </summary>
-        public static string BackToGame {
-            get {
-                return ResourceManager.GetString("BackToGame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller Settings.
-        /// </summary>
-        public static string ControllerSettings {
-            get {
-                return ResourceManager.GetString("ControllerSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Discord.
-        /// </summary>
-        public static string Discord {
-            get {
-                return ResourceManager.GetString("Discord", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Display Settings.
-        /// </summary>
-        public static string DisplaySettings {
-            get {
-                return ResourceManager.GetString("DisplaySettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Into the Dream Spring.
         /// </summary>
         public static string GameTitle {
@@ -103,38 +67,11 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Legal.
-        /// </summary>
-        public static string Legal {
-            get {
-                return ResourceManager.GetString("Legal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Menu.
         /// </summary>
         public static string Menu {
             get {
                 return ResourceManager.GetString("Menu", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Player Survey.
-        /// </summary>
-        public static string PlayerSurvey {
-            get {
-                return ResourceManager.GetString("PlayerSurvey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Quit to Desktop.
-        /// </summary>
-        public static string QuitToDesktop {
-            get {
-                return ResourceManager.GetString("QuitToDesktop", resourceCulture);
             }
         }
         
@@ -166,11 +103,182 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accessibility Settings.
+        /// </summary>
+        public static string SettingsAccessibility {
+            get {
+                return ResourceManager.GetString("SettingsAccessibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accessibility.
+        /// </summary>
+        public static string SettingsAccessibilityHeader {
+            get {
+                return ResourceManager.GetString("SettingsAccessibilityHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back to Game.
+        /// </summary>
+        public static string SettingsBackToGame {
+            get {
+                return ResourceManager.GetString("SettingsBackToGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screen Borders.
+        /// </summary>
+        public static string SettingsBorders {
+            get {
+                return ResourceManager.GetString("SettingsBorders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Controller Settings.
+        /// </summary>
+        public static string SettingsController {
+            get {
+                return ResourceManager.GetString("SettingsController", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Controller.
+        /// </summary>
+        public static string SettingsControllerHeader {
+            get {
+                return ResourceManager.GetString("SettingsControllerHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord.
+        /// </summary>
+        public static string SettingsDiscord {
+            get {
+                return ResourceManager.GetString("SettingsDiscord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Display Settings.
+        /// </summary>
+        public static string SettingsDisplay {
+            get {
+                return ResourceManager.GetString("SettingsDisplay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Display.
+        /// </summary>
+        public static string SettingsDisplayHeader {
+            get {
+                return ResourceManager.GetString("SettingsDisplayHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Settings.
+        /// </summary>
+        public static string SettingsGeneral {
+            get {
+                return ResourceManager.GetString("SettingsGeneral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal.
+        /// </summary>
+        public static string SettingsLegal {
+            get {
+                return ResourceManager.GetString("SettingsLegal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player Survey.
+        /// </summary>
+        public static string SettingsPlayerSurvey {
+            get {
+                return ResourceManager.GetString("SettingsPlayerSurvey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quit to Desktop.
+        /// </summary>
+        public static string SettingsQuitToDesktop {
+            get {
+                return ResourceManager.GetString("SettingsQuitToDesktop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screen Layout.
+        /// </summary>
+        public static string SettingsScreenLayout {
+            get {
+                return ResourceManager.GetString("SettingsScreenLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screen Reader.
+        /// </summary>
+        public static string SettingsScreenReader {
+            get {
+                return ResourceManager.GetString("SettingsScreenReader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Website.
         /// </summary>
-        public static string Website {
+        public static string SettingsWebsite {
             get {
-                return ResourceManager.GetString("Website", resourceCulture);
+                return ResourceManager.GetString("SettingsWebsite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        public static string SettingSwitchDisabled {
+            get {
+                return ResourceManager.GetString("SettingSwitchDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enabled.
+        /// </summary>
+        public static string SettingSwitchEnabled {
+            get {
+                return ResourceManager.GetString("SettingSwitchEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Off.
+        /// </summary>
+        public static string SettingSwitchOff {
+            get {
+                return ResourceManager.GetString("SettingSwitchOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On.
+        /// </summary>
+        public static string SettingSwitchOn {
+            get {
+                return ResourceManager.GetString("SettingSwitchOn", resourceCulture);
             }
         }
         

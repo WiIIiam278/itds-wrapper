@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -105,6 +104,12 @@ public class MainViewModel : ViewModelBase
             }
         }
     }
+    
+    [Reactive]
+    public string BordersSettingDesc { get; set; }
+    
+    [Reactive]
+    public string ScreenReaderSettingDesc { get; set; }
 
     private readonly Dictionary<Setting, Action> _settingsChangesBuffer = [];
 
@@ -117,8 +122,10 @@ public class MainViewModel : ViewModelBase
     [Reactive] 
     public bool ControllerSettingsMenuOpen { get; set; }
     [Reactive]
+    public bool AccessibilitySettingsMenuOpen { get; set; }
+    [Reactive]
     public bool LegalMenuOpen { get; set; }
-    public bool ShowSidebar => !(IsMobile && (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || LegalMenuOpen));
+    public bool ShowSidebar => !(IsMobile && (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || AccessibilitySettingsMenuOpen || LegalMenuOpen));
 
     public Settings WrapperSettings { get; }
     private int _currentLangBit;
@@ -206,6 +213,7 @@ public class MainViewModel : ViewModelBase
     public ICommand CloseMenuOverlayCommand { get; }
     public ICommand OpenDisplaySettingsMenuCommand { get; }
     public ICommand OpenControllerSettingsMenuCommand { get; }
+    public ICommand OpenAccessibilitySettingsMenuCommand { get; }
     public ICommand OpenSurveyUrlCommand { get; }
     public ICommand OpenLegalMenuCommand { get; }
     public ICommand OpenDiscordUrlCommand { get; }
@@ -213,7 +221,9 @@ public class MainViewModel : ViewModelBase
     
     public ICommand ChangeWindowingSettingsCommand { get; }
     public ICommand ChangeScreenLayoutCommand { get; }
-    
+    public ICommand ChangeBorderSettingsCommand { get; }
+    public ICommand ChangeScreenReaderSettingsCommand { get; }
+
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
     public VirtualButtonViewModel? XButton { get; set; }
@@ -243,6 +253,8 @@ public class MainViewModel : ViewModelBase
         WrapperSettings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
         WindowingModeIdx = (int)WrapperSettings.WindowingMode;
         TargetScreenLayoutIdx = (int)WrapperSettings.CurrentScreenLayout;
+        BordersSettingDesc = WrapperSettings.BordersEnabled ? Strings.SettingSwitchEnabled : Strings.SettingSwitchDisabled;
+        ScreenReaderSettingDesc = WrapperSettings.ScreenReaderEnabled ? Strings.SettingSwitchOn : Strings.SettingSwitchOff;
         
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
@@ -309,6 +321,7 @@ public class MainViewModel : ViewModelBase
         CloseMenuOverlayCommand = ReactiveCommand.Create(ToggleMenuOverlay);
         OpenDisplaySettingsMenuCommand = ReactiveCommand.Create(OpenDisplaySettings);
         OpenControllerSettingsMenuCommand = ReactiveCommand.Create(OpenControllerSettings);
+        OpenAccessibilitySettingsMenuCommand = ReactiveCommand.Create(OpenAccessibilitySettings);
         OpenSurveyUrlCommand = ReactiveCommand.Create(() => OpenUrl("https://google.com"));
         OpenLegalMenuCommand = ReactiveCommand.Create(OpenLegal);
         OpenDiscordUrlCommand = ReactiveCommand.Create(() => OpenUrl("https://discord.com"));
@@ -316,6 +329,8 @@ public class MainViewModel : ViewModelBase
         
         ChangeWindowingSettingsCommand = ReactiveCommand.Create<bool>(ChangeWindowingSettings);
         ChangeScreenLayoutCommand = ReactiveCommand.Create<bool>(ChangeScreenLayout);
+        ChangeBorderSettingsCommand = ReactiveCommand.Create(ToggleBorderSettings);
+        ChangeScreenReaderSettingsCommand = ReactiveCommand.Create(ToggleScreenReader);
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
@@ -334,17 +349,22 @@ public class MainViewModel : ViewModelBase
     private void OpenDisplaySettings()
     {
         DisplaySettingsMenuOpen = true;
-        LegalMenuOpen = ControllerSettingsMenuOpen = false;
+        LegalMenuOpen = ControllerSettingsMenuOpen = AccessibilitySettingsMenuOpen = false;
     }
     private void OpenControllerSettings()
     {
         ControllerSettingsMenuOpen = true;
-        LegalMenuOpen = DisplaySettingsMenuOpen = false;
+        LegalMenuOpen = DisplaySettingsMenuOpen = AccessibilitySettingsMenuOpen = false;
+    }
+    private void OpenAccessibilitySettings()
+    {
+        AccessibilitySettingsMenuOpen = true;
+        DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = LegalMenuOpen = false;
     }
     private void OpenLegal()
     {
         LegalMenuOpen = true;
-        DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = false;
+        DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = AccessibilitySettingsMenuOpen = false;
     }
 
     private void ToggleMenuOverlay()
@@ -408,6 +428,38 @@ public class MainViewModel : ViewModelBase
                 SendLayoutChangeToCore(numPresses);
             };
         }
+    }
+
+    private void ToggleBorderSettings()
+    {
+        if (WrapperSettings.BordersEnabled)
+        {
+            StopBorder();
+            BordersSettingDesc = Strings.SettingSwitchDisabled;
+        }
+        else
+        {
+            StartBorder();
+            BordersSettingDesc = Strings.SettingSwitchEnabled;
+        }
+        
+        WrapperSettings.BordersEnabled = !WrapperSettings.BordersEnabled;
+    }
+
+    private void ToggleScreenReader()
+    {
+        if (WrapperSettings.ScreenReaderEnabled)
+        {
+            StopScreenReader();
+            ScreenReaderSettingDesc = Strings.SettingSwitchOff;
+        }
+        else
+        {
+            StartScreenReader();
+            ScreenReaderSettingDesc = Strings.SettingSwitchOn;
+        }
+        
+        WrapperSettings.ScreenReaderEnabled = !WrapperSettings.ScreenReaderEnabled;
     }
 
     public void ChangeEmulatedScreenLayout()
@@ -673,7 +725,7 @@ public class MainViewModel : ViewModelBase
     
     private void StartScreenReader()
     {
-        _logInterpreter!.ScreenReader = ((App)Application.Current!).LogInterpreter?.ScreenReader;
+        _logInterpreter!.ScreenReader = ((App)Application.Current!).ScreenReader;
     }
 
     private void StopScreenReader()

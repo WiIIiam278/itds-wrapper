@@ -1,11 +1,7 @@
-using System;
 using System.Linq;
-using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
 using ITDSWrapper.ViewModels;
 using ITDSWrapper.Views.Controls;
 
