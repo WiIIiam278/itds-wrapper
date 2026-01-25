@@ -5,6 +5,6 @@ namespace ITDSWrapper.Views.Controls;
 public interface IPressableButtonView
 {
     public Rect Bounds { get; }
-    public void PressButton();
-    public void ReleaseButton(bool softRelease = false);
+    public void PressButton(bool doHaptics = false);
+    public void ReleaseButton(bool doHaptics = true, bool softRelease = false);
 }

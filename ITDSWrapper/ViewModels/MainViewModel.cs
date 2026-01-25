@@ -110,7 +110,9 @@ public class MainViewModel : ViewModelBase
     
     [Reactive]
     public string ScreenReaderSettingDesc { get; set; }
-
+    [Reactive]
+    public string ControlPadHapticsSettingDesc { get; set; }
+    
     private readonly Dictionary<Setting, Action> _settingsChangesBuffer = [];
 
     public RetroWrapper Wrapper { get; }
@@ -125,7 +127,8 @@ public class MainViewModel : ViewModelBase
     public bool AccessibilitySettingsMenuOpen { get; set; }
     [Reactive]
     public bool LegalMenuOpen { get; set; }
-    public bool ShowSidebar => !(IsMobile && (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || AccessibilitySettingsMenuOpen || LegalMenuOpen));
+    [Reactive]
+    public bool ShowSidebar { get; set; }
 
     public Settings WrapperSettings { get; }
     private int _currentLangBit;
@@ -223,6 +226,9 @@ public class MainViewModel : ViewModelBase
     public ICommand ChangeScreenLayoutCommand { get; }
     public ICommand ChangeBorderSettingsCommand { get; }
     public ICommand ChangeScreenReaderSettingsCommand { get; }
+    public ICommand ChangeControlPadHapticsSettingsCommand { get; }
+    
+    public ICommand SettingsBackCommand { get; }
 
     public VirtualButtonViewModel? AButton { get; set; }
     public VirtualButtonViewModel? BButton { get; set; }
@@ -244,7 +250,7 @@ public class MainViewModel : ViewModelBase
     public VirtualButtonViewModel? SettingsButton { get; set; }
     
     [Reactive]
-    public bool DisplaySettingsOverlay { get; set; }
+    public bool DisplayMenuOverlay { get; set; }
     [Reactive]
     public IEffect? ScreenEffect { get; set; }
     
@@ -331,6 +337,9 @@ public class MainViewModel : ViewModelBase
         ChangeScreenLayoutCommand = ReactiveCommand.Create<bool>(ChangeScreenLayout);
         ChangeBorderSettingsCommand = ReactiveCommand.Create(ToggleBorderSettings);
         ChangeScreenReaderSettingsCommand = ReactiveCommand.Create(ToggleScreenReader);
+        ChangeControlPadHapticsSettingsCommand = ReactiveCommand.Create(ToggleControlPadHaptics);
+
+        SettingsBackCommand = ReactiveCommand.Create(CloseSubMenu);
         
         Wrapper.OnFrame = DisplayFrame;
         Wrapper.OnSample = PlaySample;
@@ -350,31 +359,42 @@ public class MainViewModel : ViewModelBase
     {
         DisplaySettingsMenuOpen = true;
         LegalMenuOpen = ControllerSettingsMenuOpen = AccessibilitySettingsMenuOpen = false;
+        ShowSidebar = !IsMobile;
     }
     private void OpenControllerSettings()
     {
         ControllerSettingsMenuOpen = true;
         LegalMenuOpen = DisplaySettingsMenuOpen = AccessibilitySettingsMenuOpen = false;
+        ShowSidebar = !IsMobile;
     }
     private void OpenAccessibilitySettings()
     {
         AccessibilitySettingsMenuOpen = true;
         DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = LegalMenuOpen = false;
+        ShowSidebar = !IsMobile;
     }
     private void OpenLegal()
     {
         LegalMenuOpen = true;
         DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = AccessibilitySettingsMenuOpen = false;
+        ShowSidebar = !IsMobile;
+    }
+
+    private void CloseSubMenu()
+    {
+        DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = AccessibilitySettingsMenuOpen = LegalMenuOpen = false;
+        ShowSidebar = true;
     }
 
     private void ToggleMenuOverlay()
     {
-        DisplaySettingsOverlay = !DisplaySettingsOverlay;
-        _pauseDriver.PushPauseState(DisplaySettingsOverlay);
+        DisplayMenuOverlay = !DisplayMenuOverlay;
+        _pauseDriver.PushPauseState(DisplayMenuOverlay);
         DisplaySettingsMenuOpen = ControllerSettingsMenuOpen = LegalMenuOpen = false;
         ScreenEffect = ScreenEffect is null ? new BlurEffect { Radius = 50 } : null;
+        ShowSidebar = true;
 
-        if (!DisplaySettingsOverlay)
+        if (!DisplayMenuOverlay)
         {
             foreach (Setting setting in _settingsChangesBuffer.Keys)
             {
@@ -460,6 +480,12 @@ public class MainViewModel : ViewModelBase
         }
         
         WrapperSettings.ScreenReaderEnabled = !WrapperSettings.ScreenReaderEnabled;
+    }
+
+    private void ToggleControlPadHaptics()
+    {
+        ControlPadHapticsSettingDesc = WrapperSettings.ControlPadHapticsEnabled ? Strings.SettingSwitchOff : Strings.SettingSwitchOn;
+        WrapperSettings.ControlPadHapticsEnabled = !WrapperSettings.ControlPadHapticsEnabled;
     }
 
     public void ChangeEmulatedScreenLayout()

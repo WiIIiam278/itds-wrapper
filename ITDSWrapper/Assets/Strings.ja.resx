@@ -98,4 +98,10 @@
     <data name="SettingsScreenLayout" xml:space="preserve">
         <value>Screen Layout</value>
     </data>
+    <data name="SettingsControlPadHaptics" xml:space="preserve">
+        <value>Control Pad Haptics</value>
+    </data>
+    <data name="SettingsBack" xml:space="preserve">
+        <value>Back</value>
+    </data>
 </root>

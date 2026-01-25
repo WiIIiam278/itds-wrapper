@@ -17,21 +17,24 @@ public partial class VirtualButtonView : UserControl, IPressableButtonView
         InitializeComponent();
     }
     
-    public void PressButton()
+    public void PressButton(bool doHaptics)
     {
         if (_held)
         {
             _holdTimer = HoldTimerStart;
             return;
         }
-        
-        ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(true);
+
+        if (doHaptics)
+        {
+            ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(true);
+        }
         ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Press((VirtualButtonViewModel)DataContext!);
         _held = true;
         _holdTimer = HoldTimerStart;
     }
 
-    public void ReleaseButton(bool softRelease = false)
+    public void ReleaseButton(bool doHaptics = true, bool softRelease = false)
     {
         if (!_held)
         {
@@ -44,7 +47,10 @@ public partial class VirtualButtonView : UserControl, IPressableButtonView
             return;
         }
 
-        ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(false);
+        if (doHaptics)
+        {
+            ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(false);
+        }
         ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Release((VirtualButtonViewModel)DataContext!);
         _held = false;
         _holdTimer = HoldTimerStart;

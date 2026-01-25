@@ -9,6 +9,9 @@ namespace ITDSWrapper.Views;
 
 public partial class MainView : UserControl
 {
+
+    private bool Haptics => ((MainViewModel)DataContext!).WrapperSettings.ControlPadHapticsEnabled;
+    
     public MainView()
     {
         InitializeComponent();
@@ -91,16 +94,16 @@ public partial class MainView : UserControl
         {
             if (release)
             {
-                view.ReleaseButton();
+                view.ReleaseButton(Haptics);
             }
             else
             {
-                view.PressButton();
+                view.PressButton(Haptics);
             }
         }
         else if (!release)
         {
-            view.ReleaseButton(softRelease: true);
+            view.ReleaseButton(doHaptics: Haptics, softRelease: true);
         }
     }
 

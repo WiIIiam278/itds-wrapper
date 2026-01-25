@@ -121,6 +121,15 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string SettingsBack {
+            get {
+                return ResourceManager.GetString("SettingsBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back to Game.
         /// </summary>
         public static string SettingsBackToGame {
@@ -153,6 +162,15 @@ namespace ITDSWrapper.Assets {
         public static string SettingsControllerHeader {
             get {
                 return ResourceManager.GetString("SettingsControllerHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Control Pad Haptics.
+        /// </summary>
+        public static string SettingsControlPadHaptics {
+            get {
+                return ResourceManager.GetString("SettingsControlPadHaptics", resourceCulture);
             }
         }
         
