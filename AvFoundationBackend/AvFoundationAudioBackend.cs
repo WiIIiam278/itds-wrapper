@@ -34,7 +34,7 @@ public class AvFoundationAudioBackend : IAudioBackend
     }
 
     public int DesiredLatency { get; set; } = 300;
-    public int NumberOfBuffers { get; set; } = 2;
+    public int NumberOfBuffers { get; set; } = 4;
     
     public void Initialize(double sampleRate)
     {
@@ -49,7 +49,7 @@ public class AvFoundationAudioBackend : IAudioBackend
         _audioEngine.Connect(_audioPlayerNode, _audioEngine.MainMixerNode, _outputAudioFormat);
 
         _buffers = new AVAudioPcmBuffer[NumberOfBuffers];
-        int bufferSize = 10000;
+        int bufferSize = 32768;
         _bufferFrames = (uint)(bufferSize / 4);
         for (int i = 0; i < NumberOfBuffers; i++)
         {
