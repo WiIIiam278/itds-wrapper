@@ -261,6 +261,7 @@ public class MainViewModel : ViewModelBase
         TargetScreenLayoutIdx = (int)WrapperSettings.CurrentScreenLayout;
         BordersSettingDesc = WrapperSettings.BordersEnabled ? Strings.SettingSwitchEnabled : Strings.SettingSwitchDisabled;
         ScreenReaderSettingDesc = WrapperSettings.ScreenReaderEnabled ? Strings.SettingSwitchOn : Strings.SettingSwitchOff;
+        ControlPadHapticsSettingDesc = WrapperSettings.ControlPadHapticsEnabled ? Strings.SettingSwitchOn : Strings.SettingSwitchDisabled;
         
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
