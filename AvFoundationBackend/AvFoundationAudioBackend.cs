@@ -36,7 +36,7 @@ public class AvFoundationAudioBackend : IAudioBackend
     public int DesiredLatency { get; set; } = 300;
     public int NumberOfBuffers { get; set; } = 4;
     
-    public void Initialize(double sampleRate)
+    public virtual void Initialize(double sampleRate)
     {
         _sourceAudioFormat = new(AVAudioCommonFormat.PCMInt16, sampleRate, 2, false);
         _audioPlayerNode = new();
