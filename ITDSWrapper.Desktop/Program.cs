@@ -8,6 +8,9 @@ using Avalonia.ReactiveUI;
 using AvFoundationBackend;
 #endif
 using ITDSWrapper.Desktop.Steam;
+#if IS_WINDOWS
+using ITDSWrapper.Desktop.Windows;
+#endif
 
 namespace ITDSWrapper.Desktop;
 
@@ -83,6 +86,8 @@ sealed class Program
                 ((App)b.Instance!).BatteryMonitor = new BatteryMonitor();
 #if MACOS
                 ((App)b.Instance).AudioBackend = new AvFoundationAudioBackend();
+#elif IS_WINDOWS
+                ((App)b.Instance).AudioBackend = new WasapiAudioBackend();
 #endif
                 ipc.SendCommand("GAME_LANGUAGE");
 #if MACOS

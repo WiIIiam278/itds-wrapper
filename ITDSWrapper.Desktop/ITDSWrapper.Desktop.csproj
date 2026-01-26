@@ -46,6 +46,7 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Hardware.Info" />
+        <PackageReference Condition="'$(RuntimeIdentifier)'=='win-x64' Or $([System.OperatingSystem]::IsWindows())" Include="NAudio" />
         <PackageReference Include="System.Speech" />
     </ItemGroup>
 
