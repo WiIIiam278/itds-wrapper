@@ -26,7 +26,7 @@
     </PropertyGroup>
     
     <ItemGroup Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">
-        <PartialAppManifest Include="macos/Info.plist"/>
+        <PartialAppManifest Include="macos\Info.plist" />
     </ItemGroup>
     
     <ItemGroup>
