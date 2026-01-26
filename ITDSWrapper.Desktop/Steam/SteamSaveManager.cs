@@ -17,7 +17,7 @@ public static class SteamSaveManager
     public static bool DownloadCloudSave(SteamHelperIpc ipc)
     {
         string sdCardPath = Path.Combine(RetroWrapper.GetDirectoryForPlatform("saves"), "melonDS DS", "dldi_sd_card.bin");
-        ipc.SendCommand($"CLOUD_SAVE_UPLOAD {SaveFileName} {sdCardPath.Replace(' ', '\u0000')}");
+        ipc.SendCommand($"CLOUD_SAVE_DOWNLOAD {SaveFileName} {sdCardPath.Replace(' ', '\u0000')}");
 
         return false;
     }

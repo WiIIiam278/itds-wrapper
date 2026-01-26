@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO.Pipes;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Steamworks;
@@ -60,7 +61,7 @@ public static class Program
                 }
                 byte[] utf8Bytes = new byte[512];
                 await steamworksServer.ReadExactlyAsync(utf8Bytes);
-                string[] cmd = Encoding.UTF8.GetString(utf8Bytes, 0, utf8Bytes.Length).Replace('\u0000', ' ').TrimEnd().Split(' ');
+                string[] cmd = Encoding.UTF8.GetString(utf8Bytes, 0, utf8Bytes.Length).Split(' ').Select(s => s.Replace('\u0000', ' ').TrimEnd()).ToArray();
 
                 switch (cmd[0])
                 {
