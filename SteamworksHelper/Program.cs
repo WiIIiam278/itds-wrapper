@@ -28,11 +28,11 @@ public static class Program
         }
 
         string? gamePath = Environment.GetEnvironmentVariable(GamePathEnvironmentVariable);
-        if (!string.IsNullOrEmpty(gamePath))
+        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBUG_IPC")) && !string.IsNullOrEmpty(gamePath))
         {
             Process.Start(gamePath);
         }
-        else
+        else if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBUG_IPC")))
         {
             if (OperatingSystem.IsWindows())
             {
