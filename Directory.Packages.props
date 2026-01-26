@@ -15,7 +15,6 @@
     <PackageVersion Include="Avalonia.iOS" Version="11.3.10" />
     <PackageVersion Include="Avalonia.Android" Version="11.3.10" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.9" />
-    <PackageVersion Include="DiscUtils.Fat" Version="0.16.13" />
     <PackageVersion Include="Facepunch.Steamworks.Package" Version="1.0.6" />
     <PackageVersion Include="Facepunch.Steamworks.Posix" Version="2.4.6" />
     <PackageVersion Include="Facepunch.Steamworks.Win64" Version="2.4.6" />

@@ -24,7 +24,6 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI" />
-        <PackageReference Include="LTRData.DiscUtils.Fat" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Silk.NET.OpenAL" />
         <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />
