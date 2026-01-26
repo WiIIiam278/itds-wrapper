@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Linq;
@@ -30,13 +31,34 @@ public static class Program
         string? gamePath = Environment.GetEnvironmentVariable(GamePathEnvironmentVariable);
         if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBUG_IPC")) && !string.IsNullOrEmpty(gamePath))
         {
-            Process.Start(gamePath);
+            if (OperatingSystem.IsMacOS())
+            {
+                ProcessStartInfo psi = new(gamePath)
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                };
+                Process.Start(psi);
+            }
+            else
+            {
+                Process.Start(gamePath);
+            }
         }
         else if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBUG_IPC")))
         {
             if (OperatingSystem.IsWindows())
             {
                 Process.Start(".\\ITDSWrapper.Desktop.exe");
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                ProcessStartInfo psi = new("./ITDSWrapper.Desktop")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                };
+                Process.Start(psi);
             }
             else
             {

@@ -15,7 +15,7 @@
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleExecutable</key>
-        <string>ITDSWrapper</string>
+        <string>Contents/MacOS/ITDSWrapper.Desktop</string>
         <key>CFBundleShortVersionString</key>
         <string>0.1.0</string>
         <key>NSPrincipalClass</key>
