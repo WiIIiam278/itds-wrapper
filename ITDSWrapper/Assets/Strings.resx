@@ -105,4 +105,10 @@
     <data name="SettingsBorders" xml:space="preserve">
         <value>Screen Borders</value>
     </data>
+    <data name="SettingsControlPadHaptics" xml:space="preserve">
+        <value>Control Pad Haptics</value>
+    </data>
+    <data name="SettingsBack" xml:space="preserve">
+        <value>Back</value>
+    </data>
 </root>
