@@ -13,6 +13,7 @@ namespace ITDSWrapper.Desktop;
 
 sealed class Program
 {
+    private const string DebugIpcEnvironmentVariable = "DEBUG_IPC";
     private const string NoSteamEnvironmentVariable = "NOSTEAM";
     private const string ClearSteamCloudEnvironmentVariable = "CLEAR_CLOUD";
     
@@ -46,6 +47,11 @@ sealed class Program
             })
             .AfterSetup(b =>
             {
+                string? ipcPath = Environment.GetEnvironmentVariable(DebugIpcEnvironmentVariable);
+                if (!string.IsNullOrEmpty(ipcPath))
+                {
+                    Process.Start(ipcPath);
+                }
                 SteamHelperIpc ipc = new();
                 if (!Environment.GetEnvironmentVariable(NoSteamEnvironmentVariable)
                         ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? true)
