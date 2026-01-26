@@ -144,6 +144,34 @@ namespace Libretro.NET
                                 value = (sbyte*)Marshal.StringToHGlobalAnsi("rumble-pak"),
                             };
                             break;
+                        case "melonds_number_of_screen_layouts":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("3"),
+                            };
+                            break;
+                        case "melonds_screen_layout1":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("top-bottom"),
+                            };
+                            break;
+                        case "melonds_screen_layout2":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("left-right"),
+                            };
+                            break;
+                        case "melonds_screen_layout3":
+                            *cb = new()
+                            {
+                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
+                                value = (sbyte*)Marshal.StringToHGlobalAnsi("right-left"),
+                            };
+                            break;
                     }
                     return 1;
                 }

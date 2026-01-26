@@ -19,11 +19,34 @@
         <OnPlatform>
             <On Options="Android, iOS">
                 <Styles>
+                    <Style Selector="Grid.menu">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="ColumnSpan" Value="2" />
+                    </Style>
+                    
+                    <Style Selector="Grid.overlaymenucontainer">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    </Style>
+                    
+                    <Style Selector="Border.overlaydimming">
+                        <Setter Property="Background" Value="#59000000" />
+                    </Style>
+                    
                     <Style Selector="Label.header">
                         <Setter Property="FontSize" Value="40" />
                         <Setter Property="FontWeight" Value="Bold" />
                         <Setter Property="Margin" Value="16, 30, 16, 10" />
                         <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                    </Style>
+                    
+                    <Style Selector="Grid.menucontainer">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    </Style>
+                    
+                    <Style Selector="Grid.submenu">
+                        <Setter Property="Column" Value="0" />
+                        <Setter Property="ColumnSpan" Value="2" />
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
                     </Style>
 
                     <Style Selector="Button.menuitem">
@@ -54,6 +77,7 @@
                     
                     <Style Selector="Grid.submenu">
                         <Setter Property="Margin" Value="80 0 0 0" />
+                        <Setter Property="Column" Value="1" />
                         <Setter Property="Background">
                             <Setter.Value>
                                 <LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%" Opacity="0.45">

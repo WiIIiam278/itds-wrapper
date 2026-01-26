@@ -17,7 +17,7 @@ public partial class VirtualMultiButtonView : UserControl, IPressableButtonView
         InitializeComponent();
     }
 
-    public void PressButton()
+    public void PressButton(bool doHaptics = true)
     {
         if (_held)
         {
@@ -26,7 +26,10 @@ public partial class VirtualMultiButtonView : UserControl, IPressableButtonView
         }
 
         var ctx = (VirtualMultiButtonViewModel)DataContext!;
-        ctx.Haptics?.Fire(false);
+        if (doHaptics)
+        {
+            ctx.Haptics?.Fire(false);
+        }
         foreach (var button in ctx.Buttons)
         {
             button.AssociatedInput?.Press(button);
@@ -35,7 +38,7 @@ public partial class VirtualMultiButtonView : UserControl, IPressableButtonView
         _holdTimer = HoldTimerStart;
     }
 
-    public void ReleaseButton(bool softRelease = false)
+    public void ReleaseButton(bool doHaptics = true, bool softRelease = false)
     {
         if (!_held)
         {
@@ -49,7 +52,10 @@ public partial class VirtualMultiButtonView : UserControl, IPressableButtonView
         }
 
         var ctx = (VirtualMultiButtonViewModel)DataContext!;
-        ctx.Haptics?.Fire(false);
+        if (doHaptics)
+        {
+            ctx.Haptics?.Fire(false);
+        }
         foreach (var button in ctx.Buttons)
         {
             button.AssociatedInput?.Release(button);

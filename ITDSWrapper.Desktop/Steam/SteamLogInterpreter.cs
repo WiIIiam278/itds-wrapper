@@ -73,21 +73,22 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
                 break;
             
             case InputChangeStartVerb:
-                inputSwitcher.SetInputDelegate((_, _, _, id) =>
+                inputSwitcher.SetInputDelegate(new(InputChangeStartVerb, (_, _, _, id) =>
                 {
                     return id switch
                     {
                         RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP or RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN => 1,
                         _ => 0,
                     };
-                });
+                }));
                 break;
             
             case InputChangeRequestVerb:
                 uint[] glyphAction = inputDriver.GetActionGlyphId(log[(endIndex + 2)..^1]);
                 int numInputs = 0;
                 int numInputsToSend = glyphAction.Length * 2;
-                inputSwitcher.SetInputDelegate((_, _, _, id) =>
+                inputSwitcher.ResetInputDelegate();
+                inputSwitcher.SetInputDelegate(new(InputChangeRequestVerb, (_, _, _, id) =>
                 {
                     if (numInputs < numInputsToSend && id == glyphAction[numInputs / 2])
                     {
@@ -95,7 +96,7 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
                         return 1;
                     }
                     return 0;
-                });
+                }));
                 break;
             
             case InputChangeCompleteVerb:

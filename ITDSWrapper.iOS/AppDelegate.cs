@@ -23,7 +23,7 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
             .AfterSetup(b =>
             {
                 IosControllerInputDriver inputDriver = new();
-                ((App)b.Instance!).AudioBackend = new AvFoundationAudioBackend();
+                ((App)b.Instance!).AudioBackend = new IosAudioDriver();
                 ((App)b.Instance).PauseDriver = new(useActivatableLifetime: true);
                 ((App)b.Instance).HapticsBackend = new IosHapticsBackend();
                 ((App)b.Instance).InputDrivers = [inputDriver];
