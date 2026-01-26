@@ -29,4 +29,8 @@ public class AndroidUpdater(AndroidControllerInputDriver inputDriver) : IUpdater
 
         return RetValue;
     }
+
+    public void Die()
+    {
+    }
 }

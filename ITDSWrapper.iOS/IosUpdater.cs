@@ -21,4 +21,8 @@ public class IosUpdater(IosControllerInputDriver inputDriver) : IUpdater
         }
         return -1;
     }
+
+    public void Die()
+    {
+    }
 }

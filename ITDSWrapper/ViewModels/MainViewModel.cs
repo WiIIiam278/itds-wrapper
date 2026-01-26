@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -187,6 +188,8 @@ public class MainViewModel : ViewModelBase
     private int _nextBorderFrame = 0;
     
     public bool Closing { get; set; }
+
+    private IUpdater? _updater;
     
     private readonly PauseDriver _pauseDriver;
     private readonly LogInterpreter? _logInterpreter;
@@ -353,7 +356,11 @@ public class MainViewModel : ViewModelBase
     private void CloseApplication()
     {
         // todo a modal warning?
-        Environment.Exit(0);
+        _updater?.Die();
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
+        {
+            desktopApp.Shutdown();
+        }
     }
 
     private void OpenDisplaySettings()
@@ -600,11 +607,11 @@ public class MainViewModel : ViewModelBase
     {
         TimeSpan interval = TimeSpan.FromSeconds(1 / Wrapper.Fps);
         DateTime nextTick = DateTime.Now + interval;
-        IUpdater? updater = ((App)Application.Current!).Updater;
+        _updater = ((App)Application.Current!).Updater;
         
         while (!Closing)
         {
-            int nextInputDriver = updater?.Update() ?? -1;
+            int nextInputDriver = _updater?.Update() ?? -1;
             if (nextInputDriver >= 0)
             {
                 if (nextInputDriver != _currentInputDriver)
@@ -635,6 +642,7 @@ public class MainViewModel : ViewModelBase
         {
             inputDriver.Shutdown();
         }
+        _updater?.Die();
         Wrapper.Dispose();
         _logInterpreter?.Dispose();
     }

@@ -1,13 +1,11 @@
 using ITDSWrapper.Core;
-using Steamworks;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamAchievementManager : IAchievementManager
+public class SteamAchievementManager(SteamHelperIpc ipc) : IAchievementManager
 {
     public void Unlock(string achievementName)
     {
-        SteamUserStats.SetAchievement(achievementName);
-        while (!SteamUserStats.StoreStats());
+        ipc.SendCommand($"ACHIEVEMENT {achievementName}");
     }
 }

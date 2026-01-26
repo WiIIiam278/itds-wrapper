@@ -159,6 +159,7 @@ jobs:
             cmake_flags: ''
             shell: 'bash'
             artifact: 'publish'
+            steamworks_target: 'publish'
           - image: 'macos-26'
             tfm: net10.0-macos
             rid: 'osx-x64'
@@ -168,6 +169,7 @@ jobs:
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64" -DBUILD_AS_SHARED_LIBRARY=ON'
             shell: 'bash'
             artifact: 'ITDSWrapper.Desktop.app'
+            steamworks_target: 'ITDSWrapper.Desktop.app/Contents/MacOS'
           - image: 'macos-26'
             tfm: net10.0-macos
             rid: 'osx-arm64'
@@ -177,6 +179,7 @@ jobs:
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF -DBUILD_AS_SHARED_LIBRARY=ON'
             shell: 'bash'
             artifact: 'ITDSWrapper.Desktop.app'
+            steamworks_target: 'ITDSWrapper.Desktop.app/Contents/MacOS'
           - image: 'windows-latest'
             tfm: net10.0
             rid: 'win-x64'
@@ -187,6 +190,7 @@ jobs:
                           # Temporarily disable LTO until a regression in GCC 15 is resolved https://github.com/msys2/MINGW-packages/issues/24152
             shell: 'msys2 {0}'
             artifact: 'publish'
+            steamworks_target: 'publish'
     runs-on: ${{ matrix.platform.image }}
     defaults:
       run:
@@ -263,7 +267,13 @@ jobs:
     - name: Restore & Publish Wrapper
       run: |
         dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
-        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
+        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained -p:DebugType=None -p:DebugSymbols=false -p:PublishSingleFile=${{ matrix.platform.single_file }}
+      shell: pwsh
+    - name: Restore & Publish SteamworksHelper
+      run: |
+        dotnet restore SteamworksHelper/SteamworksHelper.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
+        dotnet publish SteamworksHelper/SteamworksHelper.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained -p:DebugType=None -p:DebugSymobls=false -p:PublishSingleFile=${{ matrix.platform.single_file }}
+        mv SteamworksHelper/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/* ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.steamworks_target }}/
       shell: pwsh
     - name: Zip wrapper
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip

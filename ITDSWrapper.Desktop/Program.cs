@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using Avalonia;
 using Avalonia.ReactiveUI;
 #if MACOS
 using AvFoundationBackend;
 #endif
 using ITDSWrapper.Desktop.Steam;
-using Steamworks;
 
 namespace ITDSWrapper.Desktop;
 
 sealed class Program
 {
+    private const string DebugIpcEnvironmentVariable = "DEBUG_IPC";
     private const string NoSteamEnvironmentVariable = "NOSTEAM";
-    private const string ResetAchievementsEnvironmentVariable = "RESET_ACHIEVEMENTS";
     private const string ClearSteamCloudEnvironmentVariable = "CLEAR_CLOUD";
     
     // Initialization code. Don't use any Avalonia, third-party APIs or any
@@ -46,30 +47,30 @@ sealed class Program
             })
             .AfterSetup(b =>
             {
+                string? ipcPath = Environment.GetEnvironmentVariable(DebugIpcEnvironmentVariable);
+                if (!string.IsNullOrEmpty(ipcPath))
+                {
+                    Process.Start(ipcPath);
+                }
+                SteamHelperIpc ipc = new();
                 if (!Environment.GetEnvironmentVariable(NoSteamEnvironmentVariable)
                         ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? true)
                 {
                     try
                     {
-                        SteamClient.Init(4026050);
-                        if (Environment.GetEnvironmentVariable(ResetAchievementsEnvironmentVariable)
-                                ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? false)
-                        {
-                            SteamUserStats.ResetAll(includeAchievements: true); // TODO: DELETE THIS
-                        }
                         if (Environment.GetEnvironmentVariable(ClearSteamCloudEnvironmentVariable)
                                 ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? false)
                         {
-                            SteamSaveManager.ClearSteamCloud();
+                            SteamSaveManager.ClearSteamCloud(ipc);
                         }
-                        SteamInputDriver inputDriver = new();
+                        SteamInputDriver inputDriver = new(ipc);
                         ((App)b.Instance!).InputDrivers = [inputDriver];
-                        ((App)b.Instance).Updater = new SteamUpdater(inputDriver);
+                        ((App)b.Instance).Updater = new SteamUpdater(inputDriver, ipc);
                         ((App)b.Instance).InputSwitcher = new();
-                        SteamLogInterpreter logInterpreter = new(inputDriver, ((App)b.Instance).InputSwitcher!)
+                        SteamLogInterpreter logInterpreter = new(inputDriver, ((App)b.Instance).InputSwitcher!, ipc)
                         {
-                            AchievementManager = new SteamAchievementManager(),
-                            WatchForSdCreate = SteamSaveManager.DownloadCloudSave(),
+                            AchievementManager = new SteamAchievementManager(ipc),
+                            WatchForSdCreate = SteamSaveManager.DownloadCloudSave(ipc),
                         };
                         ((App)b.Instance).LogInterpreter = logInterpreter;
                     }
@@ -83,11 +84,11 @@ sealed class Program
 #if MACOS
                 ((App)b.Instance).AudioBackend = new AvFoundationAudioBackend();
 #endif
-                
+                ipc.SendCommand("GAME_LANGUAGE");
 #if MACOS
-                ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(DesktopScreenReader.GetPlatformSpecificLanguageCode(SteamApps.GameLanguage));
+                ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(DesktopScreenReader.GetPlatformSpecificLanguageCode(Encoding.UTF8.GetString(ipc.ReceiveResponse())));
 #else
-                ((App)b.Instance).ScreenReader = DesktopScreenReader.Instantiate(SteamApps.GameLanguage);
+                ((App)b.Instance).ScreenReader = DesktopScreenReader.Instantiate(Encoding.UTF8.GetString(ipc.ReceiveResponse()));
 #endif
             });
 }

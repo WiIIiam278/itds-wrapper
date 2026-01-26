@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ITDSWrapper.Input;
 using Libretro.NET.Bindings;
-using Steamworks;
 
 namespace ITDSWrapper.Desktop.Steam;
 
 public class SteamInputDriver : IInputDriver
 {
-    private Controller _controller;
+    private readonly SteamHelperIpc _steamHelperIpc;
     private readonly Dictionary<uint, SteamControllerInput?> _actionsDictionary = [];
 
     private static readonly Dictionary<string, SteamInputAction[]> ActionSets = new()
@@ -87,19 +87,10 @@ public class SteamInputDriver : IInputDriver
 
     public bool RequestInputUpdate { get; set; }
 
-    public SteamInputDriver()
+    public SteamInputDriver(SteamHelperIpc ipc)
     {
-        SteamInput.Init();
-    }
-
-    public void SetController(Controller controller)
-    {
-        if (_controller != controller)
-        {
-            RequestInputUpdate = true;
-        }
-
-        _controller = controller;
+        _steamHelperIpc = ipc;
+        _steamHelperIpc.SendCommand("INPUT_INIT");
     }
 
     public bool UpdateState()
@@ -107,19 +98,20 @@ public class SteamInputDriver : IInputDriver
         bool controllerUsed = false;
         if (!string.IsNullOrEmpty(_currentActionSet))
         {
-            _controller.ActionSet = _currentActionSet;
+            _steamHelperIpc.SendCommand($"INPUT_ACTION_SET_SET {_currentActionSet}");
             foreach (SteamInputAction input in ActionSets[_currentActionSet])
             {
                 if (input.RetroBindings.Length > 1)
                 {
-                    AnalogState state = _controller.GetAnalogState(input.ActionName);
-                    if (state.X > 0.05f)
+                    _steamHelperIpc.SendCommand($"INPUT_ACTION_ANALOG {input.ActionName}");
+                    byte[] response = _steamHelperIpc.ReceiveResponse();
+                    if (response[1] == 1)
                     {
                         controllerUsed = true;
                         Push($"{input.ActionName}_RIGHT");
                         Release($"{input.ActionName}_LEFT");
                     }
-                    else if (state.X < -0.05f)
+                    else if (response[3] == 1)
                     {
                         controllerUsed = true;
                         Release($"{input.ActionName}_RIGHT");
@@ -131,13 +123,13 @@ public class SteamInputDriver : IInputDriver
                         Release($"{input.ActionName}_LEFT");
                     }
 
-                    if (state.Y < -0.05f)
+                    if (response[0] == 1)
                     {
                         controllerUsed = true;
                         Push($"{input.ActionName}_DOWN");
                         Release($"{input.ActionName}_UP");
                     }
-                    else if (state.Y > 0.05f)
+                    else if (response[2] == 1)
                     {
                         controllerUsed = true;
                         Release($"{input.ActionName}_DOWN");
@@ -151,7 +143,8 @@ public class SteamInputDriver : IInputDriver
                 }
                 else
                 {
-                    if (_controller.GetDigitalState(input.ActionName).Pressed)
+                    _steamHelperIpc.SendCommand($"INPUT_ACTION_DIGITAL {input.ActionName}");
+                    if (_steamHelperIpc.ReceiveResponse()[0] == 1)
                     {
                         controllerUsed = true;
                         Push(input.ActionName);
@@ -169,7 +162,7 @@ public class SteamInputDriver : IInputDriver
 
     public void Shutdown()
     {
-        SteamInput.Shutdown();
+        _steamHelperIpc.SendCommand("INPUT_SHUTDOWN");
     }
 
     public uint[] GetInputKeys()
@@ -240,7 +233,7 @@ public class SteamInputDriver : IInputDriver
 
     public void DoRumble(ushort strength)
     {
-        _controller.TriggerVibration(strength, strength);
+        _steamHelperIpc.SendCommand($"INPUT_RUMBLE {strength}");
     }
 
     public uint[] GetActionGlyphId(string button)
@@ -257,7 +250,8 @@ public class SteamInputDriver : IInputDriver
             return [ButtonNamesMap[button]];
         }
 
-        string glyph = SteamInput.GetSvgActionGlyph(_controller, actionName);
+        _steamHelperIpc.SendCommand($"INPUT_ACTION_GET_GLYPH {actionName}");
+        string glyph = Encoding.UTF8.GetString(_steamHelperIpc.ReceiveResponse());
         if (string.IsNullOrEmpty(glyph))
         {
             return [ButtonNamesMap[button]];
