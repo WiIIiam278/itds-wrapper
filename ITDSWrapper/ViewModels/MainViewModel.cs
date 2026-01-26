@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -354,7 +355,10 @@ public class MainViewModel : ViewModelBase
     {
         // todo a modal warning?
 
-        Closing = true;
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
+        {
+            desktopApp.Shutdown();
+        }
     }
 
     private void OpenDisplaySettings()
