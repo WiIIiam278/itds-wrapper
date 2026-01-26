@@ -353,7 +353,8 @@ public class MainViewModel : ViewModelBase
     private void CloseApplication()
     {
         // todo a modal warning?
-        Environment.Exit(0);
+
+        Closing = true;
     }
 
     private void OpenDisplaySettings()
@@ -635,6 +636,7 @@ public class MainViewModel : ViewModelBase
         {
             inputDriver.Shutdown();
         }
+        updater?.Die();
         Wrapper.Dispose();
         _logInterpreter?.Dispose();
     }

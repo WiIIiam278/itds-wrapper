@@ -23,4 +23,9 @@ public class SteamUpdater(SteamInputDriver inputDriver, SteamHelperIpc ipc) : IU
 
         return -1;
     }
+
+    public void Die()
+    {
+        ipc.SendCommand("DIE");
+    }
 }

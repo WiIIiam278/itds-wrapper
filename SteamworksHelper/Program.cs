@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO.Pipes;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,9 +7,10 @@ using Steamworks;
 
 namespace SteamworksHelper;
 
-class Program
+public static class Program
 {
     private const string ResetAchievementsEnvironmentVariable = "RESET_ACHIEVEMENTS";
+    private const string GamePathEnvironmentVariable = "ITDS_PATH";
     
     private static void Main(string[] args)
     {
@@ -22,6 +24,23 @@ class Program
                 ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? false)
         {
             SteamUserStats.ResetAll(includeAchievements: true); // TODO: DELETE THIS
+        }
+
+        string? gamePath = Environment.GetEnvironmentVariable(GamePathEnvironmentVariable);
+        if (!string.IsNullOrEmpty(gamePath))
+        {
+            Process.Start(gamePath);
+        }
+        else
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                Process.Start(".\\ITDSWrapper.Desktop.exe");
+            }
+            else
+            {
+                Process.Start("./ITDSWrapper.Desktop");
+            }
         }
         
         NamedPipeServerStream steamworksServer = new("SteamworksHelperPipe");
@@ -76,29 +95,24 @@ class Program
                         break;
                     
                     case "INPUT_ACTION_ANALOG":
-                        Console.WriteLine("Fetching analog input action...");
                         ControllerAnalogResponse analogResponse = controllerManager.GetAnalogState(cmd[1]);
                         steamworksClient.SendResponse([analogResponse.Up, analogResponse.Right, analogResponse.Down, analogResponse.Left]);
                         break;
                     
                     case "INPUT_ACTION_DIGITAL":
-                        Console.WriteLine("Fetching digital input action...");
                         steamworksClient.SendResponse([(byte)(controllerManager.GetDigitalState(cmd[1]) ? 1 : 0)]);
                         break;
                     
                     case "INPUT_ACTION_GET_GLYPH":
-                        Console.WriteLine("Fetching action glyph...");
                         string? glyph = controllerManager.GetGlyph(cmd[1]);
                         steamworksClient.SendResponse(glyph ?? string.Empty);
                         break;
                     
                     case "INPUT_ACTION_SET_SET":
-                        Console.WriteLine("Setting input action set...");
                         controllerManager.SetActionSet(cmd[1]);
                         break;
                     
                     case "INPUT_POLL_CONTROLLERS":
-                        Console.WriteLine("Polling controllers...");
                         ControllerPollResponse pollResponse = controllerManager.PollControllers();
                         steamworksClient.SendResponse([pollResponse.HasController, pollResponse.NewController]);
                         break;

@@ -263,7 +263,13 @@ jobs:
     - name: Restore & Publish Wrapper
       run: |
         dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
-        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
+        dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained -p:DebugType=None -p:DebugSymbols=false -p:PublishSingleFile=${{ matrix.platform.single_file }}
+      shell: pwsh
+    - name: Restore & Publish SteamworksHelper
+      run: |
+        dotnet restore SteamworksHelper/SteamworksHelper.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
+        dotnet publish SteamworksHelper/SteamworksHelper.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained -p:DebugType=None -p:DebugSymobls=false -p:PublishSingleFile=${{ matrix.platform.single_file }}
+        mv SteamworksHelper/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/* ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/
       shell: pwsh
     - name: Zip wrapper
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip

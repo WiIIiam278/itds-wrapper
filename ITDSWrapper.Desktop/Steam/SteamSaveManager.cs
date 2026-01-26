@@ -1,8 +1,4 @@
-using System;
 using System.IO;
-using System.Threading;
-using DiscUtils.Fat;
-using DiscUtils.Streams;
 using Libretro.NET;
 
 namespace ITDSWrapper.Desktop.Steam;
