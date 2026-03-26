@@ -134,10 +134,11 @@ public static class Program
         {
             if (OperatingSystem.IsMacOS())
             {
-                ProcessStartInfo psi = new(gamePath)
+                ProcessStartInfo psi = new("open")
                 {
                     UseShellExecute = false,
                     CreateNoWindow = false,
+                    ArgumentList = { gamePath },
                 };
                 Process.Start(psi);
             }
@@ -148,23 +149,7 @@ public static class Program
         }
         else if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBUG_IPC")))
         {
-            if (OperatingSystem.IsWindows())
-            {
-                Process.Start(".\\ITDSWrapper.Desktop.exe");
-            }
-            else if (OperatingSystem.IsMacOS())
-            {
-                ProcessStartInfo psi = new("./ITDSWrapper.Desktop")
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                };
-                Process.Start(psi);
-            }
-            else
-            {
-                Process.Start("./ITDSWrapper.Desktop");
-            }
+            Process.Start(OperatingSystem.IsWindows() ? ".\\ITDSWrapper.Desktop.exe" : "./ITDSWrapper.Desktop");
         }
 
         NamedPipeServerStream steamworksServer = new("SteamworksHelperPipe");
