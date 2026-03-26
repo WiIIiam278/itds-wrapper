@@ -20,5 +20,7 @@
         <string>0.1.0</string>
         <key>NSPrincipalClass</key>
         <string>NSApplication</string>
+        <key>CFBundleIconName</key>
+        <string>AppIcon</string>
     </dict>
 </plist>

@@ -112,44 +112,36 @@ jobs:
           - image: 'ubuntu-latest'
             tfm: net10.0
             rid: 'linux-x64'
-            single-file: true
+            single_file: true
             melondsds_src: build/src/libretro/melondsds_libretro.so
-            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.so
             cmake_flags: ''
             shell: 'bash'
             artifact: 'publish'
-            steamworks_target: 'publish'
           - image: 'macos-26'
             tfm: net10.0-macos
             rid: 'osx-x64'
-            single-file: false
+            single_file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
-            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64" -DBUILD_AS_SHARED_LIBRARY=ON'
             shell: 'bash'
-            artifact: 'ITDSWrapper.Desktop.app'
-            steamworks_target: 'ITDSWrapper.Desktop.app/Contents/MacOS'
+            artifact: 'wrapper-contents'
           - image: 'macos-26'
             tfm: net10.0-macos
             rid: 'osx-arm64'
-            single-file: false
+            single_file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
-            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF -DBUILD_AS_SHARED_LIBRARY=ON'
             shell: 'bash'
-            artifact: 'ITDSWrapper.Desktop.app'
-            steamworks_target: 'ITDSWrapper.Desktop.app/Contents/MacOS'
+            artifact: 'wrapper-contents'
           - image: 'windows-latest'
             tfm: net10.0
             rid: 'win-x64'
-            single-file: true
+            single_file: true
             melondsds_src: build/src/libretro/melondsds_libretro.dll
-            melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dll
             cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe" -DENABLE_LTO_RELEASE=OFF'
                           # Temporarily disable LTO until a regression in GCC 15 is resolved https://github.com/msys2/MINGW-packages/issues/24152
             shell: 'msys2 {0}'
             artifact: 'publish'
-            steamworks_target: 'publish'
     runs-on: ${{ matrix.platform.image }}
     defaults:
       run:
@@ -213,7 +205,7 @@ jobs:
         cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" ${{ matrix.platform.cmake_flags }}
         cmake --build build
         popd
-        cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
+        cp melondsds/${{ matrix.platform.melondsds_src }} ITDSWrapper.Desktop/
 
     - name: Install macOS Workload
       run: dotnet workload install macos
@@ -228,12 +220,22 @@ jobs:
         dotnet restore ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
         dotnet publish ITDSWrapper.Desktop/ITDSWrapper.Desktop.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained -p:DebugType=None -p:DebugSymbols=false -p:PublishSingleFile=${{ matrix.platform.single_file }}
       shell: pwsh
-    - name: Restore & Publish SteamworksHelper
+    - name: Restore & Publish SteamworksHelper (non-macOS)
       run: |
         dotnet restore SteamworksHelper/SteamworksHelper.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
         dotnet publish SteamworksHelper/SteamworksHelper.csproj -c Release -f net10.0 -r ${{ matrix.platform.rid }} --self-contained -p:DebugType=None -p:DebugSymobls=false -p:PublishSingleFile=true
-        mv SteamworksHelper/bin/Release/net10.0/${{ matrix.platform.rid }}/publish/* ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.steamworks_target }}/
+        mv SteamworksHelper/bin/Release/net10.0/${{ matrix.platform.rid }}/publish/* ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish
       shell: pwsh
+      if: ${{ matrix.platform.tfm != 'net10.0-macos' }}
+    - name: Restore & Publish SteamworksHelper (macOS)
+      run: |
+        dotnet restore SteamworksHelper/SteamworksHelper.csproj -p:RuntimeIdentifier=${{ matrix.platform.rid }}
+        dotnet publish SteamworksHelper/SteamworksHelper.csproj -c Release -f net10.0-macos -r ${{ matrix.platform.rid }} --self-contained -p:DebugType=None -p:DebugSymobls=false -p:PublishSingleFile=false
+        mkdir ITDSWrapper.Desktop/bin/Release/net10.0-macos/${{ matrix.platform.rid }}/wrapper-contents
+        mv ITDSWrapper.Desktop/bin/Release/net10.0-macos/${{ matrix.platform.rid }}/ITDSWrapper.Desktop.app ITDSWrapper.Desktop/bin/Release/net10.0-macos/${{ matrix.platform.rid }}/wrapper-contents
+        mv SteamworksHelper/bin/Release/net10.0-macos/${{ matrix.platform.rid }}/SteamworksHelper.app ITDSWrapper.Desktop/bin/Release/net10.0-macos/${{ matrix.platform.rid }}/wrapper-contents
+      shell: pwsh
+      if: ${{ matrix.platform.tfm == 'net10.0-macos' }}
     - name: Zip wrapper
       run: Compress-Archive -Path ITDSWrapper.Desktop/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/${{ matrix.platform.artifact }}/* -DestinationPath ./publish.zip
       shell: pwsh
@@ -276,10 +278,9 @@ jobs:
         Expand-Archive -Path osx-arm64.zip -DestinationPath macos-arm64
         Expand-Archive -Path win-x64.zip -DestinationPath steam/win-x64
       shell: pwsh
-    - name: Construct macOS app bundle
+    - name: Construct macOS app bundles
       run: |
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.X64.app/
-        mkdir -p steam/macos/Into\ the\ Dream\ Spring.ARM64.app/
+        mkdir -p steam/macos/
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/ITDSWrapper
         cp -r macos-x64/* steam/macos/Into\ the\ Dream\ Spring.X64.app/
         cp -r macos-arm64/* steam/macos/Into\ the\ Dream\ Spring.ARM64.app/

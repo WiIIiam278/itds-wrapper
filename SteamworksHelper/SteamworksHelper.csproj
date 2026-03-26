@@ -18,6 +18,11 @@
         <PackageReference Condition="'$(RuntimeIdentifier)' != 'win-x64' And !$([System.OperatingSystem]::IsWindows())" Include="Facepunch.Steamworks.Posix"/>
         <PackageReference Include="LTRData.DiscUtils.Fat" />
     </ItemGroup>
+
+    <PropertyGroup Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">
+        <CreatePackage>false</CreatePackage>
+        <AppIcon>AppIcon</AppIcon>
+    </PropertyGroup>
     
     <ItemGroup>
       <PartialAppManifest Include="macos\Info.plist" />
