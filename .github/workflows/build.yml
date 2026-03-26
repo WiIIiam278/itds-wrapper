@@ -282,8 +282,8 @@ jobs:
       run: |
         mkdir -p steam/macos/
         cp itds-wrapper/ITDSWrapper.Desktop/macos/ITDSWrapper steam/macos/ITDSWrapper
-        mv macos-x64/Into\ the\ Dream\ Spring.app steam/macos/Into\ the\ Dream\ Spring.X64.app/
-        mv macos-arm64/Into\ the\ Dream\ Spring.app steam/macos/Into\ the\ Dream\ Spring.ARM64.app/
+        mv macos-x64/ITDSWrapper.Desktop.app steam/macos/Into\ the\ Dream\ Spring.X64.app/
+        mv macos-arm64/ITDSWrapper.Desktop.app steam/macos/Into\ the\ Dream\ Spring.ARM64.app/
         mv macos-x64/SteamworksHelper.app steam/macos/SteamworksHelper.X64.app/
         mv macos-arm64/SteamworksHelper.app steam/macos/SteamworksHelper.ARM64.app/
       shell: bash
