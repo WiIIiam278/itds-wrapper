@@ -18,10 +18,12 @@ public static class Program
     private const string GamePathEnvironmentVariable = "ITDS_PATH";
 
     private static bool _loop = true;
+    
+#if MACOS
     private static NamedPipeClientStream? _keyboardPipe;
-
     private static bool _stealFocus = true;
-
+#endif
+    
     private static void Main(string[] args)
     {
 #if MACOS
