@@ -888,19 +888,19 @@ public class MainViewModel : ViewModelBase
             // Multi buttons
             if (UpButton is not null && LeftButton is not null)
             {
-                UpLeftButton = new VirtualMultiButtonViewModel("・", [UpButton, LeftButton], 50, 50, _hapticsBackend);
+                UpLeftButton = new("・", [UpButton, LeftButton], 50, 50, _hapticsBackend);
             }
             if (UpButton is not null && RightButton is not null)
             {
-                UpRightButton = new VirtualMultiButtonViewModel("・", [UpButton, RightButton], 50, 50, _hapticsBackend);
+                UpRightButton = new("・", [UpButton, RightButton], 50, 50, _hapticsBackend);
             }
             if (DownButton is not null && LeftButton is not null)
             {
-                DownLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, LeftButton], 50, 50, _hapticsBackend);
+                DownLeftButton = new("・", [DownButton, LeftButton], 50, 50, _hapticsBackend);
             }
             if (DownButton is not null && RightButton is not null)
             {
-                DownRightButton = new VirtualMultiButtonViewModel("・", [DownButton, RightButton], 50, 50, _hapticsBackend);
+                DownRightButton = new("・", [DownButton, RightButton], 50, 50, _hapticsBackend);
             }
             
             _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);
