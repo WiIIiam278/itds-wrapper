@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipes;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -11,6 +13,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using ITDSWrapper.Assets;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
@@ -308,6 +311,12 @@ public class MainViewModel : ViewModelBase
         _pauseDriver = ((App)Application.Current).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
 
+        if (((App)Application.Current).KeyboardPipe is not null)
+        {
+            Console.WriteLine("Running macOS keyboard listener!");
+            Task.Run(() => ListenForKeyboardMacAsync(((App)Application.Current).KeyboardPipe!, CancellationToken.None));
+        }
+        
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
         _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, ToggleMenuOverlay));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
@@ -895,6 +904,39 @@ public class MainViewModel : ViewModelBase
             }
             
             _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);
+        }
+    }
+
+    private async Task ListenForKeyboardMacAsync(NamedPipeServerStream keyboardPipe, CancellationToken token)
+    {
+        byte[] buffer = new byte[4];
+        while (!token.IsCancellationRequested)
+        {
+            await keyboardPipe.ReadExactlyAsync(buffer, token);
+            byte eventType = buffer[0];
+            ushort macKeyCode = (ushort)(buffer[1] | (buffer[2] << 8));
+            byte modifiers = buffer[3];
+            
+            KeyModifiers keyModifiers = KeyModifiers.None;
+            if ((modifiers & 3) != 0)
+                keyModifiers |= KeyModifiers.Shift;
+            if ((modifiers & 4) != 0)
+                keyModifiers |= KeyModifiers.Control;
+            if ((modifiers & 8) != 0)
+                keyModifiers |= KeyModifiers.Alt;
+            if ((modifiers & 16) != 0)
+                keyModifiers |= KeyModifiers.Meta;
+            
+            Dispatcher.UIThread.Post(() =>
+            {
+                Top?.RaiseEvent(new KeyEventArgs
+                {
+                    RoutedEvent = eventType == 0 ? InputElement.KeyDownEvent : InputElement.KeyUpEvent,
+                    PhysicalKey = MacKeyCodeMap.ToPhysicalKey(macKeyCode),
+                    KeyModifiers = keyModifiers,
+                    Source = Top,
+                });
+            });
         }
     }
 }

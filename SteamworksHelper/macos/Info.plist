@@ -3,11 +3,11 @@
 <plist version="1.0">
     <dict>
         <key>CFBundleName</key>
-        <string>Into the Dream Spring</string>
+        <string>SteamworksHelper</string>
         <key>CFBundleDisplayName</key>
-        <string>Into the Dream Spring</string>
+        <string>ITDS Steamworks Helper</string>
         <key>CFBundleIdentifier</key>
-        <string>com.intothedreamspring.ITDSWrapper</string>
+        <string>com.intothedreamspring.SteamworksHelper</string>
         <key>CFBundleVersion</key>
         <string>0.1.0</string>
         <key>CFBundlePackageType</key>
@@ -15,12 +15,10 @@
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleExecutable</key>
-        <string>Contents/MacOS/ITDSWrapper.Desktop</string>
+        <string>Contents/MacOS/SteamworksHelper</string>
         <key>CFBundleShortVersionString</key>
         <string>0.1.0</string>
-        <key>LSUIElement</key>
-        <true/>
-        <key>NSHighResolutionCapable</key>
-        <true />
+        <key>NSPrincipalClass</key>
+        <string>NSApplication</string>
     </dict>
 </plist>

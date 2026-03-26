@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net10.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <TargetFramework Condition="'$(RuntimeIdentifier)'!='osx-arm64' And '$(RuntimeIdentifier)'!='osx-x64' And !$([System.OperatingSystem]::IsMacOs())">net10.0</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='osx-x64' Or $([System.OperatingSystem]::IsMacOs())">net10.0-macos</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -16,6 +17,10 @@
         <PackageReference Condition="'$(RuntimeIdentifier)' == 'win-x64' Or $([System.OperatingSystem]::IsWindows())" Include="Facepunch.Steamworks.Win64"/>
         <PackageReference Condition="'$(RuntimeIdentifier)' != 'win-x64' And !$([System.OperatingSystem]::IsWindows())" Include="Facepunch.Steamworks.Posix"/>
         <PackageReference Include="LTRData.DiscUtils.Fat" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PartialAppManifest Include="macos\Info.plist" />
     </ItemGroup>
 
 </Project>
