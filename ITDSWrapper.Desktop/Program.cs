@@ -48,6 +48,10 @@ sealed class Program
             {
                 RenderingMode = [Win32RenderingMode.Vulkan, Win32RenderingMode.AngleEgl, Win32RenderingMode.Wgl, Win32RenderingMode.Software],
             })
+            .With(new MacOSPlatformOptions
+            {
+                ShowInDock = false,
+            })
             .AfterSetup(b =>
             {
                 string? ipcPath = Environment.GetEnvironmentVariable(DebugIpcEnvironmentVariable);
@@ -56,6 +60,9 @@ sealed class Program
                     Process.Start(ipcPath);
                 }
                 SteamHelperIpc ipc = new();
+#if MACOS
+                ((App)b.Instance!).KeyboardPipe = ipc.KeyboardPipe;
+#endif
                 if (!Environment.GetEnvironmentVariable(NoSteamEnvironmentVariable)
                         ?.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ?? true)
                 {
@@ -93,7 +100,8 @@ sealed class Program
 #if MACOS
                 ((App)b.Instance).ScreenReader = new AvFoundationScreenReader(DesktopScreenReader.GetPlatformSpecificLanguageCode(Encoding.UTF8.GetString(ipc.ReceiveResponse())));
 #else
-                ((App)b.Instance).ScreenReader = DesktopScreenReader.Instantiate(Encoding.UTF8.GetString(ipc.ReceiveResponse()));
+                ((App)b.Instance).ScreenReader =
+ DesktopScreenReader.Instantiate(Encoding.UTF8.GetString(ipc.ReceiveResponse()));
 #endif
             });
 }

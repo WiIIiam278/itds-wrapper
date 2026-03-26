@@ -9,11 +9,17 @@ public class SteamHelperIpc
 {
     private readonly NamedPipeClientStream _steamworksHelperPipe = new("SteamworksHelperPipe");
     private readonly NamedPipeServerStream _steamworksReturnPipe = new("SteamworksReturnPipe");
+#if MACOS
+    public readonly NamedPipeServerStream KeyboardPipe = new("macOSKeyboardPipe");
+#endif
 
     public SteamHelperIpc()
     {
         _steamworksHelperPipe.Connect();
         _steamworksReturnPipe.WaitForConnection();
+#if MACOS
+        KeyboardPipe.WaitForConnection();
+#endif
     }
     
     public void SendCommand(string command)

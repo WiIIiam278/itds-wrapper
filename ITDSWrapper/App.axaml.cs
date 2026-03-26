@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO.Pipes;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -23,6 +24,7 @@ public partial class App : Application
     public IBatteryMonitor? BatteryMonitor { get; set; }
     public IScreenReader? ScreenReader { get; set; }
     public InputSwitcher? InputSwitcher { get; set; }
+    public NamedPipeServerStream? KeyboardPipe { get; set; }
 
     public override void Initialize()
     {
