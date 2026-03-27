@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 #if MACOS
@@ -151,7 +152,25 @@ public static class Program
         }
         else if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DEBUG_IPC")))
         {
-            Process.Start(OperatingSystem.IsWindows() ? ".\\ITDSWrapper.Desktop.exe" : "./ITDSWrapper.Desktop");
+            if (OperatingSystem.IsWindows())
+            {
+                Process.Start(".\\ITDSWrapper.Desktop.exe");
+            }
+            if (OperatingSystem.IsMacOS())
+            {
+                ProcessStartInfo psi = new($"../../../Into the Dream Spring." +
+                                           $"{(RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "ARM64" : "X64")}.app/" +
+                                           $"Contents/MacOS/ITDSWrapper.Desktop")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                };
+                Process.Start(psi);
+            }
+            else
+            {
+                Process.Start("./ITDSWrapper.Desktop");
+            }
         }
 
         NamedPipeServerStream steamworksServer = new("SteamworksHelperPipe");

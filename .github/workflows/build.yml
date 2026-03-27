@@ -4,30 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-mobile-wrappers:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - image: 'ubuntu-latest'
-            tfm: net10.0-android
-            rid: 'android-arm64'
-            project: ITDSWrapper.Android
-            melondsds_src: build/src/libretro/melondsds_libretro_android.so
-            melondsds_dst: ITDSWrapper.Android/libs/arm64-v8a/libmelondsds_libretro.so
-            cmake_flags: '-DENABLE_OGLRENDERER=OFF -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=24 -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" -DENABLE_LTO_RELEASE=OFF'
-                          # Disabling LTO because it causes a linker error with Clang 18.0.3 and NDK 27.2.12479018 for some reason
-            single_file: false
-            artifact: com.intothedreamspring.itdswrapper-Signed.apk
-            upload: com.intothedreamspring.itdswrapper.apk
-          # - image: 'macos-26'
-          #   tfm: net10.0-ios
-          #   rid: 'ios-arm64'
-          #   project: ITDSWrapper.iOS
-          #   melondsds_src: melondsds_libretro-ios-Release/cores/melondsds_libretro.dylib
-          #   melondsds_dst: ITDSWrapper.iOS/melondsds_libretro.dylib
-          #   single_file: false
-    runs-on: ${{ matrix.platform.image }}
+  build-android-wrapper:            
+    runs-on: 'ubuntu-latest'
     steps:
     # Setup
     - name: 'Checkout repository'
@@ -56,7 +34,6 @@ jobs:
         path: melondsds
         clean: false
     - name: Install Dependencies (Linux)
-      if: ${{ matrix.platform.image == 'ubuntu-latest' }}
       uses: awalsh128/cache-apt-pkgs-action@v1.4.3
       with:
         packages: ccache cmake libepoxy-dev libopengl0 libopengl-dev ninja-build p7zip-full x11-xserver-utils xdg-utils xvfb
@@ -68,37 +45,33 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-      if: matrix.platform.project == 'ITDSWrapper.Android'
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-      if: matrix.platform.project == 'ITDSWrapper.Android'
     - name: Setup Android NDK
       uses: nttld/setup-ndk@v1.5.0
       with:
         ndk-version: r26d
     - name: Install Android .NET workload
       run: dotnet workload install android
-      if: matrix.platform.project == 'ITDSWrapper.Android'
     - name: Make libs dir
       run: mkdir -p ITDSWrapper.Android/libs/arm64-v8a
-      if: matrix.platform.project == 'ITDSWrapper.Android'
 
     # Build melonDS DS
     - name: 'Build melonDS DS'
       run: |
         pushd melondsds
-        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" ${{ matrix.platform.cmake_flags }}
+        cmake -B build -Wno-deprecated -DCMAKE_BUILD_TYPE="Release" -DENABLE_OGLRENDERER=OFF -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=24 -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" -DENABLE_LTO_RELEASE=OFF
         cmake --build build
         popd
-        cp melondsds/${{ matrix.platform.melondsds_src }} ${{ matrix.platform.melondsds_dst }}
+        cp melondsds/build/src/libretro/melondsds_libretro_android.so ITDSWrapper.Android/libs/arm64-v8a/libmelondsds_libretro.so
 
     # Build & Publish
     - name: Restore & Publish Wrapper
       run: |
-        dotnet restore ${{ matrix.platform.project }} -r ${{ matrix.platform.rid }}
-        dotnet publish ${{ matrix.platform.project }}/${{ matrix.platform.project }}.csproj -c Release -f ${{ matrix.platform.tfm }} -r ${{ matrix.platform.rid }} --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=${{ matrix.platform.single_file }}
+        dotnet restore ITDSWrapper.Android -r android-arm64
+        dotnet publish ITDSWrapper.Android/ITDSWrapper.Android.csproj -c Release -f net10.0-android -r android-arm64 --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=false
     - name: 'Upload wrappers to bucket'
-      run: s5cmd cp ${{ matrix.platform.project }}/bin/Release/${{ matrix.platform.tfm }}/${{ matrix.platform.rid }}/publish/${{ matrix.platform.artifact }} s3://into-the-dream-spring-wrapper/${{ matrix.platform.upload }}
+      run: s5cmd cp ITDSWrapper.Android/bin/Release/net10.0-android/android-arm64/publish/com.intothedreamspring.itdswrapper-Signed.apk s3://into-the-dream-spring-wrapper/com.intothedreamspring.itdswrapper.apk
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
