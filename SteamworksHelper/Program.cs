@@ -159,7 +159,7 @@ public static class Program
             if (OperatingSystem.IsMacOS())
             {
                 ProcessStartInfo psi = new($"../../../Into the Dream Spring." +
-                                           $"${(RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "ARM64" : "X64")}.app/" +
+                                           $"{(RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "ARM64" : "X64")}.app/" +
                                            $"Contents/MacOS/ITDSWrapper.Desktop")
                 {
                     UseShellExecute = false,
