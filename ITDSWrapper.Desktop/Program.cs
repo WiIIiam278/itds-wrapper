@@ -66,7 +66,7 @@ sealed class Program
                         {
                             SteamSaveManager.ClearSteamCloud(ipc);
                         }
-                        SteamInputDriver inputDriver = new(ipc);
+                        SdlInputDriver inputDriver = new();
                         ((App)b.Instance!).InputDrivers = [inputDriver];
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver, ipc);
                         ((App)b.Instance).InputSwitcher = new();

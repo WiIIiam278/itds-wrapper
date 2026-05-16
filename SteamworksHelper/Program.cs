@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Linq;
@@ -69,7 +68,6 @@ public static class Program
         NamedPipeServerStream steamworksServer = new("SteamworksHelperPipe");
         NamedPipeClientStream steamworksClient = new("SteamworksReturnPipe");
         await steamworksClient.ConnectAsync();
-        ControllerManager controllerManager = new();
         bool loop = true;
         await steamworksServer.WaitForConnectionAsync();
         
@@ -115,44 +113,6 @@ public static class Program
                     case "GAME_LANGUAGE":
                         Console.WriteLine("Fetching game language...");
                         steamworksClient.SendResponse(Steamworks.GameLanguage());
-                        break;
-                    
-                    case "INPUT_ACTION_ANALOG":
-                        ControllerAnalogResponse analogResponse = controllerManager.GetAnalogState(cmd[1]);
-                        steamworksClient.SendResponse([analogResponse.Up, analogResponse.Right, analogResponse.Down, analogResponse.Left]);
-                        break;
-                    
-                    case "INPUT_ACTION_DIGITAL":
-                        steamworksClient.SendResponse([(byte)(controllerManager.GetDigitalState(cmd[1]) ? 1 : 0)]);
-                        break;
-                    
-                    case "INPUT_ACTION_GET_GLYPH":
-                        string? glyph = controllerManager.GetGlyph(cmd[1]);
-                        steamworksClient.SendResponse(glyph ?? string.Empty);
-                        break;
-                    
-                    case "INPUT_ACTION_SET_SET":
-                        controllerManager.SetActionSet(cmd[1]);
-                        break;
-                    
-                    case "INPUT_POLL_CONTROLLERS":
-                        ControllerPollResponse pollResponse = controllerManager.PollControllers();
-                        steamworksClient.SendResponse([pollResponse.HasController, pollResponse.NewController]);
-                        break;
-                    
-                    case "INPUT_INIT":
-                        Console.WriteLine("Initializing input...");
-                        Steamworks.InputInit();
-                        break;
-                    
-                    case "INPUT_RUMBLE":
-                        Console.WriteLine("Starting controller rumble...");
-                        controllerManager.Rumble(ushort.Parse(cmd[1]));
-                        break;
-                    
-                    case "INPUT_SHUTDOWN":
-                        Console.WriteLine("Shutting down input...");
-                        Steamworks.InputShutdown();
                         break;
                     
                     case "RICH_PRESENCE":

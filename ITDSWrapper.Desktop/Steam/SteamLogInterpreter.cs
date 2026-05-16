@@ -6,7 +6,7 @@ using Libretro.NET.Bindings;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inputSwitcher, SteamHelperIpc ipc) : LogInterpreter
+public class SteamLogInterpreter(SdlInputDriver inputDriver, InputSwitcher inputSwitcher, SteamHelperIpc ipc) : LogInterpreter
 {
     private const string ActionSetVerb = "ACTION_SET";
     private const string CloudSaveVerb = "CLOUD_SAVE";
