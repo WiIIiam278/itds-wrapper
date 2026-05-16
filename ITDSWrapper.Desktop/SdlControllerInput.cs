@@ -45,23 +45,23 @@ public class SdlControllerInput : IGameInput<object>
 
     public void Press(object? input)
     {
-        if (_input == input && _input is Button { Pressed: true })
+        if (_input is Button button && input is Button { Pressed: true } received && received.Name == button.Name)
         {
             IsSet = true;
             SpecialAction?.Invoke();
         }
-        else if (_input == input && _input is Thumbstick thumbstick)
+        else if (input is Thumbstick inThumbstick && _input is Thumbstick thumbstick && inThumbstick.Index == thumbstick.Index)
         {
-            if (_direction == ThumbstickDirection.NEGATIVE_X && thumbstick.X <= -0.1f ||
-                _direction == ThumbstickDirection.POSITIVE_X && thumbstick.X >= 0.1f ||
-                _direction == ThumbstickDirection.POSITIVE_Y && thumbstick.Y >= 0.1f ||
-                _direction == ThumbstickDirection.NEGATIVE_Y && thumbstick.Y < -0.1f)
+            if (_direction == ThumbstickDirection.NEGATIVE_X && inThumbstick.X <= -0.1f ||
+                _direction == ThumbstickDirection.POSITIVE_X && inThumbstick.X >= 0.1f ||
+                _direction == ThumbstickDirection.POSITIVE_Y && inThumbstick.Y >= 0.1f ||
+                _direction == ThumbstickDirection.NEGATIVE_Y && inThumbstick.Y < -0.1f)
             {
                 IsSet = true;
                 SpecialAction?.Invoke();
             }
         }
-        else if (_input == input && _input is Trigger { Position: >= 0.1f })
+        else if (input is Trigger { Position: >= 0.1f } inTrigger && _input is Trigger trigger && inTrigger.Index == trigger.Index)
         {
             IsSet = true;
             SpecialAction?.Invoke();
@@ -70,21 +70,21 @@ public class SdlControllerInput : IGameInput<object>
 
     public void Release(object? input)
     {
-        if (_input == input && _input is Button { Pressed: false })
+        if (_input is Button button && input is Button { Pressed: false } inButton && inButton.Name == button.Name)
         {
             IsSet = false;
         }
-        else if (_input == input && _input is Thumbstick thumbstick)
+        else if (input is Thumbstick inThumbstick && _input is Thumbstick thumbstick && inThumbstick.Index == thumbstick.Index)
         {
-            if (_direction == ThumbstickDirection.NEGATIVE_X && thumbstick.X > -0.1f ||
-                _direction == ThumbstickDirection.POSITIVE_X && thumbstick.X < 0.1f ||
-                _direction == ThumbstickDirection.POSITIVE_Y && thumbstick.Y < 0.1f ||
-                _direction == ThumbstickDirection.NEGATIVE_Y && thumbstick.Y > -0.1f)
+            if (_direction == ThumbstickDirection.NEGATIVE_X && inThumbstick.X > -0.1f ||
+                _direction == ThumbstickDirection.POSITIVE_X && inThumbstick.X < 0.1f ||
+                _direction == ThumbstickDirection.POSITIVE_Y && inThumbstick.Y < 0.1f ||
+                _direction == ThumbstickDirection.NEGATIVE_Y && inThumbstick.Y > -0.1f)
             {
                 IsSet = false;
             }
         }
-        else if (_input == input && _input is Trigger { Position: < 0.1f })
+        else if (input is Trigger { Position: < 0.1f } inTrigger && _input is Trigger trigger && inTrigger.Index == trigger.Index)
         {
             IsSet = false;
         }

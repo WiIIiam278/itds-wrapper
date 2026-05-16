@@ -40,9 +40,7 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public WindowState WindowState { get; set; } = WindowState.FullScreen;
     [Reactive]
-    public SystemDecorations Decorations { get; set; } = SystemDecorations.Full;
-    [Reactive]
-    public ExtendClientAreaChromeHints ChromeHints { get; set; } = ExtendClientAreaChromeHints.Default;
+    public WindowDecorations Decorations { get; set; } = WindowDecorations.Full;
     [Reactive] 
     public bool ExtendClientArea { get; set; } = false;
     [Reactive]
@@ -75,15 +73,13 @@ public class MainViewModel : ViewModelBase
                 
                 case WindowingMode.BORDERLESS:
                     WindowState = WindowState.Maximized;
-                    Decorations = SystemDecorations.None;
-                    ChromeHints = ExtendClientAreaChromeHints.NoChrome;
+                    Decorations = WindowDecorations.None;
                     ExtendClientArea = true;
                     break;
                 
                 case WindowingMode.WINDOWED:
                     WindowState = WindowState.Maximized;
-                    Decorations = SystemDecorations.Full;
-                    ChromeHints = ExtendClientAreaChromeHints.Default;
+                    Decorations = WindowDecorations.Full;
                     ExtendClientArea = false;
                     break;
             }

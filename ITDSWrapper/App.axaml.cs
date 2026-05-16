@@ -43,6 +43,15 @@ public partial class App : Application
             };
             vm.Top = desktop.MainWindow;
         }
+        else if (ApplicationLifetime is IActivityApplicationLifetime activityLifetime)
+        {
+            activityLifetime.MainViewFactory = () =>
+            {
+                MainView view = new() { DataContext = vm };
+                vm.Top = view;
+                return view;
+            };
+        }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
             singleViewPlatform.MainView = new MainView
