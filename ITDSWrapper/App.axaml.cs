@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.IO.Pipes;
+using System;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ITDSWrapper.Accessibility;
@@ -24,7 +25,7 @@ public partial class App : Application
     public IBatteryMonitor? BatteryMonitor { get; set; }
     public IScreenReader? ScreenReader { get; set; }
     public InputSwitcher? InputSwitcher { get; set; }
-    public NamedPipeServerStream? KeyboardPipe { get; set; }
+    public Action<TopLevel>? DesktopTopLevelOpened { get; set; }
 
     public override void Initialize()
     {
@@ -41,6 +42,15 @@ public partial class App : Application
                 DataContext = vm,
             };
             vm.Top = desktop.MainWindow;
+        }
+        else if (ApplicationLifetime is IActivityApplicationLifetime activityLifetime)
+        {
+            activityLifetime.MainViewFactory = () =>
+            {
+                MainView view = new() { DataContext = vm };
+                vm.Top = view;
+                return view;
+            };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {

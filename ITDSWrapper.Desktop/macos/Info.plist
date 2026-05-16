@@ -18,11 +18,9 @@
         <string>Contents/MacOS/ITDSWrapper.Desktop</string>
         <key>CFBundleShortVersionString</key>
         <string>0.1.0</string>
-        <key>LSUIElement</key>
-        <true/>
+        <key>NSPrincipalClass</key>
+        <string>NSApplication</string>
         <key>NSHighResolutionCapable</key>
         <true />
-        <key>CFBundleIconName</key>
-        <string>AppIcon</string>
     </dict>
 </plist>

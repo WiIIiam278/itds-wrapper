@@ -1,4 +1,5 @@
 using System;
+using Android.Content;
 using Android.OS;
 using Android.Speech.Tts;
 using ITDSWrapper.Accessibility;
@@ -12,10 +13,10 @@ public class AndroidScreenReader : Java.Lang.Object, IScreenReader, TextToSpeech
     private Locale? _language;
     private int _currentId;
     
-    public AndroidScreenReader(MainActivity activity, string language)
+    public AndroidScreenReader(Context context, string language)
     {
         Initialize(language);
-        _tts = new(activity.ApplicationContext, this);
+        _tts = new(context.ApplicationContext, this);
     }
     
     public bool Initialize(string language)

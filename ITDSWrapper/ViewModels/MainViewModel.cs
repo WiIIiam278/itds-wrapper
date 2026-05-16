@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipes;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,7 +11,6 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Avalonia.Threading;
 using ITDSWrapper.Assets;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
@@ -43,11 +40,9 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public WindowState WindowState { get; set; } = WindowState.FullScreen;
     [Reactive]
-    public SystemDecorations Decorations { get; set; } = SystemDecorations.Full;
-    [Reactive]
-    public ExtendClientAreaChromeHints ChromeHints { get; set; } = ExtendClientAreaChromeHints.Default;
+    public WindowDecorations Decorations { get; set; } = WindowDecorations.Full;
     [Reactive] 
-    public bool ExtendClientArea { get; set; } = false;
+    public bool ExtendClientArea { get; set; }
     [Reactive]
     public string WindowingModeDesc { get; set; } = Strings.WindowStateFullScreen;
 
@@ -74,19 +69,19 @@ public class MainViewModel : ViewModelBase
                         window?.Position = new(currentScreen.WorkingArea.X, currentScreen.WorkingArea.Y);
                     }
                     WindowState = WindowState.FullScreen;
+                    Decorations = WindowDecorations.None;
+                    ExtendClientArea = true;
                     break;
                 
                 case WindowingMode.BORDERLESS:
                     WindowState = WindowState.Maximized;
-                    Decorations = SystemDecorations.None;
-                    ChromeHints = ExtendClientAreaChromeHints.NoChrome;
+                    Decorations = WindowDecorations.None;
                     ExtendClientArea = true;
                     break;
                 
                 case WindowingMode.WINDOWED:
                     WindowState = WindowState.Maximized;
-                    Decorations = SystemDecorations.Full;
-                    ChromeHints = ExtendClientAreaChromeHints.Default;
+                    Decorations = WindowDecorations.Full;
                     ExtendClientArea = false;
                     break;
             }
@@ -311,12 +306,6 @@ public class MainViewModel : ViewModelBase
         _pauseDriver = ((App)Application.Current).PauseDriver ?? new();
         _pauseDriver.AudioBackend = _audioBackend;
 
-        if (((App)Application.Current).KeyboardPipe is not null)
-        {
-            Console.WriteLine("Running macOS keyboard listener!");
-            Task.Run(() => ListenForKeyboardMacAsync(((App)Application.Current).KeyboardPipe!, CancellationToken.None));
-        }
-        
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
         _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, ToggleMenuOverlay));
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
@@ -888,55 +877,22 @@ public class MainViewModel : ViewModelBase
             // Multi buttons
             if (UpButton is not null && LeftButton is not null)
             {
-                UpLeftButton = new("・", [UpButton, LeftButton], 50, 50, _hapticsBackend);
+                UpLeftButton = new VirtualMultiButtonViewModel("・", [UpButton, LeftButton], 50, 50, _hapticsBackend);
             }
             if (UpButton is not null && RightButton is not null)
             {
-                UpRightButton = new("・", [UpButton, RightButton], 50, 50, _hapticsBackend);
+                UpRightButton = new VirtualMultiButtonViewModel("・", [UpButton, RightButton], 50, 50, _hapticsBackend);
             }
             if (DownButton is not null && LeftButton is not null)
             {
-                DownLeftButton = new("・", [DownButton, LeftButton], 50, 50, _hapticsBackend);
+                DownLeftButton = new VirtualMultiButtonViewModel("・", [DownButton, LeftButton], 50, 50, _hapticsBackend);
             }
             if (DownButton is not null && RightButton is not null)
             {
-                DownRightButton = new("・", [DownButton, RightButton], 50, 50, _hapticsBackend);
+                DownRightButton = new VirtualMultiButtonViewModel("・", [DownButton, RightButton], 50, 50, _hapticsBackend);
             }
             
             _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);
-        }
-    }
-
-    private async Task ListenForKeyboardMacAsync(NamedPipeServerStream keyboardPipe, CancellationToken token)
-    {
-        byte[] buffer = new byte[4];
-        while (!token.IsCancellationRequested)
-        {
-            await keyboardPipe.ReadExactlyAsync(buffer, token);
-            byte eventType = buffer[0];
-            ushort macKeyCode = (ushort)(buffer[1] | (buffer[2] << 8));
-            byte modifiers = buffer[3];
-            
-            KeyModifiers keyModifiers = KeyModifiers.None;
-            if ((modifiers & 3) != 0)
-                keyModifiers |= KeyModifiers.Shift;
-            if ((modifiers & 4) != 0)
-                keyModifiers |= KeyModifiers.Control;
-            if ((modifiers & 8) != 0)
-                keyModifiers |= KeyModifiers.Alt;
-            if ((modifiers & 16) != 0)
-                keyModifiers |= KeyModifiers.Meta;
-            
-            Dispatcher.UIThread.Post(() =>
-            {
-                Top?.RaiseEvent(new KeyEventArgs
-                {
-                    RoutedEvent = eventType == 0 ? InputElement.KeyDownEvent : InputElement.KeyUpEvent,
-                    PhysicalKey = MacKeyCodeMap.ToPhysicalKey(macKeyCode),
-                    KeyModifiers = keyModifiers,
-                    Source = Top,
-                });
-            });
         }
     }
 }

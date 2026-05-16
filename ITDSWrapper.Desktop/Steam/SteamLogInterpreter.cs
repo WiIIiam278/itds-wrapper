@@ -6,9 +6,8 @@ using Libretro.NET.Bindings;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inputSwitcher, SteamHelperIpc ipc) : LogInterpreter
+public class SteamLogInterpreter(SdlInputDriver inputDriver, InputSwitcher inputSwitcher, SteamHelperIpc ipc) : LogInterpreter
 {
-    private const string ActionSetVerb = "ACTION_SET";
     private const string CloudSaveVerb = "CLOUD_SAVE";
     private const string RichPresenceVerb = "RICH_PRESENCE";
     private const string TimelineInstantaneousEventVerb = "TIMELINE_EVENT_I";
@@ -37,10 +36,6 @@ public class SteamLogInterpreter(SteamInputDriver inputDriver, InputSwitcher inp
 
         switch (verb)
         {
-            case ActionSetVerb:
-                inputDriver.SetActionSet(log[(endIndex + 2)..^1]);
-                break;
-
             case CloudSaveVerb:
                 Dispatcher.UIThread.InvokeAsync(() => SteamSaveManager.UploadCloudSave(ipc));
                 break;

@@ -9,9 +9,8 @@
         x:Class="ITDSWrapper.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        SystemDecorations="{Binding Decorations}"
+        WindowDecorations="{Binding Decorations}"
         ExtendClientAreaToDecorationsHint="{Binding ExtendClientArea}"
-        ExtendClientAreaChromeHints="{Binding ChromeHints}"
         WindowState="{Binding WindowState}"
         Title="{x:Static assets:Strings.GameTitle}">
         <views:MainView Name="View" />

@@ -2,26 +2,17 @@ using ITDSWrapper.Core;
 
 namespace ITDSWrapper.Desktop.Steam;
 
-public class SteamUpdater(SteamInputDriver inputDriver, SteamHelperIpc ipc) : IUpdater
+public class SteamUpdater(SdlInputDriver inputDriver, SteamHelperIpc ipc) : IUpdater
 {
     public int Update()
     {
-        ipc.SendCommand("INPUT_POLL_CONTROLLERS");
-        byte[] receipt = ipc.ReceiveResponse();
-        if (receipt.Length > 0 && receipt[0] == 1)
+        if (!inputDriver.HasInputContext)
         {
-            if (receipt[1] == 1)
-            {
-                inputDriver.RequestInputUpdate = true;
-            }
-            
-            if (inputDriver.UpdateState())
-            {
-                return 1;
-            }
+            inputDriver.SetInputContext();
+            return inputDriver.HasGamepad ? 1 : -1;
         }
-
-        return -1;
+        
+        return inputDriver.PumpView();
     }
 
     public void Die()
