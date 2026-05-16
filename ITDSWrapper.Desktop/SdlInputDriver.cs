@@ -60,7 +60,7 @@ public class SdlInputDriver : IInputDriver
                     SetGamepad(gamepad);
                 }
             };
-            _contextHost.View?.DoEvents();
+            Dispatcher.UIThread.Invoke(() => _contextHost.View?.DoEvents());
             if (_inputContext.Gamepads.Count > 0)
             {
                 SetGamepad(_inputContext.Gamepads[0]);
@@ -70,7 +70,7 @@ public class SdlInputDriver : IInputDriver
 
     public void PumpView()
     {
-        _contextHost.View?.DoEvents();
+        Dispatcher.UIThread.Invoke(() => _contextHost.View?.DoEvents());
     }
 
     public void SetGamepad(IGamepad? gamepad)

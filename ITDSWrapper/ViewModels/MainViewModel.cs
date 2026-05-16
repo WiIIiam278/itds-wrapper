@@ -42,7 +42,7 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public WindowDecorations Decorations { get; set; } = WindowDecorations.Full;
     [Reactive] 
-    public bool ExtendClientArea { get; set; } = false;
+    public bool ExtendClientArea { get; set; }
     [Reactive]
     public string WindowingModeDesc { get; set; } = Strings.WindowStateFullScreen;
 
@@ -69,6 +69,8 @@ public class MainViewModel : ViewModelBase
                         window?.Position = new(currentScreen.WorkingArea.X, currentScreen.WorkingArea.Y);
                     }
                     WindowState = WindowState.FullScreen;
+                    Decorations = WindowDecorations.None;
+                    ExtendClientArea = true;
                     break;
                 
                 case WindowingMode.BORDERLESS:

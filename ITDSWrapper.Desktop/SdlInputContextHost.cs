@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using Silk.NET.Core.Loader;
 using Silk.NET.Maths;
 using Silk.NET.SDL;
@@ -43,20 +44,23 @@ public sealed class SdlInputContextHost : IDisposable
         _topLevel = topLevel;
         _topLevel.Closed += HandleTopLevelClosed;
 
-        View = Window.Create(new()
+        Dispatcher.UIThread.Invoke(() =>
         {
-            IsVisible = false,
-            API = GraphicsAPI.None,
-            WindowBorder = WindowBorder.Hidden,
-            Size = new(1, 1),
-            Title = "InputCapture",
-        });
-        
-        SdlProvider.SDL.Value.SetHint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
-        View.Initialize();
+            View = Window.Create(new()
+            {
+                IsVisible = false,
+                API = GraphicsAPI.None,
+                WindowBorder = WindowBorder.Hidden,
+                Size = new(1, 1),
+                Title = "InputCapture",
+            });
+            
+            SdlProvider.SDL.Value.SetHint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
+            View!.Initialize();
 
-        if (View is IWindow window)
-            window.IsVisible = false;
+            if (View is IWindow window)
+                window.IsVisible = false;
+        });
     }
 
     public void Dispose()
