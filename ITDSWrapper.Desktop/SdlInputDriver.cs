@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using ITDSWrapper.Input;
 using Libretro.NET.Bindings;
 using Silk.NET.Input;
@@ -14,7 +15,11 @@ public class SdlInputDriver : IInputDriver
     private readonly SdlInputContextHost _contextHost;
     private IInputContext? _inputContext;
     private IGamepad? _gamepad;
-    
+    private Action<IGamepad, Button>? _buttonDownHandler;
+    private Action<IGamepad, Button>? _buttonUpHandler;
+    private Action<IGamepad, Thumbstick>? _thumbstickMovedHandler;
+    private Action<IGamepad, Trigger>? _triggerMovedHandler;
+
     private readonly Dictionary<uint, SdlControllerInput?> _controlsDictionary = [];
 
     private static readonly Dictionary<string, uint> ButtonNamesMap = new()
@@ -37,26 +42,29 @@ public class SdlInputDriver : IInputDriver
         SdlInput.RegisterPlatform();
         _contextHost = contextHost;
     }
-    
+
     public bool HasInputContext => _inputContext is not null;
 
     public void SetInputContext()
     {
+        if (_contextHost.View?.IsInitialized != true)
+            return;
+
         _inputContext = _contextHost.View?.CreateInput();
-        _contextHost.View?.DoEvents();
         if (HasInputContext)
         {
-            if (_inputContext!.Gamepads.Count > 0)
-            {
-                SetGamepad(_inputContext.Gamepads[0]);
-            }
-            _inputContext.ConnectionChanged += (device, _) =>
+            _inputContext!.ConnectionChanged += (device, _) =>
             {
                 if (device is IGamepad { IsConnected: true } gamepad)
                 {
                     SetGamepad(gamepad);
                 }
             };
+            _contextHost.View?.DoEvents();
+            if (_inputContext.Gamepads.Count > 0)
+            {
+                SetGamepad(_inputContext.Gamepads[0]);
+            }
         }
     }
 
@@ -67,11 +75,24 @@ public class SdlInputDriver : IInputDriver
 
     public void SetGamepad(IGamepad? gamepad)
     {
+        if (_gamepad is not null)
+        {
+            if (_buttonDownHandler is not null) _gamepad.ButtonDown -= _buttonDownHandler;
+            if (_buttonUpHandler is not null) _gamepad.ButtonUp -= _buttonUpHandler;
+            if (_thumbstickMovedHandler is not null) _gamepad.ThumbstickMoved -= _thumbstickMovedHandler;
+            if (_triggerMovedHandler is not null) _gamepad.TriggerMoved -= _triggerMovedHandler;
+        }
+
         _gamepad = gamepad;
         _controlsDictionary.Clear();
-        if (_gamepad is null) 
+        _buttonDownHandler = null;
+        _buttonUpHandler = null;
+        _thumbstickMovedHandler = null;
+        _triggerMovedHandler = null;
+
+        if (_gamepad is null)
             return;
-        
+
         foreach (Button button in _gamepad.Buttons)
         {
             switch (button.Name)
@@ -117,33 +138,33 @@ public class SdlInputDriver : IInputDriver
 
         if (_gamepad?.Thumbsticks.Count > 0)
         {
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP, new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_Y)));
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_X)));
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_Y)));
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_X)));
+            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP,
+                new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_Y)));
+            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT,
+                new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_X)));
+            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN,
+                new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_Y)));
+            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT,
+                new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_X)));
         }
 
-        _gamepad?.ButtonDown += (_, button) =>
-        {
-            Push(button);
-        };
-
-        _gamepad?.ButtonUp += (_, button) =>
-        {
-            Release(button);
-        };
-
-        _gamepad?.ThumbstickMoved += (_, thumbstick) =>
+        _buttonDownHandler = (_, button) => Push(button);
+        _buttonUpHandler = (_, button) => Release(button);
+        _thumbstickMovedHandler = (_, thumbstick) =>
         {
             Push(thumbstick);
             Release(thumbstick);
         };
-
-        _gamepad?.TriggerMoved += (_, trigger) =>
+        _triggerMovedHandler = (_, trigger) =>
         {
             Push(trigger);
             Release(trigger);
         };
+
+        _gamepad!.ButtonDown += _buttonDownHandler;
+        _gamepad.ButtonUp += _buttonUpHandler;
+        _gamepad.ThumbstickMoved += _thumbstickMovedHandler;
+        _gamepad.TriggerMoved += _triggerMovedHandler;
     }
 
     public void Shutdown()

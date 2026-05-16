@@ -2,10 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Platform;
 using Silk.NET.Core.Loader;
+using Silk.NET.Maths;
+using Silk.NET.SDL;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Sdl;
+using Window = Silk.NET.Windowing.Window;
 
 namespace ITDSWrapper.Desktop;
 
@@ -20,7 +22,7 @@ public sealed class SdlInputContextHost : IDisposable
         SdlWindowing.RegisterPlatform();
     }
 
-    public unsafe void Attach(TopLevel topLevel)
+    public void Attach(TopLevel topLevel)
     {
         if (_topLevel == topLevel && View is { IsInitialized: true })
         {
@@ -28,15 +30,6 @@ public sealed class SdlInputContextHost : IDisposable
         }
 
         Detach();
-
-        IPlatformHandle? platformHandle = topLevel.TryGetPlatformHandle();
-        if (platformHandle is null)
-        {
-            throw new InvalidOperationException("Unable to create the SDL input host before Avalonia exposes a native platform handle.");
-        }
-
-        _topLevel = topLevel;
-        _topLevel.Closed += HandleTopLevelClosed;
 
         if (OperatingSystem.IsLinux())
         {
@@ -46,11 +39,24 @@ public sealed class SdlInputContextHost : IDisposable
                     ? nativeDllSearchDirectories.Split(":").Select(dir => Path.Combine(dir, file))
                     : []);
         }
-        View = SdlWindowing.CreateFrom(platformHandle.Handle.ToPointer());
-        if (!View.IsInitialized)
+
+        _topLevel = topLevel;
+        _topLevel.Closed += HandleTopLevelClosed;
+
+        View = Window.Create(new()
         {
-            View.Initialize();
-        }
+            IsVisible = false,
+            API = GraphicsAPI.None,
+            WindowBorder = WindowBorder.Hidden,
+            Size = new(1, 1),
+            Title = "InputCapture",
+        });
+        
+        SdlProvider.SDL.Value.SetHint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
+        View.Initialize();
+
+        if (View is IWindow window)
+            window.IsVisible = false;
     }
 
     public void Dispose()

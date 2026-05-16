@@ -41,10 +41,6 @@
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Include="Avalonia.Diagnostics">
-            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-        </PackageReference>
         <PackageReference Include="Hardware.Info" />
         <PackageReference Condition="'$(RuntimeIdentifier)'=='win-x64' Or $([System.OperatingSystem]::IsWindows())" Include="NAudio" />
         <PackageReference Include="Silk.NET.Input.Sdl" />
