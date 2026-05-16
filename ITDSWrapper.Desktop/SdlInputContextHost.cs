@@ -51,8 +51,6 @@ public sealed class SdlInputContextHost : IDisposable
         {
             View.Initialize();
         }
-
-        View.IsEventDriven = true;
     }
 
     public void Dispose()
