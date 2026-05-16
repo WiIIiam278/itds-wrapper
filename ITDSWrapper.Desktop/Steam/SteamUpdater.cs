@@ -9,12 +9,10 @@ public class SteamUpdater(SdlInputDriver inputDriver, SteamHelperIpc ipc) : IUpd
         if (!inputDriver.HasInputContext)
         {
             inputDriver.SetInputContext();
-            return inputDriver.HasInputContext ? 1 : -1;
+            return inputDriver.HasGamepad ? 1 : -1;
         }
         
-        inputDriver.PumpView();
-        
-        return -1;
+        return inputDriver.PumpView();
     }
 
     public void Die()

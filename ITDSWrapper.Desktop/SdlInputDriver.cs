@@ -35,6 +35,7 @@ public class SdlInputDriver : IInputDriver
     };
 
     public bool RequestInputUpdate { get; set; }
+    private bool _requestControl { get; set; }
 
     public SdlInputDriver(SdlInputContextHost contextHost)
     {
@@ -43,6 +44,7 @@ public class SdlInputDriver : IInputDriver
     }
 
     public bool HasInputContext => _inputContext is not null;
+    public bool HasGamepad => _gamepad is not null;
 
     public void SetInputContext()
     {
@@ -67,9 +69,16 @@ public class SdlInputDriver : IInputDriver
         }
     }
 
-    public void PumpView()
+    public int PumpView()
     {
         Dispatcher.UIThread.Invoke(() => _contextHost.View?.DoEvents());
+        if (_requestControl)
+        {
+            _requestControl = false;
+            return 1;
+        }
+
+        return -1;
     }
 
     public void SetGamepad(IGamepad? gamepad)
@@ -196,6 +205,7 @@ public class SdlInputDriver : IInputDriver
 
     public void Push<T>(T binding)
     {
+        _requestControl = true;
         foreach (SdlControllerInput? input in _controlsDictionary.Values)
         {
             input?.Press(binding);
