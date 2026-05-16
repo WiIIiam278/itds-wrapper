@@ -1,6 +1,9 @@
 using System;
+using System.IO;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform;
+using Silk.NET.Core.Loader;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Sdl;
 
@@ -35,6 +38,14 @@ public sealed class SdlInputContextHost : IDisposable
         _topLevel = topLevel;
         _topLevel.Closed += HandleTopLevelClosed;
 
+        if (OperatingSystem.IsLinux())
+        {
+            ((DefaultPathResolver)PathResolver.Default).Resolvers.Clear();
+            ((DefaultPathResolver)PathResolver.Default).Resolvers.Add(file => 
+                AppContext.GetData("NATIVE_DLL_SEARCH_DIRECTORIES") is string nativeDllSearchDirectories
+                    ? nativeDllSearchDirectories.Split(":").Select(dir => Path.Combine(dir, file))
+                    : []);
+        }
         View = SdlWindowing.CreateFrom(platformHandle.Handle.ToPointer());
         if (!View.IsInitialized)
         {
