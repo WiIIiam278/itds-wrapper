@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ITDSWrapper.Accessibility;
@@ -23,6 +25,7 @@ public partial class App : Application
     public IBatteryMonitor? BatteryMonitor { get; set; }
     public IScreenReader? ScreenReader { get; set; }
     public InputSwitcher? InputSwitcher { get; set; }
+    public Action<TopLevel>? DesktopTopLevelOpened { get; set; }
 
     public override void Initialize()
     {

@@ -2,19 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Media.TextFormatting.Unicode;
-using ITDSWrapper.Desktop.Steam;
 using ITDSWrapper.Input;
 using Libretro.NET.Bindings;
 using Silk.NET.Input;
 using Silk.NET.Input.Sdl;
-using Silk.NET.Windowing.Sdl;
 
 namespace ITDSWrapper.Desktop;
 
 public class SdlInputDriver : IInputDriver
 {
-    private IInputContext _context;
+    private readonly SdlInputContextHost _contextHost;
+    private IInputContext? _inputContext;
     private IGamepad? _gamepad;
     
     private readonly Dictionary<uint, SdlControllerInput?> _controlsDictionary = [];
@@ -34,9 +32,31 @@ public class SdlInputDriver : IInputDriver
 
     public bool RequestInputUpdate { get; set; }
 
-    public SdlInputDriver()
+    public SdlInputDriver(SdlInputContextHost contextHost)
     {
         SdlInput.RegisterPlatform();
+        _contextHost = contextHost;
+    }
+    
+    public bool HasInputContext => _inputContext is not null;
+
+    public void SetInputContext()
+    {
+        _inputContext = _contextHost.View?.CreateInput();
+        if (HasInputContext)
+        {
+            if (_inputContext!.Gamepads.Count > 0)
+            {
+                SetGamepad(_inputContext.Gamepads[0]);
+            }
+            _inputContext.ConnectionChanged += (device, _) =>
+            {
+                if (device is IGamepad { IsConnected: true } gamepad)
+                {
+                    SetGamepad(gamepad);
+                }
+            };
+        }
     }
 
     public void SetGamepad(IGamepad? gamepad)

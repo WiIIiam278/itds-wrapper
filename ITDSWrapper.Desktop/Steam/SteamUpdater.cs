@@ -6,6 +6,11 @@ public class SteamUpdater(SdlInputDriver inputDriver, SteamHelperIpc ipc) : IUpd
 {
     public int Update()
     {
+        if (!inputDriver.HasInputContext)
+        {
+            inputDriver.SetInputContext();
+            return inputDriver.HasInputContext ? 1 : -1;
+        }
         
         return -1;
     }

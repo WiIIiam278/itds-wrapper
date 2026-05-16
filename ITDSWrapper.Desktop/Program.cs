@@ -66,8 +66,10 @@ sealed class Program
                         {
                             SteamSaveManager.ClearSteamCloud(ipc);
                         }
-                        SdlInputDriver inputDriver = new();
+                        SdlInputContextHost inputContextHost = new();
+                        SdlInputDriver inputDriver = new(inputContextHost);
                         ((App)b.Instance!).InputDrivers = [inputDriver];
+                        ((App)b.Instance).DesktopTopLevelOpened = inputContextHost.Attach;
                         ((App)b.Instance).Updater = new SteamUpdater(inputDriver, ipc);
                         ((App)b.Instance).InputSwitcher = new();
                         SteamLogInterpreter logInterpreter = new(inputDriver, ((App)b.Instance).InputSwitcher!, ipc)

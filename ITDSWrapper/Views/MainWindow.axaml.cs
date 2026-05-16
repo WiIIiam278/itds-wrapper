@@ -1,4 +1,5 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using ITDSWrapper.ViewModels;
@@ -15,6 +16,7 @@ public partial class MainWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+        ((App)Application.Current!).DesktopTopLevelOpened?.Invoke(this);
         ((MainViewModel)DataContext!).ChangeEmulatedScreenLayout();
         ((MainViewModel)DataContext).SendLayoutChangeToCore(((MainViewModel)DataContext).TargetScreenLayoutIdx);
     }
