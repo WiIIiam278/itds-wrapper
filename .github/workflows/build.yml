@@ -85,7 +85,7 @@ jobs:
           - image: 'ubuntu-latest'
             tfm: net10.0
             rid: 'linux-x64'
-            single-file: true
+            single_file: true
             melondsds_src: build/src/libretro/melondsds_libretro.so
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.so
             cmake_flags: ''
@@ -95,7 +95,7 @@ jobs:
           - image: 'macos-26'
             tfm: net10.0-macos
             rid: 'osx-x64'
-            single-file: false
+            single_file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="x86_64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="x86_64" -DBUILD_AS_SHARED_LIBRARY=ON'
@@ -105,7 +105,7 @@ jobs:
           - image: 'macos-26'
             tfm: net10.0-macos
             rid: 'osx-arm64'
-            single-file: false
+            single_file: false
             melondsds_src: build/src/libretro/melondsds_libretro.dylib
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dylib
             cmake_flags: '-DCMAKE_OSX_ARCHITECTURES:STRING="arm64" -DENABLE_OGLRENDERER=OFF -DCMAKE_APPLE_SILICON_PROCESSOR="arm64" -DENABLE_JIT=OFF -DBUILD_AS_SHARED_LIBRARY=ON'
@@ -115,7 +115,7 @@ jobs:
           - image: 'windows-latest'
             tfm: net10.0
             rid: 'win-x64'
-            single-file: true
+            single_file: true
             melondsds_src: build/src/libretro/melondsds_libretro.dll
             melondsds_dst: ITDSWrapper.Desktop/melondsds_libretro.dll
             cmake_flags: '-DENABLE_SCCACHE=ON -DSCCACHE="C:/Users/runneradmin/.cargo/bin/sccache.exe" -DENABLE_LTO_RELEASE=OFF'
