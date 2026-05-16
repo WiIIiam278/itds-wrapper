@@ -216,15 +216,6 @@ public class SdlInputDriver : IInputDriver
         foreach (IMotor motor in _gamepad?.VibrationMotors ?? [])
         {
             motor.Speed = (float)strength / ushort.MaxValue;
-
-            Task.Run(StopMotor);
-            continue;
-
-            async Task StopMotor()
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(500));
-                motor.Speed = 0;
-            }
         }
     }
 
