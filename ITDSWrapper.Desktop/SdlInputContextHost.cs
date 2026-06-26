@@ -38,6 +38,7 @@ public sealed class SdlInputContextHost : IDisposable
                 AppContext.GetData("NATIVE_DLL_SEARCH_DIRECTORIES") is string nativeDllSearchDirectories
                     ? nativeDllSearchDirectories.Split(":").Select(dir => Path.Combine(dir, file))
                     : []);
+            ((DefaultPathResolver)PathResolver.Default).Resolvers.Add(file => [Path.Combine(AppContext.BaseDirectory, file)]);
         }
 
         _topLevel = topLevel;
