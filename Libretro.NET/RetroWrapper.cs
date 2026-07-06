@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Libretro.NET.Bindings;
@@ -12,12 +13,14 @@ namespace Libretro.NET
     public unsafe class RetroWrapper : IDisposable
     {
         private RetroInterop _interop;
-        
+
         private static retro_log_printf_t _log;
         private static retro_set_rumble_state_t _setRumbleState;
-        
+
         private static GCHandle? _logHandle;
         private static GCHandle? _setRumbleStateHandle;
+
+        private List<nint> _hGlobals = [];
 
         public uint Width { get; private set; }
         public uint Height { get; private set; }
@@ -39,17 +42,17 @@ namespace Libretro.NET
         public OnCheckInputDelegate OnCheckInput { get; set; }
 
         public delegate bool OnRumbleDelegate(uint port, uint effect, ushort strength);
-        
+
         public OnRumbleDelegate OnRumble { get; set; }
 
         public delegate void OnReceiveLogDelegate(string line);
-        
+
         public OnReceiveLogDelegate OnReceiveLog { get; set; }
 
         public void LoadCore()
         {
             _interop = new();
-            
+
             _interop.set_environment(Environment);
             _interop.set_video_refresh(VideoRefresh);
             _interop.set_input_poll(InputPoll);
@@ -65,11 +68,13 @@ namespace Libretro.NET
             _interop.get_system_info(ref system);
 
             string fakePath = "itds.nds";
+            nint fakePathPtr = Marshal.StringToHGlobalAnsi(fakePath);
             retro_game_info game = new()
             {
-                path = (sbyte*)Marshal.StringToHGlobalAnsi(fakePath),
+                path = (sbyte*)fakePathPtr,
                 size = (UIntPtr)gameData.Length,
             };
+            _hGlobals.Add(fakePathPtr);
 
             game.data = (void*)Marshal.AllocHGlobal((int)game.size);
             Marshal.Copy(gameData, 0, (IntPtr)game.data, (int)game.size);
@@ -103,8 +108,11 @@ namespace Libretro.NET
                     {
                         Directory.CreateDirectory(sysDir!);
                     }
+
                     char** cb = (char**)data;
-                    *cb = (char*)Marshal.StringToHGlobalAnsi(sysDir);
+                    nint ptr = Marshal.StringToHGlobalAnsi(sysDir);
+                    _hGlobals.Add(ptr);
+                    *cb = (char*)ptr;
                     return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -114,65 +122,101 @@ namespace Libretro.NET
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_VARIABLE:
                 {
-                    string key = Marshal.PtrToStringUTF8((IntPtr)(*(char **)data));
+                    string key = Marshal.PtrToStringUTF8((IntPtr)(*(char**)data));
                     retro_variable* cb = (retro_variable*)data;
                     switch (key)
                     {
                         case "melonds_homebrew_sdcard":
+                        {
+                            nint keyPtr = Marshal.StringToHGlobalAnsi(key);
+                            nint valuePtr = Marshal.StringToHGlobalAnsi("enabled");
+                            _hGlobals.AddRange([keyPtr, valuePtr]);
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("enabled"),
+                                key = (sbyte*)keyPtr,
+                                value = (sbyte*)valuePtr,
                             };
                             break;
+                        }
                         case "melonds_jit_enable":
                         case "melonds_jit_branch_optimisations":
                         case "melonds_jit_literal_optimisations":
                         case "melonds_show_cursor":
                         case "melonds_homebrew_sync_sdcard_to_host":
                         case "melonds_homebrew_readonly":
+                        {
+                            nint keyPtr = Marshal.StringToHGlobalAnsi(key);
+                            nint valuePtr = Marshal.StringToHGlobalAnsi("disabled");
+                            _hGlobals.AddRange([keyPtr, valuePtr]);
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("disabled"),
+                                key = (sbyte*)keyPtr,
+                                value = (sbyte*)valuePtr,
                             };
                             break;
+                        }
                         case "melonds_slot2_device":
+                        {
+                            nint keyPtr = Marshal.StringToHGlobalAnsi(key);
+                            nint valuePtr = Marshal.StringToHGlobalAnsi("rumble-pak");
+                            _hGlobals.AddRange([keyPtr, valuePtr]);
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("rumble-pak"),
+                                key = (sbyte*)keyPtr,
+                                value = (sbyte*)valuePtr,
                             };
                             break;
+                        }
                         case "melonds_number_of_screen_layouts":
+                        {
+                            nint keyPtr = Marshal.StringToHGlobalAnsi(key);
+                            nint valuePtr = Marshal.StringToHGlobalAnsi("3");
+                            _hGlobals.AddRange([keyPtr, valuePtr]);
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("3"),
+                                key = (sbyte*)keyPtr,
+                                value = (sbyte*)valuePtr,
                             };
                             break;
+                        }
                         case "melonds_screen_layout1":
+                        {
+                            nint keyPtr = Marshal.StringToHGlobalAnsi(key);
+                            nint valuePtr = Marshal.StringToHGlobalAnsi("top-bottom");
+                            _hGlobals.AddRange([keyPtr, valuePtr]);
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("top-bottom"),
+                                key = (sbyte*)keyPtr,
+                                value = (sbyte*)valuePtr,
                             };
                             break;
+                        }
                         case "melonds_screen_layout2":
+                        {
+                            nint keyPtr = Marshal.StringToHGlobalAnsi(key);
+                            nint valuePtr = Marshal.StringToHGlobalAnsi("left-right");
+                            _hGlobals.AddRange([keyPtr, valuePtr]);
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("left-right"),
+                                key = (sbyte*)keyPtr,
+                                value = (sbyte*)valuePtr,
                             };
                             break;
+                        }
                         case "melonds_screen_layout3":
+                        {
+                            nint keyPtr = Marshal.StringToHGlobalAnsi(key);
+                            nint valuePtr = Marshal.StringToHGlobalAnsi("right-left");
+                            _hGlobals.AddRange([keyPtr, valuePtr]);
                             *cb = new()
                             {
-                                key = (sbyte*)Marshal.StringToHGlobalAnsi(key),
-                                value = (sbyte*)Marshal.StringToHGlobalAnsi("right-left"),
+                                key = (sbyte*)keyPtr,
+                                value = (sbyte*)valuePtr,
                             };
                             break;
+                        }
                     }
+
                     return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CAN_DUPE:
@@ -208,6 +252,7 @@ namespace Libretro.NET
                     {
                         Directory.CreateDirectory(saveDir!);
                     }
+
                     char** cb = (char**)data;
                     *cb = (char*)Marshal.StringToHGlobalAnsi(saveDir);
                     return 1;
@@ -224,7 +269,7 @@ namespace Libretro.NET
                 case RetroBindings.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
                 {
                     retro_core_option_display s = Marshal.PtrToStructure<retro_core_option_display>((IntPtr)data);
-                    string value = Marshal.PtrToStringUTF8((IntPtr)((char *)s.key));
+                    string value = Marshal.PtrToStringUTF8((IntPtr)((char*)s.key));
                     return 1;
                 }
                 case RetroBindings.RETRO_ENVIRONMENT_GET_DEVICE_POWER:
@@ -279,6 +324,8 @@ namespace Libretro.NET
             Marshal.Copy(new[] { left, right }, 0, data, 0);
             Marshal.Copy(data, audio, 0, count * 2);
 
+            Marshal.FreeHGlobal(data);
+
             OnSample?.Invoke(audio);
         }
 
@@ -298,7 +345,7 @@ namespace Libretro.NET
         {
             string str = Marshal.PtrToStringUTF8((IntPtr)(char*)fmt);
             Console.Write(str);
-            
+
             OnReceiveLog?.Invoke(str);
         }
 
@@ -319,10 +366,16 @@ namespace Libretro.NET
 
         public static string GetDirectoryForPlatform(string dirName)
         {
-            return OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() ?
-                Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds", dirName) :
-                OperatingSystem.IsMacOS() ?
-                    Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!.FullName)!.FullName, dirName) :
+            return OperatingSystem.IsAndroid() || OperatingSystem.IsIOS()
+                ?
+                Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "itds",
+                    dirName)
+                : OperatingSystem.IsMacOS()
+                    ? Path.Combine(
+                        Directory.GetParent(
+                            Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!
+                                .FullName)!.FullName, dirName)
+                    :
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dirName);
         }
 
@@ -331,6 +384,10 @@ namespace Libretro.NET
             _interop?.Dispose();
             _logHandle?.Free();
             _setRumbleStateHandle?.Free();
+            foreach (nint ptr in _hGlobals)
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
         }
     }
 }
