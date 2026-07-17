@@ -1,3 +1,6 @@
+using System;
+using Libretro.NET.Bindings;
+
 namespace ITDSWrapper.Input;
 
 public interface IInputDriver
@@ -6,7 +9,7 @@ public interface IInputDriver
 
     public void Shutdown();
     public uint[] GetInputKeys();
-    public void SetActionSet(string actionSet);
+    public void SetSpecialAction(uint button, Action specialAction);
     public void SetBinding<T>(uint input, IGameInput<T>? binding);
     public bool QueryInput(uint id);
     public void Push<T>(T binding);

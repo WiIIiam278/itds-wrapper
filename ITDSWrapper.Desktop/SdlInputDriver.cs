@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Threading;
+using ITDSWrapper.Core;
 using ITDSWrapper.Input;
 using Libretro.NET.Bindings;
 using Silk.NET.Input;
@@ -18,6 +19,7 @@ public class SdlInputDriver : IInputDriver
     private Action<IGamepad, Button>? _buttonUpHandler;
     private Action<IGamepad, Thumbstick>? _thumbstickMovedHandler;
     private Action<IGamepad, Trigger>? _triggerMovedHandler;
+    private Action? _specialAction;
 
     private readonly Dictionary<uint, SdlControllerInput?> _controlsDictionary = [];
 
@@ -35,7 +37,7 @@ public class SdlInputDriver : IInputDriver
     };
 
     public bool RequestInputUpdate { get; set; }
-    private bool _requestControl { get; set; }
+    private bool _requestControl;
 
     public SdlInputDriver(SdlInputContextHost contextHost)
     {
@@ -139,7 +141,7 @@ public class SdlInputDriver : IInputDriver
                     _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, new(button));
                     break;
                 case ButtonName.Back:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, new(button));
+                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, new(button) { SpecialAction = _specialAction });
                     break;
             }
         }
@@ -184,8 +186,9 @@ public class SdlInputDriver : IInputDriver
         return _controlsDictionary.Keys.ToArray();
     }
 
-    public void SetActionSet(string actionSet)
+    public void SetSpecialAction(uint button, Action specialAction)
     {
+        _specialAction = specialAction;
     }
 
     public void SetBinding<T>(uint input, IGameInput<T>? binding)

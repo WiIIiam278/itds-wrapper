@@ -42,8 +42,12 @@ public class AndroidControllerInputDriver : IInputDriver
         return _inputDictionary.Keys.ToArray();
     }
 
-    public void SetActionSet(string actionSet)
+    public void SetSpecialAction(uint button, Action specialAction)
     {
+        if (_inputDictionary.TryGetValue(button, out AndroidControllerInput? input))
+        {
+            input?.SpecialAction = specialAction;
+        }
     }
 
     public void SetBinding<T>(uint input, IGameInput<T>? binding)

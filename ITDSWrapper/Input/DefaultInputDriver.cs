@@ -63,10 +63,13 @@ public class DefaultInputDriver : IInputDriver
         return _bindings.Keys.ToArray();
     }
 
-    public void SetActionSet(string actionSet)
+    public void SetSpecialAction(uint button, Action specialAction)
     {
+        if (_bindings.TryGetValue(button, out object? input) && input is PhysicalKeyInput keyInput)
+        {
+            keyInput.SpecialAction = specialAction;
+        }
     }
-
 
     public void SetBinding<T>(uint input, IGameInput<T>? binding)
     {
