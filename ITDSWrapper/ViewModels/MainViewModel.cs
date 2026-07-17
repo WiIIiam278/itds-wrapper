@@ -197,17 +197,17 @@ public class MainViewModel : ViewModelBase
     
     private readonly List<IInputDriver> _inputDrivers;
     public int NumInputDrivers => _inputDrivers.Count;
-    private int _currentInputDriver;
 
     public int CurrentInputDriver
     {
-        get => _currentInputDriver;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _currentInputDriver, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(DisplayVirtualControls));
         }
     }
+
     private readonly PointerState? _pointerState;
 
     private readonly InputSwitcher _inputSwitcher;
@@ -308,6 +308,10 @@ public class MainViewModel : ViewModelBase
 
         _inputDrivers = ((App)Application.Current).InputDrivers ?? [];
         _inputDrivers.Insert(0, new DefaultInputDriver(IsMobile, ToggleMenuOverlay));
+        for (int i = 1; i < _inputDrivers.Count; i++)
+        {
+            _inputDrivers[i].SetSpecialAction(RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, ToggleMenuOverlay);
+        }
         _pointerState = new(EmuRenderWidth, EmuRenderHeight);
         if (IsMobile)
         {
@@ -612,7 +616,7 @@ public class MainViewModel : ViewModelBase
             int nextInputDriver = _updater?.Update() ?? -1;
             if (nextInputDriver >= 0)
             {
-                if (nextInputDriver != _currentInputDriver)
+                if (nextInputDriver != CurrentInputDriver)
                 {
                     _inputDrivers[nextInputDriver].RequestInputUpdate = true;
                 }

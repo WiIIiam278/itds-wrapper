@@ -43,8 +43,12 @@ public class IosControllerInputDriver : IInputDriver
         return _actionsDictionary.Keys.ToArray();
     }
 
-    public void SetActionSet(string actionSet)
+    public void SetSpecialAction(uint button, Action specialAction)
     {
+        if (_actionsDictionary.TryGetValue(button, out IosControllerInput? input))
+        {
+            input?.SpecialAction = specialAction;
+        }
     }
 
     public void SetBinding<T>(uint input, IGameInput<T>? binding)
