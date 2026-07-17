@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using Avalonia;
 using Avalonia.ReactiveUI;
-using ITDSWrapper.Core;
 #if MACOS
 using AvFoundationBackend;
 #endif

@@ -1,5 +1,4 @@
 using System;
-using Libretro.NET.Bindings;
 
 namespace ITDSWrapper.Input;
 
