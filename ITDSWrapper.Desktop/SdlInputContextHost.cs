@@ -33,7 +33,6 @@ public sealed class SdlInputContextHost : IDisposable
 
         if (OperatingSystem.IsLinux())
         {
-            ((DefaultPathResolver)PathResolver.Default).Resolvers.Clear();
             ((DefaultPathResolver)PathResolver.Default).Resolvers.Add(file => 
                 AppContext.GetData("NATIVE_DLL_SEARCH_DIRECTORIES") is string nativeDllSearchDirectories
                     ? nativeDllSearchDirectories.Split(":").Select(dir => Path.Combine(dir, file))
