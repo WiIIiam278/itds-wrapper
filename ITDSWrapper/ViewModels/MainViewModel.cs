@@ -698,25 +698,43 @@ public class MainViewModel : ViewModelBase
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_A))
                     {
+                        IInputElement? focused = TopLevel.GetTopLevel(Top)?.FocusManager.GetFocusedElement();
                         Dispatcher.UIThread.Post(() =>
-                            TopLevel.GetTopLevel(Top)?.RaiseEvent(new KeyEventArgs
+                        {
+                            focused?.RaiseEvent(new KeyEventArgs
                             {
                                 RoutedEvent = InputElement.KeyDownEvent,
-                                Key = Key.Next,
-                                Source = TopLevel.GetTopLevel(Top),
-                            }));
+                                Key = Key.Enter,
+                                Source = focused,
+                            });
+                            focused?.RaiseEvent(new KeyEventArgs
+                            {
+                                RoutedEvent = InputElement.KeyUpEvent,
+                                Key = Key.Enter,
+                                Source = focused,
+                            });
+                        });
                         _acceptingMenuInput = false;
                         _menuInputTimer.Start();
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_B))
                     {
+                        IInputElement? focused = TopLevel.GetTopLevel(Top)?.FocusManager.GetFocusedElement();
                         Dispatcher.UIThread.Post(() =>
-                            TopLevel.GetTopLevel(Top)?.RaiseEvent(new KeyEventArgs
+                        {
+                            focused?.RaiseEvent(new KeyEventArgs
                             {
                                 RoutedEvent = InputElement.KeyDownEvent,
                                 Key = Key.Back,
-                                Source = TopLevel.GetTopLevel(Top),
-                            }));
+                                Source = focused,
+                            });
+                            focused?.RaiseEvent(new KeyEventArgs
+                            {
+                                RoutedEvent = InputElement.KeyUpEvent,
+                                Key = Key.Back,
+                                Source = focused,
+                            });
+                        });
                         _acceptingMenuInput = false;
                         _menuInputTimer.Start();
                     }
