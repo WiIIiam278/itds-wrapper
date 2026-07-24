@@ -7,9 +7,9 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.intothedreamspring.itdswrapper</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>WRAPPER_VERSION</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>WRAPPER_VERSION</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>

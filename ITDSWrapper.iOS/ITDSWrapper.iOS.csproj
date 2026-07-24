@@ -7,6 +7,7 @@
         <UseInterpreter>true</UseInterpreter>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AppIcon>AppIcon</AppIcon>
+        <RunPostBuildEvent>Always</RunPostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <CodesignKey>iPhone Developer</CodesignKey>
@@ -32,4 +33,12 @@
         <ProjectReference Include="..\AvFoundationBackend\AvFoundationBackend.csproj" />
         <ProjectReference Include="..\ITDSWrapper\ITDSWrapper.csproj"/>
     </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+      <Exec Command="sed -i '' -e 's/WRAPPER_VERSION/$(Version)/g' Info.plist" />
+    </Target>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="sed -i '' -e 's/$(Version)/WRAPPER_VERSION/g' Info.plist" />
+    </Target>
 </Project>
