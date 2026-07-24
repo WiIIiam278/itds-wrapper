@@ -42,8 +42,7 @@ jobs:
         ref: use-my-fork
         path: melondsds
         clean: false
-    - name: Install Dependencies (macOS)
-      if: ${{ matrix.platform.image == 'macos-26' }}
+    - name: Install Dependencies (iOS)
       shell: bash
       run: brew install pkg-config cmake ninja ccache
 
@@ -58,7 +57,7 @@ jobs:
         install_name_tool -id @rpath/melondsds_libretro.framework/melondsds_libretro ITDSWrapper.iOS/melondsds_libretro.framework/melondsds_libretro
 
     - name: 'Set version in plist'
-      run: sed -i '' -e 's/WRAPPER_VERSION/$Version/g' ITDSWrapper.iOS/Info.plist
+      run: sed -i '' -e "s/WRAPPER_VERSION/$Version/g" ITDSWrapper.iOS/Info.plist
 
     - name: Import signing certificate
       uses: Apple-Actions/import-codesign-certs@v5
