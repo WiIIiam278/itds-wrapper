@@ -22,7 +22,7 @@ public class Application
     private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
     {
         return libraryName.Equals("melondsds_libretro") ?
-            // Flatpak runtime doesn't have libSDL2.so, so we make do
-            NativeLibrary.Load("Frameworks/melondsds_libretro.framework/melondsds_libretro", assembly, searchPath) : IntPtr.Zero;
+            // iOS needs to look in this frameworks directory think
+            NativeLibrary.Load("Frameworks/melondsds_libretro.framework/melondsds_libretro", assembly, DllImportSearchPath.ApplicationDirectory) : IntPtr.Zero;
     }
 }
