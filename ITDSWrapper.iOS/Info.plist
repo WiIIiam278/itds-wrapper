@@ -7,9 +7,9 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.intothedreamspring.itdswrapper</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>WRAPPER_VERSION</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>WRAPPER_VERSION</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>
@@ -17,19 +17,16 @@
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
-		<integer>2</integer>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
