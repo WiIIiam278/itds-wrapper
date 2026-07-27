@@ -103,7 +103,7 @@ jobs:
       uses: pCYSl5EDgo/cat@1.0.1
       id: release-notes-cat
       with:
-        path: .changelog/android/rolling/whatsnew-en-GB
+        path: .changelog/mobile/rolling/whatsnew-en-GB
 
     - name: Upload to TestFlight
       uses: apple-actions/upload-testflight-build@v4
