@@ -189,7 +189,7 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.intothedreamspring.itdswrapper
         releaseFiles: ITDSWrapper.Android/bin/Release/net10.0-android/android-arm64/publish/com.intothedreamspring.itdswrapper-Signed.apk
-        tracks: qa
+        tracks: internal
         status: completed
         inAppUpdatePriority: 3
         whatsNewDirectory: .changelog/android/${{ inputs.version == '' &&  'rolling' || inputs.version }}
