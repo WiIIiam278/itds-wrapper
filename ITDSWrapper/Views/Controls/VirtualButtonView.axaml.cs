@@ -1,58 +1,50 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using ITDSWrapper.ViewModels.Controls;
 
 namespace ITDSWrapper.Views.Controls;
 
-public partial class VirtualButtonView : UserControl, IPressableButtonView
+public partial class VirtualButtonView : UserControl
 {
-    private const int HoldTimerStart = 5;
-    
     private bool _held;
-    private int _holdTimer = HoldTimerStart;
-    
+
     public VirtualButtonView()
     {
         Focusable = false;
 
         InitializeComponent();
+        AddHandler(PointerPressedEvent, (_, _) => PressButton(), handledEventsToo: true);
+        AddHandler(PointerReleasedEvent, (_, _) => ReleaseButton(), handledEventsToo: true);
+        InputButton.AddHandler(PointerCaptureLostEvent, (_, _) => ReleaseButton(), handledEventsToo: true);
     }
-    
-    public void PressButton(bool doHaptics)
+
+    private void PressButton()
     {
-        if (_held)
+        if (_held || DataContext is not VirtualButtonViewModel ctx)
         {
-            _holdTimer = HoldTimerStart;
             return;
         }
 
-        if (doHaptics)
+        if (ctx.HapticsEnabled)
         {
-            ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(true);
+            ctx.Haptics?.Fire(true);
         }
-        ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Press((VirtualButtonViewModel)DataContext!);
+        ctx.AssociatedInput?.Press(ctx);
         _held = true;
-        _holdTimer = HoldTimerStart;
     }
 
-    public void ReleaseButton(bool doHaptics = true, bool softRelease = false)
+    private void ReleaseButton()
     {
-        if (!_held)
+        if (!_held || DataContext is not VirtualButtonViewModel ctx)
         {
             return;
         }
 
-        if (softRelease && _holdTimer > 0)
+        if (ctx.HapticsEnabled)
         {
-            _holdTimer--;
-            return;
+            ctx.Haptics?.Fire(false);
         }
-
-        if (doHaptics)
-        {
-            ((VirtualButtonViewModel?)DataContext)?.Haptics?.Fire(false);
-        }
-        ((VirtualButtonViewModel?)DataContext)?.AssociatedInput?.Release((VirtualButtonViewModel)DataContext!);
+        ctx.AssociatedInput?.Release(ctx);
         _held = false;
-        _holdTimer = HoldTimerStart;
     }
 }

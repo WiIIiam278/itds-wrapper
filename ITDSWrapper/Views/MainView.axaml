@@ -34,8 +34,7 @@
         </Grid>
         
         <Grid Grid.Row="2" Name="OnScreenControls" IsVisible="{Binding DisplayVirtualControls}"
-              RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="5" PointerMoved="OnScreenControls_OnPointerMoved"
-              IsHitTestVisible="True" Effect="{Binding ScreenEffect}">
+              RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="5" Effect="{Binding ScreenEffect}">
             <Grid.Background>
                 <SvgResourceExtension Path="/Assets/ControlPad.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Top" />
             </Grid.Background>
@@ -46,15 +45,8 @@
                 <c:VirtualButtonView Grid.Column="3" VerticalAlignment="Center" DataContext="{Binding StartButton}" />
                 <c:VirtualButtonView Grid.Column="4" VerticalAlignment="Center" Margin="10 0 0 0" DataContext="{Binding RButton}" />
             </Grid>
-            <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
-                <c:VirtualMultiButtonView Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding UpLeftButton}" />
-                <c:VirtualButtonView Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding UpButton}" />
-                <c:VirtualMultiButtonView Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding UpRightButton}" />
-                <c:VirtualButtonView Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding LeftButton}" />
-                <c:VirtualButtonView Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding RightButton}" />
-                <c:VirtualMultiButtonView Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding DownLeftButton}" />
-                <c:VirtualButtonView Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding DownButton}" />
-                <c:VirtualMultiButtonView Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding DownRightButton}" />
+            <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto" RowDefinitions="Auto" HorizontalAlignment="Center">
+                <c:VirtualDPadView DataContext="{Binding Dpad}" />
             </Grid>
             <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
                 <c:VirtualButtonView Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding XButton}" />

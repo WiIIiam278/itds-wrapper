@@ -230,14 +230,7 @@ public class MainViewModel : ViewModelBase
     public VirtualButtonViewModel? YButton { get; set; }
     public VirtualButtonViewModel? LButton { get; set; }
     public VirtualButtonViewModel? RButton { get; set; }
-    public VirtualButtonViewModel? UpButton { get; set; }
-    public VirtualButtonViewModel? RightButton { get; set; }
-    public VirtualButtonViewModel? DownButton { get; set; }
-    public VirtualButtonViewModel? LeftButton { get; set; }
-    public VirtualMultiButtonViewModel? UpLeftButton { get; set; }
-    public VirtualMultiButtonViewModel? UpRightButton { get; set; }
-    public VirtualMultiButtonViewModel? DownLeftButton { get; set; }
-    public VirtualMultiButtonViewModel? DownRightButton { get; set; }
+    public VirtualDPadViewModel Dpad { get; set; } = new(150, 150);
 
     public VirtualButtonViewModel? StartButton { get; set; }
     public VirtualButtonViewModel? SelectButton { get; set; }
@@ -950,71 +943,48 @@ public class MainViewModel : ViewModelBase
             switch (inputKey)
             {
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_A:
-                    AButton = new("A", button, 50, 50, _hapticsBackend);
+                    AButton = new("A", button, 50, 50, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_B:
-                    BButton = new("B", button, 50, 50, _hapticsBackend);
+                    BButton = new("B", button, 50, 50, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_X:
-                    XButton = new("X", button, 50, 50, _hapticsBackend);
+                    XButton = new("X", button, 50, 50, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y:
-                    YButton = new("Y", button, 50, 50, _hapticsBackend);
+                    YButton = new("Y", button, 50, 50, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_L:
-                    LButton = new("L", button, 67, 40, _hapticsBackend);
+                    LButton = new("L", button, 67, 40, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R:
-                    RButton = new("R", button, 67, 40, _hapticsBackend);
+                    RButton = new("R", button, 67, 40, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP:
-                    UpButton = new("・", button, 50, 50, _hapticsBackend);
+                    Dpad?.Up = new("UP", button, 0, 0, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT:
-                    RightButton = new("・", button, 50, 50, _hapticsBackend);
+                    Dpad?.Right = new("RIGHT", button, 0, 0, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN:
-                    DownButton = new("・", button, 50, 50, _hapticsBackend);
+                    Dpad?.Down = new("DOWN", button, 0, 0, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT:
-                    LeftButton = new("・", button, 50, 50, _hapticsBackend);
+                    Dpad?.Left = new("LEFT", button, 0, 0, _hapticsBackend);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_START:
-                    StartButton = new("START", button, 65, 40, _hapticsBackend);
+                    StartButton = new("START", button, 65, 40, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT:
-                    SelectButton = new("SELECT", button, 65, 40, _hapticsBackend);
+                    SelectButton = new("SELECT", button, 65, 40, _hapticsBackend, WrapperSettings);
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2:
                     button.SpecialAction = ToggleMenuOverlay;
-                    SettingsButton = new("MENU", button, 65, 40, _hapticsBackend);
+                    SettingsButton = new("MENU", button, 65, 40, _hapticsBackend, WrapperSettings);
                     break;
                 default:
                     button = null;
                     break;
-            }
-
-            // Multi buttons
-            if (UpButton is not null && LeftButton is not null)
-            {
-                UpLeftButton = new VirtualMultiButtonViewModel("・", [UpButton, LeftButton], 50, 50, _hapticsBackend);
-            }
-
-            if (UpButton is not null && RightButton is not null)
-            {
-                UpRightButton = new VirtualMultiButtonViewModel("・", [UpButton, RightButton], 50, 50, _hapticsBackend);
-            }
-
-            if (DownButton is not null && LeftButton is not null)
-            {
-                DownLeftButton =
-                    new VirtualMultiButtonViewModel("・", [DownButton, LeftButton], 50, 50, _hapticsBackend);
-            }
-
-            if (DownButton is not null && RightButton is not null)
-            {
-                DownRightButton =
-                    new VirtualMultiButtonViewModel("・", [DownButton, RightButton], 50, 50, _hapticsBackend);
             }
 
             _inputDrivers[defaultInputDriverIndex].SetBinding(inputKey, button);
