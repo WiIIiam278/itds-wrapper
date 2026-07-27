@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Avalonia.Input;
-using ITDSWrapper.Haptics;
 using ITDSWrapper.Input;
 
 namespace ITDSWrapper.ViewModels.Controls;
@@ -16,7 +14,6 @@ public class VirtualDPadViewModel(double width, double height) : ViewModelBase
     
     private readonly Dictionary<int, AvaloniaPointerState> _pointerStates = [];
     private int _lastPointerId = -1;
-    private Vec2 _currentVector = new(0, 0, 75, 75);
     private double _currentSectorMinAngle;
     private double _currentSectorMaxAngle;
     
@@ -62,9 +59,7 @@ public class VirtualDPadViewModel(double width, double height) : ViewModelBase
         if (Math.Abs(_currentSectorMinAngle - _currentSectorMaxAngle) > double.Epsilon &&
             AngleWithin(angle, _currentSectorMinAngle - BoundaryBuffer, _currentSectorMaxAngle + BoundaryBuffer))
             return;
-
-        _currentVector = newVector;
-        Console.WriteLine($"({_currentVector.X}, {_currentVector.Y}) Angle: {RadToDeg(angle)}");
+        
         if (angle >= DegToRad(0) && angle <= DegToRad(45))
         {
             _currentSectorMinAngle = DegToRad(0);
@@ -151,7 +146,6 @@ public class VirtualDPadViewModel(double width, double height) : ViewModelBase
         if (_pointerStates.Count == 0)
         {
             _lastPointerId = -1;
-            _currentVector = new(75.0, 75.0, CenterX, CenterY);
             _currentSectorMinAngle = 0.0;
             _currentSectorMaxAngle = 0.0;
             Up?.AssociatedInput?.Release(Up);

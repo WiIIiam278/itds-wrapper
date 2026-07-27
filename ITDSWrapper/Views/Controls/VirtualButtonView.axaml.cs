@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Input;
 using ITDSWrapper.ViewModels.Controls;
 
 namespace ITDSWrapper.Views.Controls;
