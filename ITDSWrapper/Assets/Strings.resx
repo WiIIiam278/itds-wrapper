@@ -111,4 +111,13 @@
     <data name="SettingsBack" xml:space="preserve">
         <value>Back</value>
     </data>
+    <data name="SettingsVirtualButtonLayout" xml:space="preserve">
+        <value>Button Layout</value>
+    </data>
+    <data name="SettingsVirtualButtonLayoutRecommended" xml:space="preserve">
+        <value>Recommended</value>
+    </data>
+    <data name="SettingsVirtualButtonLayoutFull" xml:space="preserve">
+        <value>Full</value>
+    </data>
 </root>

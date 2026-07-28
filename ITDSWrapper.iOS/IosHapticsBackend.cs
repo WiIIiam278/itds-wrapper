@@ -9,7 +9,7 @@ public class IosHapticsBackend : IHapticsBackend
     
     public void Initialize()
     {
-        _generator = new(UIImpactFeedbackStyle.Medium);
+        _generator = new(UIImpactFeedbackStyle.Light);
     }
 
     public void Fire(bool press)

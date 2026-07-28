@@ -9,7 +9,8 @@ public class Settings
     public bool FirstLaunch { get; set; } = true;
     public bool BordersEnabled { get; set; } = true;
     public bool ScreenReaderEnabled { get; set; } = false;
-    public bool ControlPadHapticsEnabled { get; set; } = true;
+    public bool VirtualButtonHaptics { get; set; } = true;
+    public bool VirtualButtonFullLayout { get; set; } = false;
     public string LanguageCode { get; set; } = "en";
 
     private static string[] _langCodeArray = ["en", "ja"];
