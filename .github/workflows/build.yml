@@ -11,6 +11,7 @@ on:
 env:
   Version: ${{ inputs.version == '' && format('1.0.{0}', github.run_number) || inputs.version }}
   AssemblyVersion: ${{ inputs.version == '' && format('1.0.{0}', github.run_number) || inputs.version }}
+  AndroidVersion: ${{ github.run_number }}
 
 jobs:
   build-ios-wrapper:
@@ -99,6 +100,12 @@ jobs:
         dotnet publish ITDSWrapper.iOS -f net10.0-ios -c Release -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="Apple Distribution" -p:CodesignProvision="${{ steps.prof.outputs.uuid }}"
       shell: pwsh
 
+    - name: Cat release notes
+      uses: pCYSl5EDgo/cat@1.0.1
+      id: release-notes-cat
+      with:
+        path: .changelog/mobile/rolling/whatsnew-en-GB
+
     - name: Upload to TestFlight
       uses: apple-actions/upload-testflight-build@v4
       with: 
@@ -106,10 +113,10 @@ jobs:
         issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
         api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
         api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-        # release-notes: todo: input please # optional
-        uses-non-exempt-encryption: 'false' # optional: "true" or "false" maps directly to App Store Connect usesNonExemptEncryption
-        wait-for-processing: 'true' # optional: set to "false" to skip waiting (metadata updates will be skipped)
-        backend: AppStoreAPI # optional: AppStoreAPI | transporter | altool (default: AppStoreAPI; case insensitive)
+        release-notes: ${{ steps.release-notes-cat.outputs.text }}
+        uses-non-exempt-encryption: 'false'
+        wait-for-processing: 'true'
+        backend: AppStoreAPI
 
   build-android-wrapper:            
     runs-on: 'ubuntu-latest'
@@ -173,16 +180,25 @@ jobs:
         cp melondsds/build/src/libretro/melondsds_libretro_android.so ITDSWrapper.Android/libs/arm64-v8a/libmelondsds_libretro.so
 
     # Build & Publish
+    - name: Decode upload keystore
+      run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.keystore"
     - name: Restore & Publish Wrapper
+      env:
+        ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+        ANDROID_KEY_PASS: ${{ secrets.ANDROID_KEY_PASS }}
       run: |
         dotnet restore ITDSWrapper.Android -r android-arm64
-        dotnet publish ITDSWrapper.Android/ITDSWrapper.Android.csproj -c Release -f net10.0-android -r android-arm64 --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=false
-    - name: 'Upload wrappers to bucket'
-      run: s5cmd cp ITDSWrapper.Android/bin/Release/net10.0-android/android-arm64/publish/com.intothedreamspring.itdswrapper-Signed.apk s3://into-the-dream-spring-wrapper/com.intothedreamspring.itdswrapper.apk
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_KEY }}
-        S3_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
+        dotnet publish ITDSWrapper.Android/ITDSWrapper.Android.csproj -c Release -f net10.0-android -r android-arm64 --self-contained /p:DebugType=None /p:DebugSymbols=false /p:PublishSingleFile=false /p:AndroidKeyStore=true "/p:AndroidSigningKeyStore=$RUNNER_TEMP/upload.keystore" "/p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" /p:AndroidSigningStorePass=env:ANDROID_KEYSTORE_PASS /p:AndroidSigningKeyPass=env:ANDROID_KEY_PASS
+    - name: Upload to Play Store
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        packageName: com.intothedreamspring.itdswrapper
+        releaseFiles: ITDSWrapper.Android/bin/Release/net10.0-android/android-arm64/publish/com.intothedreamspring.itdswrapper-Signed.aab
+        tracks: internal
+        status: completed
+        inAppUpdatePriority: 3
+        whatsNewDirectory: .changelog/mobile/${{ inputs.version == '' &&  'rolling' || inputs.version }}
 
   build-steam-wrappers:
     strategy:
