@@ -110,7 +110,8 @@ public class MainViewModel : ViewModelBase
     [Reactive] public string BordersSettingDesc { get; set; }
 
     [Reactive] public string ScreenReaderSettingDesc { get; set; }
-    [Reactive] public string ControlPadHapticsSettingDesc { get; set; }
+    [Reactive] public string VirtualButtonsLayoutSettingDesc { get; set; }
+    [Reactive] public string VirtualButtonsHapticsSettingDesc { get; set; }
 
     private readonly Dictionary<Setting, Action> _settingsChangesBuffer = [];
 
@@ -221,6 +222,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ChangeBorderSettingsCommand { get; }
     public ICommand ChangeScreenReaderSettingsCommand { get; }
     public ICommand ChangeControlPadHapticsSettingsCommand { get; }
+    public ICommand ChangeVirtualButtonsLayoutSettingsCommand { get; }
 
     public ICommand SettingsBackCommand { get; }
 
@@ -234,10 +236,11 @@ public class MainViewModel : ViewModelBase
 
     public VirtualButtonViewModel? StartButton { get; set; }
     public VirtualButtonViewModel? SelectButton { get; set; }
-    public VirtualButtonViewModel? SettingsButton { get; set; }
+    public VirtualButtonViewModel? MenuButton { get; set; }
 
     [Reactive] public bool DisplayMenuOverlay { get; set; }
     [Reactive] public IEffect? ScreenEffect { get; set; }
+    [Reactive] public bool IsFullLayout { get; set; }
 
     public MainViewModel()
     {
@@ -249,10 +252,13 @@ public class MainViewModel : ViewModelBase
             : Strings.SettingSwitchDisabled;
         ScreenReaderSettingDesc =
             WrapperSettings.ScreenReaderEnabled ? Strings.SettingSwitchOn : Strings.SettingSwitchOff;
-        ControlPadHapticsSettingDesc = WrapperSettings.ControlPadHapticsEnabled
+        VirtualButtonsHapticsSettingDesc = WrapperSettings.VirtualButtonHaptics
             ? Strings.SettingSwitchOn
             : Strings.SettingSwitchDisabled;
-
+        IsFullLayout =  WrapperSettings.VirtualButtonFullLayout;
+        VirtualButtonsLayoutSettingDesc = IsFullLayout
+            ? Strings.SettingsVirtualButtonLayoutFull
+            : Strings.SettingsVirtualButtonLayoutRecommended;
         Wrapper = new();
         _logInterpreter = ((App)Application.Current!).LogInterpreter ?? new();
         _logInterpreter.SetNextBorder = border =>
@@ -334,8 +340,9 @@ public class MainViewModel : ViewModelBase
         ChangeScreenLayoutCommand = ReactiveCommand.Create<bool>(ChangeScreenLayout);
         ChangeBorderSettingsCommand = ReactiveCommand.Create(ToggleBorderSettings);
         ChangeScreenReaderSettingsCommand = ReactiveCommand.Create(ToggleScreenReader);
+        ChangeVirtualButtonsLayoutSettingsCommand = ReactiveCommand.Create(ToggleVirtualButtonsLayout);
         ChangeControlPadHapticsSettingsCommand = ReactiveCommand.Create(ToggleControlPadHaptics);
-
+        
         SettingsBackCommand = ReactiveCommand.Create(CloseSubMenu);
 
         Wrapper.OnFrame = DisplayFrame;
@@ -488,12 +495,21 @@ public class MainViewModel : ViewModelBase
         WrapperSettings.ScreenReaderEnabled = !WrapperSettings.ScreenReaderEnabled;
     }
 
+    private void ToggleVirtualButtonsLayout()
+    {
+        WrapperSettings.VirtualButtonFullLayout = !WrapperSettings.VirtualButtonFullLayout;
+        VirtualButtonsLayoutSettingDesc = WrapperSettings.VirtualButtonFullLayout
+            ? Strings.SettingsVirtualButtonLayoutFull
+            : Strings.SettingsVirtualButtonLayoutRecommended;
+        IsFullLayout =  WrapperSettings.VirtualButtonFullLayout;
+    }
+
     private void ToggleControlPadHaptics()
     {
-        ControlPadHapticsSettingDesc = WrapperSettings.ControlPadHapticsEnabled
+        VirtualButtonsHapticsSettingDesc = WrapperSettings.VirtualButtonHaptics
             ? Strings.SettingSwitchOff
             : Strings.SettingSwitchOn;
-        WrapperSettings.ControlPadHapticsEnabled = !WrapperSettings.ControlPadHapticsEnabled;
+        WrapperSettings.VirtualButtonHaptics = !WrapperSettings.VirtualButtonHaptics;
     }
 
     public void ChangeEmulatedScreenLayout()
@@ -980,7 +996,7 @@ public class MainViewModel : ViewModelBase
                     break;
                 case RetroBindings.RETRO_DEVICE_ID_JOYPAD_R2:
                     button.SpecialAction = ToggleMenuOverlay;
-                    SettingsButton = new("MENU", button, 65, 40, _hapticsBackend, WrapperSettings);
+                    MenuButton = new("MENU", button, 65, 40, _hapticsBackend, WrapperSettings);
                     break;
                 default:
                     button = null;

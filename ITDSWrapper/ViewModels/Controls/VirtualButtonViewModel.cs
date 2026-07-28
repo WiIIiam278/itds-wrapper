@@ -13,5 +13,5 @@ public class VirtualButtonViewModel(string? label, VirtualButtonInput? associate
     public double Height { get; set; } = height;
 
     public IHapticsBackend? Haptics { get; set; } = haptics;
-    public bool HapticsEnabled => settings?.ControlPadHapticsEnabled ?? false;
+    public bool HapticsEnabled => settings?.VirtualButtonHaptics ?? false;
 }

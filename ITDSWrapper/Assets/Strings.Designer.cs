@@ -256,6 +256,33 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Button Layout.
+        /// </summary>
+        public static string SettingsVirtualButtonLayout {
+            get {
+                return ResourceManager.GetString("SettingsVirtualButtonLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full.
+        /// </summary>
+        public static string SettingsVirtualButtonLayoutFull {
+            get {
+                return ResourceManager.GetString("SettingsVirtualButtonLayoutFull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recommended.
+        /// </summary>
+        public static string SettingsVirtualButtonLayoutRecommended {
+            get {
+                return ResourceManager.GetString("SettingsVirtualButtonLayoutRecommended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Website.
         /// </summary>
         public static string SettingsWebsite {

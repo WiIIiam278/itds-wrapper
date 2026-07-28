@@ -19,8 +19,16 @@
                Opacity="{Binding CurrentBorderOpacity}"/>
         <Image Grid.Row="0" Grid.RowSpan="4" Stretch="UniformToFill" Source="{Binding NextBorder}"
                Opacity="{Binding NextBorderOpacity}"/>
-        
-        <StackPanel Grid.Row="0" MinHeight="{Binding TopPadding}"/>
+
+        <Grid Row="0" Margin="0 0 22 0" MinHeight="{Binding TopPadding}">
+            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="*" Width="48" Height="48" HorizontalAlignment="Right">
+                <Grid.Background>
+                    <SvgResourceExtension Path="/Assets/VirtualButtons/MenuButton.svg" Stretch="Fill" AlignmentX="Center" AlignmentY="Center" />
+                </Grid.Background>
+                <c:VirtualButtonView Grid.Column="0" Grid.Row="0" Margin="0 5 0 0" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                     DataContext="{Binding MenuButton}" />
+            </Grid>
+        </Grid>
         
         <Grid Grid.Row="1" SizeChanged="ScreenGrid_OnSizeChanged">
             <g:EmuImage Name="DsScreen"
@@ -34,25 +42,55 @@
         </Grid>
         
         <Grid Grid.Row="2" Name="OnScreenControls" IsVisible="{Binding DisplayVirtualControls}"
-              RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="5" Effect="{Binding ScreenEffect}">
-            <Grid.Background>
-                <SvgResourceExtension Path="/Assets/ControlPad.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Top" />
-            </Grid.Background>
-            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*,*,*,*" Height="45" HorizontalAlignment="Center">
-                <c:VirtualButtonView Grid.Column="0" VerticalAlignment="Center" Margin="0 0 10 0" DataContext="{Binding LButton}" />
-                <c:VirtualButtonView Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding SelectButton}" />
-                <c:VirtualButtonView Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding SettingsButton}" />
-                <c:VirtualButtonView Grid.Column="3" VerticalAlignment="Center" DataContext="{Binding StartButton}" />
-                <c:VirtualButtonView Grid.Column="4" VerticalAlignment="Center" Margin="10 0 0 0" DataContext="{Binding RButton}" />
+              RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="5" Effect="{Binding ScreenEffect}">
+            <Grid IsVisible="{Binding IsFullLayout}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*,*,*,*" ColumnSpacing="14" HorizontalAlignment="Center">
+                <Grid Grid.Column="0" VerticalAlignment="Center" Width="81" Height="45">
+                    <Grid.Background>
+                        <SvgResourceExtension Path="/Assets/VirtualButtons/LButton.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" />
+                    </Grid.Background>
+                    <c:VirtualButtonView VerticalAlignment="Center" DataContext="{Binding LButton}" />
+                </Grid>
+                <Grid Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="81" Height="45">
+                    <Grid.Background>
+                        <SvgResourceExtension Path="/Assets/VirtualButtons/SelectButton.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" />
+                    </Grid.Background>
+                    <c:VirtualButtonView HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding SelectButton}" />
+                </Grid>
+                <Grid Grid.Column="2" VerticalAlignment="Center" Width="81" Height="45">
+                    <Grid.Background>
+                        <SvgResourceExtension Path="/Assets/VirtualButtons/StartButton.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" />
+                    </Grid.Background>
+                    <c:VirtualButtonView HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{Binding StartButton}" />
+                </Grid>
+                <Grid  Grid.Column="3" VerticalAlignment="Center" Width="81" Height="45">
+                    <Grid.Background>
+                        <SvgResourceExtension Path="/Assets/VirtualButtons/RButton.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" />
+                    </Grid.Background>
+                    <c:VirtualButtonView HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{Binding RButton}" />
+                </Grid>
             </Grid>
             <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto" RowDefinitions="Auto" HorizontalAlignment="Center">
+                <Grid.Background>
+                    <SvgResourceExtension Path="/Assets/VirtualButtons/DPad.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Top" />
+                </Grid.Background>
                 <c:VirtualDPadView DataContext="{Binding Dpad}" />
             </Grid>
             <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
+                <Grid.Background>
+                    <SvgResourceExtension Path="/Assets/VirtualButtons/FaceButtons.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Top" />
+                </Grid.Background>
                 <c:VirtualButtonView Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding XButton}" />
                 <c:VirtualButtonView Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" DataContext="{Binding YButton}" />
                 <c:VirtualButtonView Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" DataContext="{Binding AButton}" />
                 <c:VirtualButtonView Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" DataContext="{Binding BButton}" />
+            </Grid>
+            <Grid IsVisible="{Binding !IsFullLayout}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="*" HorizontalAlignment="Center">
+                <Grid VerticalAlignment="Center" Width="81" Height="45">
+                    <Grid.Background>
+                        <SvgResourceExtension Path="/Assets/VirtualButtons/StartButton.svg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center" />
+                    </Grid.Background>
+                    <c:VirtualButtonView HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{Binding StartButton}" />
+                </Grid>
             </Grid>
         </Grid>
         
@@ -144,14 +182,19 @@
                 <Grid IsVisible="{Binding ControllerSettingsMenuOpen}" Classes="submenucontainer" RowDefinitions="Auto,*,Auto"
                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsControllerHeader}" />
-                    <Grid Grid.Row="1" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto,Auto"
+                    <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto,Auto"
                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsVisible="{Binding IsMobile}">
-                        <Label Grid.Row="0" Grid.Column="0" Content="{x:Static assets:Strings.SettingsControlPadHaptics}"/>
-                        <Button Grid.Row="0" Grid.Column="1" Content="&lt;" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
-                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding ControlPadHapticsSettingDesc}"/>
-                        <Button Grid.Row="0" Grid.Column="3" Content=">" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
+                        <Label Grid.Row="0" Grid.Column="0" Content="{x:Static assets:Strings.SettingsVirtualButtonLayout}"/>
+                        <Button Grid.Row="0" Grid.Column="1" Content="&lt;" Command="{Binding ChangeVirtualButtonsLayoutSettingsCommand}"/>
+                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding VirtualButtonsLayoutSettingDesc}"/>
+                        <Button Grid.Row="0" Grid.Column="3" Content=">" Command="{Binding ChangeVirtualButtonsLayoutSettingsCommand}"/>
                         
-                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Classes="menuitem"  IsVisible="{Binding IsMobile}"
+                        <Label Grid.Row="1" Grid.Column="0" Content="{x:Static assets:Strings.SettingsControlPadHaptics}"/>
+                        <Button Grid.Row="1" Grid.Column="1" Content="&lt;" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
+                        <Label Grid.Row="1" Grid.Column="2" Content="{Binding VirtualButtonsHapticsSettingDesc}"/>
+                        <Button Grid.Row="1" Grid.Column="3" Content=">" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
+                        
+                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Classes="menuitem"  IsVisible="{Binding IsMobile}"
                                 Command="{Binding SettingsBackCommand}"
                                 Content="{x:Static assets:Strings.SettingsBack}" />
                     </Grid>
