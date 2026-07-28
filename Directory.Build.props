@@ -4,6 +4,7 @@
   <PropertyGroup Condition="'$(Version)' == ''">
     <Version>1.0.1</Version>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <AndroidVersion>1</AndroidVersion>
   </PropertyGroup>
 
 </Project>

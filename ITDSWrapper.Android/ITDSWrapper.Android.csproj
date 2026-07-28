@@ -6,8 +6,8 @@
         <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
         <ApplicationId>com.intothedreamspring.itdswrapper</ApplicationId>
-        <ApplicationVersion>1</ApplicationVersion>
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>$(AndroidVersion)</ApplicationVersion>
+        <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     </PropertyGroup>
 
