@@ -192,7 +192,7 @@ jobs:
         tracks: internal
         status: completed
         inAppUpdatePriority: 3
-        whatsNewDirectory: .changelog/android/${{ inputs.version == '' &&  'rolling' || inputs.version }}
+        whatsNewDirectory: .changelog/mobile/${{ inputs.version == '' &&  'rolling' || inputs.version }}
 
   build-steam-wrappers:
     strategy:
