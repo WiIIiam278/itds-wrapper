@@ -199,6 +199,7 @@ jobs:
         status: completed
         inAppUpdatePriority: 3
         whatsNewDirectory: .changelog/mobile/${{ inputs.version == '' &&  'rolling' || inputs.version }}
+        changesNotSentForReview: true
 
   build-steam-wrappers:
     strategy:
