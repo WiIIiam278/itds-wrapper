@@ -7,9 +7,4 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Reflection.DispatchProxy" />
-    <PackageReference Include="System.Reflection.Emit" />
-  </ItemGroup>
-
 </Project>

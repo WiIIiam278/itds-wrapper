@@ -36,8 +36,6 @@
     <PackageVersion Include="Xamarin.Android.Google.BillingClient" Version="9.1.0.1" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0.3" />
     <PackageVersion Include="Xamarin.GooglePlayServices.Games" Version="125.0.0.1" />
-    <PackageVersion Include="System.Reflection.DispatchProxy" Version="4.8.2" />
-    <PackageVersion Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageVersion Include="System.Speech" Version="10.0.11" />
   </ItemGroup>
 </Project>
