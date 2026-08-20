@@ -324,7 +324,7 @@ public class MainViewModel : ViewModelBase
         _batteryTimer.Elapsed += (_, _) => Wrapper.BatteryLevel = batteryMonitor?.GetBatteryLevel() ?? 100;
         _batteryTimer.Start();
 
-        _menuInputTimer = new(TimeSpan.FromMilliseconds(100));
+        _menuInputTimer = new(TimeSpan.FromMilliseconds(300)) { AutoReset = false };
         _menuInputTimer.Elapsed += (_, _) => _acceptingMenuInput = true;
 
         CloseMenuOverlayCommand = ReactiveCommand.Create(ToggleMenuOverlay);
@@ -667,6 +667,7 @@ public class MainViewModel : ViewModelBase
                                 Source = TopLevel.GetTopLevel(Top),
                             }));
                         _acceptingMenuInput = false;
+                        _menuInputTimer.Stop();
                         _menuInputTimer.Start();
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP))
@@ -679,6 +680,7 @@ public class MainViewModel : ViewModelBase
                                 Source = TopLevel.GetTopLevel(Top),
                             }));
                         _acceptingMenuInput = false;
+                        _menuInputTimer.Stop();
                         _menuInputTimer.Start();
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT))
@@ -691,6 +693,7 @@ public class MainViewModel : ViewModelBase
                                 Source = TopLevel.GetTopLevel(Top),
                             }));
                         _acceptingMenuInput = false;
+                        _menuInputTimer.Stop();
                         _menuInputTimer.Start();
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT))
@@ -703,6 +706,7 @@ public class MainViewModel : ViewModelBase
                                 Source = TopLevel.GetTopLevel(Top),
                             }));
                         _acceptingMenuInput = false;
+                        _menuInputTimer.Stop();
                         _menuInputTimer.Start();
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_A))
@@ -723,28 +727,19 @@ public class MainViewModel : ViewModelBase
                                 Source = focused,
                             });
                         });
+                        Dispatcher.UIThread.Post(() => TopLevel.GetTopLevel(Top)?.FocusManager.Focus(focused));
                         _acceptingMenuInput = false;
+                        _menuInputTimer.Stop();
                         _menuInputTimer.Start();
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_B))
                     {
-                        IInputElement? focused = TopLevel.GetTopLevel(Top)?.FocusManager.GetFocusedElement();
-                        Dispatcher.UIThread.Post(() =>
-                        {
-                            focused?.RaiseEvent(new KeyEventArgs
-                            {
-                                RoutedEvent = InputElement.KeyDownEvent,
-                                Key = Key.Back,
-                                Source = focused,
-                            });
-                            focused?.RaiseEvent(new KeyEventArgs
-                            {
-                                RoutedEvent = InputElement.KeyUpEvent,
-                                Key = Key.Back,
-                                Source = focused,
-                            });
-                        });
+                        if (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || AccessibilitySettingsMenuOpen || LegalMenuOpen)
+                            CloseSubMenu();
+                        else
+                            ToggleMenuOverlay();
                         _acceptingMenuInput = false;
+                        _menuInputTimer.Stop();
                         _menuInputTimer.Start();
                     }
 

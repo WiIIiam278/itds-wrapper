@@ -20,7 +20,7 @@
         <Image Grid.Row="0" Grid.RowSpan="4" Stretch="UniformToFill" Source="{Binding NextBorder}"
                Opacity="{Binding NextBorderOpacity}"/>
 
-        <Grid Row="0" Margin="0 0 23 0" MinHeight="{Binding TopPadding}">
+        <Grid Row="0" Margin="0 0 23 0" MinHeight="{Binding TopPadding}" IsVisible="{Binding IsMobile}">
             <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="*" Width="46" Height="46" HorizontalAlignment="Right">
                 <Grid.Background>
                     <SvgResourceExtension Path="/Assets/VirtualButtons/MenuButton.svg" Stretch="Fill" AlignmentX="Center" AlignmentY="Center" />
@@ -120,7 +120,7 @@
                             Content="{x:Static assets:Strings.SettingsDisplay}" />
                     <Button Grid.Row="3" Classes="menuitem" 
                             Command="{Binding OpenControllerSettingsMenuCommand}"
-                            Content="{x:Static assets:Strings.SettingsController}" />
+                            Content="{x:Static assets:Strings.SettingsController}"/>
                     <Button Grid.Row="4" Classes="menuitem" 
                             Command="{Binding OpenAccessibilitySettingsMenuCommand}"
                             Content="{x:Static assets:Strings.SettingsAccessibility}" />

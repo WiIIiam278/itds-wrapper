@@ -89,4 +89,22 @@ public class SdlControllerInput : IGameInput<object>
             IsSet = false;
         }
     }
+
+    public object? GetInputId()
+    {
+        if (_input is Button button)
+        {
+            return button.Name;
+        }
+        if (_input is Thumbstick)
+        {
+            return _direction;
+        }
+        if (_input is Trigger trigger)
+        {
+            return trigger.Index;
+        }
+
+        return null;
+    }
 }
