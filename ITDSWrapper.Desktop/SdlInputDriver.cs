@@ -20,7 +20,7 @@ public class SdlInputDriver : IInputDriver
     private Action<IGamepad, Trigger>? _triggerMovedHandler;
     private Action? _specialAction;
 
-    private readonly Dictionary<uint, SdlControllerInput?> _controlsDictionary = [];
+    private readonly Dictionary<uint, List<SdlControllerInput?>> _controlsDictionary = [];
 
     private static readonly Dictionary<string, uint> ButtonNamesMap = new()
     {
@@ -101,60 +101,69 @@ public class SdlInputDriver : IInputDriver
 
         if (_gamepad is null)
             return;
+        
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_A, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_B, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_X, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_L, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, []);
+        _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, []);
 
         foreach (Button button in _gamepad.Buttons)
         {
             switch (button.Name)
             {
                 case ButtonName.A:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_A, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_A].Add(new(button));
                     break;
                 case ButtonName.B:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_B, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_B].Add(new(button));
                     break;
                 case ButtonName.X:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_X, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_X].Add(new(button));
                     break;
                 case ButtonName.Y:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_Y].Add(new(button));
                     break;
                 case ButtonName.LeftBumper:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_L, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_L].Add(new(button));
                     break;
                 case ButtonName.RightBumper:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_R, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_R].Add(new(button));
                     break;
                 case ButtonName.DPadUp:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP].Add(new(button));
                     break;
                 case ButtonName.DPadRight:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT].Add(new(button));
                     break;
                 case ButtonName.DPadDown:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN].Add(new(button));
                     break;
                 case ButtonName.DPadLeft:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT].Add(new(button));
                     break;
                 case ButtonName.Start:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_START, new(button));
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_START].Add(new(button));
                     break;
                 case ButtonName.Back:
-                    _controlsDictionary.Add(RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT, new(button) { SpecialAction = _specialAction });
+                    _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT].Add(new(button) { SpecialAction = _specialAction });
                     break;
             }
         }
 
         if (_gamepad?.Thumbsticks.Count > 0)
         {
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP,
-                new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_Y)));
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT,
-                new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_X)));
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN,
-                new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_Y)));
-            _controlsDictionary.TryAdd(RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT,
-                new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_X)));
+            _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP].Add(new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_Y)));
+            _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT].Add(new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_X)));
+            _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN].Add(new((_gamepad.Thumbsticks[0], ThumbstickDirection.POSITIVE_Y)));
+            _controlsDictionary[RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT].Add(new((_gamepad.Thumbsticks[0], ThumbstickDirection.NEGATIVE_X)));
         }
 
         _buttonDownHandler = (_, button) => Push(button);
@@ -192,33 +201,48 @@ public class SdlInputDriver : IInputDriver
 
     public void SetBinding<T>(uint input, IGameInput<T>? binding)
     {
-        _controlsDictionary[input] = binding switch
+        switch (binding)
         {
-            SdlControllerInput sdlInput => sdlInput,
-            null => null,
-            _ => _controlsDictionary[input]
-        };
+            case SdlControllerInput sdlInput:
+                int inputIdx = _controlsDictionary[input]
+                    .FindIndex(i => i is not null && i.GetInputId() == sdlInput.GetInputId());
+                if (inputIdx >= 0)
+                {
+                    _controlsDictionary[input].RemoveAt(inputIdx);
+                }
+                else
+                {
+                    _controlsDictionary[input].Add(sdlInput);
+                }
+                break;
+                
+            case null:
+                _controlsDictionary[input].Clear();
+                break;
+        }
     }
 
     public bool QueryInput(uint id)
     {
-        return _controlsDictionary.ContainsKey(id) && (_controlsDictionary[id]?.IsSet ?? false);
+        return _controlsDictionary.ContainsKey(id) && _controlsDictionary[id].Any(i => i?.IsSet ?? false);
     }
 
     public void Push<T>(T binding)
     {
         _requestControl = true;
-        foreach (SdlControllerInput? input in _controlsDictionary.Values)
+        foreach (List<SdlControllerInput?> list in _controlsDictionary.Values)
         {
-            input?.Press(binding);
+            foreach (SdlControllerInput? input in list)
+                input?.Press(binding);
         }
     }
 
     public void Release<T>(T binding)
     {
-        foreach (SdlControllerInput? input in _controlsDictionary.Values)
+        foreach (List<SdlControllerInput?> list in _controlsDictionary.Values)
         {
-            input?.Release(binding);
+            foreach (SdlControllerInput? input in list)
+                input?.Release(binding);
         }
     }
 

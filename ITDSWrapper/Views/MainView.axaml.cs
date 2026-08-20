@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -10,6 +11,19 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
+    }
+
+    private void MainView_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        if (!MainViewModel.IsMobile)
+            return;
+
+        int currentLayout = ((MainViewModel)DataContext!).TargetScreenLayoutIdx;
+        ((MainViewModel)DataContext).TargetScreenLayoutIdx = e.NewSize.Width > e.NewSize.Height ? 1 : 0;
+        ((MainViewModel)DataContext).ChangeEmulatedScreenLayout();
+        int numPresses = ((MainViewModel)DataContext!).TargetScreenLayoutIdx - currentLayout;
+        numPresses = numPresses < 0 ? Enum.GetValues<Core.ScreenLayout>().Length + numPresses : numPresses;
+        ((MainViewModel)DataContext).SendLayoutChangeToCore(numPresses);
     }
 
     private void ScreenGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)

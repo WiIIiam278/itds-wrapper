@@ -9,6 +9,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ITDSWrapper.Views.MainView"
              x:DataType="vm:MainViewModel"
+             SizeChanged="MainView_OnSizeChanged"
              TopLevel.AutoSafeAreaPadding="False"
              Name="View">
     
@@ -20,7 +21,7 @@
         <Image Grid.Row="0" Grid.RowSpan="4" Stretch="UniformToFill" Source="{Binding NextBorder}"
                Opacity="{Binding NextBorderOpacity}"/>
 
-        <Grid Row="0" Margin="0 0 23 0" MinHeight="{Binding TopPadding}">
+        <Grid Row="0" Margin="0 0 23 0" MinHeight="{Binding TopPadding}" IsVisible="{Binding IsMobile}">
             <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="*" Width="46" Height="46" HorizontalAlignment="Right">
                 <Grid.Background>
                     <SvgResourceExtension Path="/Assets/VirtualButtons/MenuButton.svg" Stretch="Fill" AlignmentX="Center" AlignmentY="Center" />
@@ -120,7 +121,7 @@
                             Content="{x:Static assets:Strings.SettingsDisplay}" />
                     <Button Grid.Row="3" Classes="menuitem" 
                             Command="{Binding OpenControllerSettingsMenuCommand}"
-                            Content="{x:Static assets:Strings.SettingsController}" />
+                            Content="{x:Static assets:Strings.SettingsController}"/>
                     <Button Grid.Row="4" Classes="menuitem" 
                             Command="{Binding OpenAccessibilitySettingsMenuCommand}"
                             Content="{x:Static assets:Strings.SettingsAccessibility}" />
@@ -155,24 +156,24 @@
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsDisplayHeader}" />
                     <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto,Auto"
                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <Label Grid.Row="0" Grid.Column="0" Content="{x:Static assets:Strings.WindowStateSettingsLabel}" IsVisible="{Binding !IsMobile}"/>
-                        <Button Grid.Row="0" Grid.Column="1" Content="&lt;" Command="{Binding ChangeWindowingSettingsCommand}"
+                        <Label Grid.Row="0" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.WindowStateSettingsLabel}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="0" Grid.Column="1" Classes="setting" Content="&lt;" Command="{Binding ChangeWindowingSettingsCommand}"
                                 CommandParameter="{x:False}" IsVisible="{Binding !IsMobile}"/>
-                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding WindowingModeDesc}" IsVisible="{Binding !IsMobile}"/>
-                        <Button Grid.Row="0" Grid.Column="3" Content=">" Command="{Binding ChangeWindowingSettingsCommand}"
+                        <Label Grid.Row="0" Grid.Column="2" Classes="setting setting-value" Content="{Binding WindowingModeDesc}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="0" Grid.Column="3" Classes="setting" Content=">" Command="{Binding ChangeWindowingSettingsCommand}"
                                 CommandParameter="{x:True}" IsVisible="{Binding !IsMobile}"/>
                         
-                        <Label Grid.Row="1" Grid.Column="0" Content="{x:Static assets:Strings.ScreenLayoutLeftRight}" IsVisible="{Binding !IsMobile}"/>
-                        <Button Grid.Row="1" Grid.Column="1" Content="&lt;" Command="{Binding ChangeScreenLayoutCommand}"
+                        <Label Grid.Row="1" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.ScreenLayoutLeftRight}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="1" Grid.Column="1" Classes="setting" Content="&lt;" Command="{Binding ChangeScreenLayoutCommand}"
                                 CommandParameter="{x:False}" IsVisible="{Binding !IsMobile}"/>
-                        <Label Grid.Row="1" Grid.Column="2" Content="{Binding TargetScreenLayoutDesc}" IsVisible="{Binding !IsMobile}"/>
-                        <Button Grid.Row="1" Grid.Column="3" Content=">" Command="{Binding ChangeScreenLayoutCommand}"
+                        <Label Grid.Row="1" Grid.Column="2" Classes="setting setting-value" Content="{Binding TargetScreenLayoutDesc}" IsVisible="{Binding !IsMobile}"/>
+                        <Button Grid.Row="1" Grid.Column="3" Classes="setting" Content=">" Command="{Binding ChangeScreenLayoutCommand}"
                                 CommandParameter="{x:True}" IsVisible="{Binding !IsMobile}"/>
                         
-                        <Label Grid.Row="2" Grid.Column="0" Content="{x:Static assets:Strings.SettingsBorders}"/>
-                        <Button Grid.Row="2" Grid.Column="1" Content="&lt;" Command="{Binding ChangeBorderSettingsCommand}"/>
-                        <Label Grid.Row="2" Grid.Column="2" Content="{Binding BordersSettingDesc}"/>
-                        <Button Grid.Row="2" Grid.Column="3" Content=">" Command="{Binding ChangeBorderSettingsCommand}"/>
+                        <Label Grid.Row="2" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.SettingsBorders}"/>
+                        <Button Grid.Row="2" Grid.Column="1" Classes="setting" Content="&lt;" Command="{Binding ChangeBorderSettingsCommand}"/>
+                        <Label Grid.Row="2" Grid.Column="2" Classes="setting setting-value" Content="{Binding BordersSettingDesc}"/>
+                        <Button Grid.Row="2" Grid.Column="3" Classes="setting" Content=">" Command="{Binding ChangeBorderSettingsCommand}"/>
                         
                         <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Classes="menuitem"  IsVisible="{Binding IsMobile}"
                                 Command="{Binding SettingsBackCommand}"
@@ -184,15 +185,15 @@
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsControllerHeader}" />
                     <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto,Auto"
                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsVisible="{Binding IsMobile}">
-                        <Label Grid.Row="0" Grid.Column="0" Content="{x:Static assets:Strings.SettingsVirtualButtonLayout}"/>
-                        <Button Grid.Row="0" Grid.Column="1" Content="&lt;" Command="{Binding ChangeVirtualButtonsLayoutSettingsCommand}"/>
-                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding VirtualButtonsLayoutSettingDesc}"/>
-                        <Button Grid.Row="0" Grid.Column="3" Content=">" Command="{Binding ChangeVirtualButtonsLayoutSettingsCommand}"/>
+                        <Label Grid.Row="0" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.SettingsVirtualButtonLayout}"/>
+                        <Button Grid.Row="0" Grid.Column="1" Classes="setting" Content="&lt;" Command="{Binding ChangeVirtualButtonsLayoutSettingsCommand}"/>
+                        <Label Grid.Row="0" Grid.Column="2" Classes="setting setting-value" Content="{Binding VirtualButtonsLayoutSettingDesc}"/>
+                        <Button Grid.Row="0" Grid.Column="3" Classes="setting" Content=">" Command="{Binding ChangeVirtualButtonsLayoutSettingsCommand}"/>
                         
-                        <Label Grid.Row="1" Grid.Column="0" Content="{x:Static assets:Strings.SettingsControlPadHaptics}"/>
-                        <Button Grid.Row="1" Grid.Column="1" Content="&lt;" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
-                        <Label Grid.Row="1" Grid.Column="2" Content="{Binding VirtualButtonsHapticsSettingDesc}"/>
-                        <Button Grid.Row="1" Grid.Column="3" Content=">" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
+                        <Label Grid.Row="1" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.SettingsControlPadHaptics}"/>
+                        <Button Grid.Row="1" Grid.Column="1" Classes="setting" Content="&lt;" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
+                        <Label Grid.Row="1" Grid.Column="2" Classes="setting setting-value" Content="{Binding VirtualButtonsHapticsSettingDesc}"/>
+                        <Button Grid.Row="1" Grid.Column="3" Classes="setting" Content=">" Command="{Binding ChangeControlPadHapticsSettingsCommand}"/>
                         
                         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Classes="menuitem"  IsVisible="{Binding IsMobile}"
                                 Command="{Binding SettingsBackCommand}"
@@ -204,10 +205,10 @@
                     <Label Grid.Row="0" Classes="header" Content="{x:Static assets:Strings.SettingsAccessibilityHeader}" />
                     <Grid Grid.Row="1" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto,Auto"
                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <Label Grid.Row="0" Grid.Column="0" Content="{x:Static assets:Strings.SettingsScreenReader}"/>
-                        <Button Grid.Row="0" Grid.Column="1" Content="&lt;" Command="{Binding ChangeScreenReaderSettingsCommand}"/>
-                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding ScreenReaderSettingDesc}"/>
-                        <Button Grid.Row="0" Grid.Column="3" Content=">" Command="{Binding ChangeScreenReaderSettingsCommand}"/>
+                        <Label Grid.Row="0" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.SettingsScreenReader}"/>
+                        <Button Grid.Row="0" Grid.Column="1" Classes="setting" Content="&lt;" Command="{Binding ChangeScreenReaderSettingsCommand}"/>
+                        <Label Grid.Row="0" Grid.Column="2" Classes="setting setting-value" Content="{Binding ScreenReaderSettingDesc}"/>
+                        <Button Grid.Row="0" Grid.Column="3" Classes="setting" Content=">" Command="{Binding ChangeScreenReaderSettingsCommand}"/>
                         
                         <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Classes="menuitem"  IsVisible="{Binding IsMobile}"
                                 Command="{Binding SettingsBackCommand}"
