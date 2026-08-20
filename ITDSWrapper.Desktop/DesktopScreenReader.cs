@@ -58,6 +58,10 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 #pragma warning restore CA1416
         return true;
 #endif
+// Unreachable... unless you're on macOS
+#pragma warning disable CS0162 // Unreachable code detected
+        return false;
+#pragma warning restore CS0162 // Unreachable code detected
     }
 
     public void Speak(string text)
