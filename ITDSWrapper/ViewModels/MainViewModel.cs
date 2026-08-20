@@ -246,7 +246,7 @@ public class MainViewModel : ViewModelBase
     {
         WrapperSettings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
         WindowingModeIdx = (int)WrapperSettings.WindowingMode;
-        TargetScreenLayoutIdx = (int)WrapperSettings.CurrentScreenLayout;
+        TargetScreenLayoutIdx = IsMobile ? (int)ScreenLayout.TOP_BOTTOM : (int)WrapperSettings.CurrentScreenLayout;
         BordersSettingDesc = WrapperSettings.BordersEnabled
             ? Strings.SettingSwitchEnabled
             : Strings.SettingSwitchDisabled;
