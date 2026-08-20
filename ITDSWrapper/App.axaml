@@ -16,6 +16,10 @@
     <Application.Styles>
         <FluentTheme />
 
+        <Style Selector=":is(Button)">
+            <Setter Property="(PlatformFeedback.FeedbackType)" Value="None" />
+        </Style>
+        
         <OnPlatform>
             <On Options="Android, iOS">
                 <Styles>
