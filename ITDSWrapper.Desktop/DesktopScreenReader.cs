@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 #if IS_WINDOWS
 using System.Globalization;
 using System.Speech.Synthesis;
@@ -40,7 +41,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     public bool Initialize(string language)
     {
 #if IS_LINUX
-        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, null, 0) != -1;
+        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "espeak-ng-data"), 0) != -1;
         
         Voice voice = new()
         {
