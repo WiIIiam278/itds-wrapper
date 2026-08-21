@@ -41,7 +41,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     public bool Initialize(string language)
     {
 #if IS_LINUX
-        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "espeak-ng-data"), 0) != -1;
+        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, Path.Combine(AppContext.BaseDirectory, "espeak-ng-data"), 0) != -1;
         
         Voice voice = new()
         {

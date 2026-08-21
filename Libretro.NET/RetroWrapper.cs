@@ -373,10 +373,10 @@ namespace Libretro.NET
                 : OperatingSystem.IsMacOS()
                     ? Path.Combine(
                         Directory.GetParent(
-                            Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.FullName)!
+                            Directory.GetParent(Directory.GetParent(AppContext.BaseDirectory)!.FullName)!
                                 .FullName)!.FullName, dirName)
                     :
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dirName);
+                    Path.Combine(AppContext.BaseDirectory, dirName);
         }
 
         public void Dispose()

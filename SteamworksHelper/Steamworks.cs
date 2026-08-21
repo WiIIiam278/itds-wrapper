@@ -82,7 +82,7 @@ public static class Steamworks
         savStream.ReadExactly(savFile);
         if (!SteamRemoteStorage.FileWrite(saveFileName, savFile))
         {
-            File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cloud_save_fail.log"),
+            File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "cloud_save_fail.log"),
                 "Failed to upload save to steam cloud.");
         }
 

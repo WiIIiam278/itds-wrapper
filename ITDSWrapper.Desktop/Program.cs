@@ -34,7 +34,7 @@ sealed class Program
         }
         catch (Exception ex)
         {
-            File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"),
+            File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "crash.log"),
                 $"CRASH: {ex.Message}\n\n{ex.StackTrace}");
             throw;
         }
@@ -54,11 +54,11 @@ sealed class Program
                     Win32RenderingMode.AngleEgl, Win32RenderingMode.Vulkan, Win32RenderingMode.Wgl,
                     Win32RenderingMode.Software,
                 ];
-                if (!Path.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings", "settings.json")))
+                if (!Path.Exists(Path.Combine(AppContext.BaseDirectory, "settings", "settings.json")))
                     return new() { RenderingMode = defaultModes };
 
                 var wrapperSettings = JsonSerializer.Deserialize<Settings>(
-                    File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings",
+                    File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "settings",
                         "settings.json")))!;
                 return new Win32PlatformOptions
                 {
@@ -106,7 +106,7 @@ sealed class Program
                     }
                     catch (Exception ex)
                     {
-                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "setup_crash.log"),
+                        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup_crash.log"),
                             $"{ex.Message}\n{ex.StackTrace}");
                         throw;
                     }
