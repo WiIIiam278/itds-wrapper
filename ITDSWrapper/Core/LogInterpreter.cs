@@ -34,7 +34,7 @@ public partial class LogInterpreter : IDisposable
     public bool LangReceived { get; private set; }
 
     private readonly string? _discordWebhookUri;
-    private readonly DropOutQueue<string> _recentLogs = new(2000);
+    private readonly DropOutQueue<string> _recentLogs = new(500);
     private readonly List<string> _saveTrace = [];
 
     public LogInterpreter()

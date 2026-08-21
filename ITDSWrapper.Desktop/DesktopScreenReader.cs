@@ -71,6 +71,8 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         {
             _ = Cancel();
         }
+
+        text = text.Insert(text.Length, "\0");
         _ = Synthesize(text, Encoding.UTF8.GetByteCount(text), 0, EspeakPositionType.POS_CHARACTER, 0, 1,
             IntPtr.Zero, IntPtr.Zero);
 #elif IS_WINDOWS
