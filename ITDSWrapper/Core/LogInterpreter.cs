@@ -100,13 +100,13 @@ public partial class LogInterpreter : IDisposable
             case SaveTraceVerb:
                 if (logParam.StartsWith("SCENE"))
                 {
-                    SendWebhookLog("Crash", $"In scene {logParam}").GetAwaiter().GetResult();
+                    Task.Run(async () => await SendWebhookLog("Crash", $"In scene {logParam}"));
                 }
 
                 _saveTrace.Add(logParam);
                 if (logParam.StartsWith("DONE"))
                 {
-                    SendWebhookFile("Save Trace", $"savetrace.txt", _saveTrace).GetAwaiter().GetResult();
+                    Task.Run(async () => await SendWebhookFile("Save Trace", $"savetrace.txt", _saveTrace));
                 }
                 break;
         }
