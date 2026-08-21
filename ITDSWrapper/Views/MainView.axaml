@@ -175,12 +175,14 @@
                         <Label Grid.Row="2" Grid.Column="2" Classes="setting setting-value" Content="{Binding BordersSettingDesc}"/>
                         <Button Grid.Row="2" Grid.Column="3" Classes="setting" Content=">" Command="{Binding ChangeBorderSettingsCommand}"/>
                         
-                        <Label IsVisible="{OnPlatform 'False', Windows='True'}" Grid.Row="3" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.SettingsWindowsRenderingMode}"/>
-                        <Button IsVisible="{OnPlatform 'False', Windows='True'}" Grid.Row="3" Grid.Column="1" Classes="setting" Content="&lt;"
-                                Command="{Binding ChangeWindowsRenderingModeCommand}" CommandParameter="{x:False}"/>
+                        <Label IsVisible="{Binding !IsMobile}" Grid.Row="3" Grid.Column="0" Classes="setting" Content="{x:Static assets:Strings.SettingsGraphicsBackend}"/>
+                        <Button IsVisible="{Binding !IsMobile}" Grid.Row="3" Grid.Column="1" Classes="setting" Content="&lt;"
+                                Command="{Binding ChangeRenderingModeCommand}" CommandParameter="{x:False}"/>
+                        <Label IsVisible="{OnPlatform 'False', Linux='True'}" Grid.Row="3" Grid.Column="2" Classes="setting setting-value" Content="{Binding LinuxRenderingModeDesc}"/>
+                        <Label IsVisible="{OnPlatform 'False', macOS='True'}" Grid.Row="3" Grid.Column="2" Classes="setting setting-value" Content="{Binding MacOsRenderingModeDesc}"/>
                         <Label IsVisible="{OnPlatform 'False', Windows='True'}" Grid.Row="3" Grid.Column="2" Classes="setting setting-value" Content="{Binding WindowsRenderingModeDesc}"/>
-                        <Button IsVisible="{OnPlatform 'False', Windows='True'}" Grid.Row="3" Grid.Column="3" Classes="setting" Content=">"
-                                Command="{Binding ChangeWindowsRenderingModeCommand}" CommandParameter="{x:True}"/>
+                        <Button IsVisible="{Binding !IsMobile}" Grid.Row="3" Grid.Column="3" Classes="setting" Content=">"
+                                Command="{Binding ChangeRenderingModeCommand}" CommandParameter="{x:True}"/>
                         
                         <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Classes="menuitem"  IsVisible="{Binding IsMobile}"
                                 Command="{Binding SettingsBackCommand}"

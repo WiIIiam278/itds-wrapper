@@ -71,6 +71,52 @@ sealed class Program
                     },
                 };
             })
+            .With(() =>
+            {
+                AvaloniaNativeRenderingMode[] defaultModes =
+                [
+                    AvaloniaNativeRenderingMode.Metal, AvaloniaNativeRenderingMode.OpenGl,
+                    AvaloniaNativeRenderingMode.Software,
+                ];
+                if (!Path.Exists(Path.Combine(AppContext.BaseDirectory, "settings", "settings.json")))
+                    return new() { RenderingMode = defaultModes };
+
+                var wrapperSettings = JsonSerializer.Deserialize<Settings>(
+                    File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "settings",
+                        "settings.json")))!;
+                return new AvaloniaNativePlatformOptions
+                {
+                    RenderingMode = wrapperSettings.MacOsRenderingMode switch
+                    {
+                        MacOsRenderingMode.METAL => [AvaloniaNativeRenderingMode.Metal],
+                        MacOsRenderingMode.OPENGL => [AvaloniaNativeRenderingMode.OpenGl],
+                        _ => [AvaloniaNativeRenderingMode.Software],
+                    },
+                };
+            })
+            .With(() =>
+            {
+                X11RenderingMode[] defaultModes =
+                [
+                    X11RenderingMode.Glx, X11RenderingMode.Egl, X11RenderingMode.Vulkan, X11RenderingMode.Software,
+                ];
+                if (!Path.Exists(Path.Combine(AppContext.BaseDirectory, "settings", "settings.json")))
+                    return new() { RenderingMode = defaultModes };
+
+                var wrapperSettings = JsonSerializer.Deserialize<Settings>(
+                    File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "settings",
+                        "settings.json")))!;
+                return new X11PlatformOptions()
+                {
+                    RenderingMode = wrapperSettings.LinuxRenderingMode switch
+                    {
+                        LinuxRenderingMode.EGL => [X11RenderingMode.Egl],
+                        LinuxRenderingMode.VULKAN => [X11RenderingMode.Vulkan],
+                        LinuxRenderingMode.GLX => [X11RenderingMode.Glx],
+                        _ => [X11RenderingMode.Software],
+                    },
+                };
+            })
             .AfterSetup(b =>
             {
                 string? ipcPath = Environment.GetEnvironmentVariable(DebugIpcEnvironmentVariable);

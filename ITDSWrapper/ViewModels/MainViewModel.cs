@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Input;
 using Avalonia;
@@ -107,6 +108,44 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    [Reactive] public string LinuxRenderingModeDesc { get; set; } = Strings.LinuxRenderingModeGlx;
+
+    public int LinuxRenderingModeIdx
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value >= 0 && value < Enum.GetNames<LinuxRenderingMode>().Length)
+            {
+                LinuxRenderingModeDesc = new[]
+                {
+                    Strings.LinuxRenderingModeGlx, Strings.LinuxRenderingModeEgl,
+                    Strings.LinuxRenderingModeVulkan, Strings.LinuxRenderingModeSoftware,
+                }[value];
+            }
+        }
+    }
+
+    [Reactive] public string MacOsRenderingModeDesc { get; set; } = Strings.MacOsRenderingModeMetal;
+
+    public int MacOsRenderingModeIdx
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value >= 0 && value < Enum.GetNames<MacOsRenderingMode>().Length)
+            {
+                MacOsRenderingModeDesc = new[]
+                {
+                    Strings.MacOsRenderingModeMetal, Strings.MacOsRenderingModeOpenGl,
+                    Strings.MacOsRenderingModeSoftware,
+                }[value];
+            }
+        }
+    }
+
     [Reactive] public string WindowsRenderingModeDesc { get; set; } = Strings.WindowsRenderingModeAngleEgl;
 
     public int WindowsRenderingModeIdx
@@ -120,7 +159,7 @@ public class MainViewModel : ViewModelBase
                 WindowsRenderingModeDesc = new[]
                 {
                     Strings.WindowsRenderingModeAngleEgl, Strings.WindowsRenderingModeVulkan,
-                    Strings.WindowsRenderingModeWgl, Strings.WindowsRenderingModeSoftware
+                    Strings.WindowsRenderingModeWgl, Strings.WindowsRenderingModeSoftware,
                 }[value];
             }
         }
@@ -238,7 +277,7 @@ public class MainViewModel : ViewModelBase
 
     public ICommand ChangeWindowingSettingsCommand { get; }
     public ICommand ChangeScreenLayoutCommand { get; }
-    public ICommand ChangeWindowsRenderingModeCommand { get; }
+    public ICommand ChangeRenderingModeCommand { get; }
     public ICommand ChangeBorderSettingsCommand { get; }
     public ICommand ChangeScreenReaderSettingsCommand { get; }
     public ICommand ChangeControlPadHapticsSettingsCommand { get; }
@@ -267,6 +306,8 @@ public class MainViewModel : ViewModelBase
         WrapperSettings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
         WindowingModeIdx = (int)WrapperSettings.WindowingMode;
         TargetScreenLayoutIdx = IsMobile ? (int)ScreenLayout.TOP_BOTTOM : (int)WrapperSettings.CurrentScreenLayout;
+        LinuxRenderingModeIdx = (int)WrapperSettings.LinuxRenderingMode;
+        MacOsRenderingModeIdx = (int)WrapperSettings.MacOsRenderingMode;
         WindowsRenderingModeIdx = (int)WrapperSettings.WindowsRenderingMode;
         BordersSettingDesc = WrapperSettings.BordersEnabled
             ? Strings.SettingSwitchEnabled
@@ -359,7 +400,7 @@ public class MainViewModel : ViewModelBase
 
         ChangeWindowingSettingsCommand = ReactiveCommand.Create<bool>(ChangeWindowingSettings);
         ChangeScreenLayoutCommand = ReactiveCommand.Create<bool>(ChangeScreenLayout);
-        ChangeWindowsRenderingModeCommand = ReactiveCommand.Create<bool>(ChangeWindowsRenderingMode);
+        ChangeRenderingModeCommand = ReactiveCommand.Create<bool>(ChangeRenderingMode);
         ChangeBorderSettingsCommand = ReactiveCommand.Create(ToggleBorderSettings);
         ChangeScreenReaderSettingsCommand = ReactiveCommand.Create(ToggleScreenReader);
         ChangeVirtualButtonsLayoutSettingsCommand = ReactiveCommand.Create(ToggleVirtualButtonsLayout);
@@ -485,16 +526,49 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private void ChangeWindowsRenderingMode(bool forward)
+    private void ChangeRenderingMode(bool forward)
     {
-        if (!forward && WindowsRenderingModeIdx == 0)
+        if (OperatingSystem.IsLinux())
         {
-            WindowsRenderingModeIdx = Enum.GetValues<WindowsRenderingMode>().Length - 1;
+            if (!forward && LinuxRenderingModeIdx == 0)
+            {
+                LinuxRenderingModeIdx = Enum.GetValues<LinuxRenderingMode>().Length - 1;
+            }
+            else
+            {
+                LinuxRenderingModeIdx = (LinuxRenderingModeIdx +
+                                         (forward ? 1 : -1)) % Enum.GetValues<LinuxRenderingMode>().Length;
+            }
+
+            WrapperSettings.LinuxRenderingMode = (LinuxRenderingMode)LinuxRenderingModeIdx;
         }
-        else
+        else if (OperatingSystem.IsMacOS())
         {
-            WindowsRenderingModeIdx = (WindowsRenderingModeIdx +
-                                       (forward ? 1 : -1)) % Enum.GetValues<WindowsRenderingMode>().Length;
+            if (!forward && MacOsRenderingModeIdx == 0)
+            {
+                MacOsRenderingModeIdx = Enum.GetValues<MacOsRenderingMode>().Length - 1;
+            }
+            else
+            {
+                MacOsRenderingModeIdx = (MacOsRenderingModeIdx +
+                                         (forward ? 1 : -1)) % Enum.GetValues<MacOsRenderingMode>().Length;
+            }
+
+            WrapperSettings.MacOsRenderingMode = (MacOsRenderingMode)MacOsRenderingModeIdx;
+        }
+        else if (OperatingSystem.IsWindows())
+        {
+            if (!forward && WindowsRenderingModeIdx == 0)
+            {
+                WindowsRenderingModeIdx = Enum.GetValues<WindowsRenderingMode>().Length - 1;
+            }
+            else
+            {
+                WindowsRenderingModeIdx = (WindowsRenderingModeIdx +
+                                           (forward ? 1 : -1)) % Enum.GetValues<WindowsRenderingMode>().Length;
+            }
+
+            WrapperSettings.WindowsRenderingMode = (WindowsRenderingMode)WindowsRenderingModeIdx;
         }
     }
 

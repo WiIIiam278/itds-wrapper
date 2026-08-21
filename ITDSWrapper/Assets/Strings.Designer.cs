@@ -67,6 +67,69 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to EGL.
+        /// </summary>
+        public static string LinuxRenderingModeEgl {
+            get {
+                return ResourceManager.GetString("LinuxRenderingModeEgl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OpenGL.
+        /// </summary>
+        public static string LinuxRenderingModeGlx {
+            get {
+                return ResourceManager.GetString("LinuxRenderingModeGlx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software.
+        /// </summary>
+        public static string LinuxRenderingModeSoftware {
+            get {
+                return ResourceManager.GetString("LinuxRenderingModeSoftware", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vulkan.
+        /// </summary>
+        public static string LinuxRenderingModeVulkan {
+            get {
+                return ResourceManager.GetString("LinuxRenderingModeVulkan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metal.
+        /// </summary>
+        public static string MacOsRenderingModeMetal {
+            get {
+                return ResourceManager.GetString("MacOsRenderingModeMetal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OpenGL.
+        /// </summary>
+        public static string MacOsRenderingModeOpenGl {
+            get {
+                return ResourceManager.GetString("MacOsRenderingModeOpenGl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software.
+        /// </summary>
+        public static string MacOsRenderingModeSoftware {
+            get {
+                return ResourceManager.GetString("MacOsRenderingModeSoftware", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Menu.
         /// </summary>
         public static string Menu {
@@ -211,6 +274,15 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Graphics Backend.
+        /// </summary>
+        public static string SettingsGraphicsBackend {
+            get {
+                return ResourceManager.GetString("SettingsGraphicsBackend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Legal.
         /// </summary>
         public static string SettingsLegal {
@@ -292,15 +364,6 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Graphics Backend.
-        /// </summary>
-        public static string SettingsWindowsRenderingMode {
-            get {
-                return ResourceManager.GetString("SettingsWindowsRenderingMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Disabled.
         /// </summary>
         public static string SettingSwitchDisabled {
@@ -337,7 +400,7 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Angle EGL.
+        ///   Looks up a localized string similar to ANGLE EGL.
         /// </summary>
         public static string WindowsRenderingModeAngleEgl {
             get {
@@ -364,7 +427,7 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows GL.
+        ///   Looks up a localized string similar to OpenGL.
         /// </summary>
         public static string WindowsRenderingModeWgl {
             get {
