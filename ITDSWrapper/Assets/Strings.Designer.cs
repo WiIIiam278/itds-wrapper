@@ -292,7 +292,7 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows Rendering Mode.
+        ///   Looks up a localized string similar to Graphics Backend.
         /// </summary>
         public static string SettingsWindowsRenderingMode {
             get {
