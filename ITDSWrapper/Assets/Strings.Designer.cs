@@ -292,6 +292,15 @@ namespace ITDSWrapper.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Windows Rendering Mode.
+        /// </summary>
+        public static string SettingsWindowsRenderingMode {
+            get {
+                return ResourceManager.GetString("SettingsWindowsRenderingMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disabled.
         /// </summary>
         public static string SettingSwitchDisabled {
@@ -324,6 +333,42 @@ namespace ITDSWrapper.Assets {
         public static string SettingSwitchOn {
             get {
                 return ResourceManager.GetString("SettingSwitchOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Angle EGL.
+        /// </summary>
+        public static string WindowsRenderingModeAngleEgl {
+            get {
+                return ResourceManager.GetString("WindowsRenderingModeAngleEgl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software.
+        /// </summary>
+        public static string WindowsRenderingModeSoftware {
+            get {
+                return ResourceManager.GetString("WindowsRenderingModeSoftware", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vulkan.
+        /// </summary>
+        public static string WindowsRenderingModeVulkan {
+            get {
+                return ResourceManager.GetString("WindowsRenderingModeVulkan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windows GL.
+        /// </summary>
+        public static string WindowsRenderingModeWgl {
+            get {
+                return ResourceManager.GetString("WindowsRenderingModeWgl", resourceCulture);
             }
         }
         

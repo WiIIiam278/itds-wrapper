@@ -18,6 +18,7 @@ public class Settings
     
     public WindowingMode WindowingMode { get; set; } = WindowingMode.FULL_SCREEN;
     public ScreenLayout CurrentScreenLayout { get; set; } = ScreenLayout.TOP_BOTTOM;
+    public WindowsRenderingMode WindowsRenderingMode { get; set; } = WindowsRenderingMode.ANGLE_EGL;
 
     public void Save(string path)
     {
@@ -48,4 +49,12 @@ public enum ScreenLayout
     TOP_BOTTOM,
     LEFT_RIGHT,
     RIGHT_LEFT,
+}
+
+public enum WindowsRenderingMode
+{
+    ANGLE_EGL,
+    VULKAN,
+    WINDOWS_GL,
+    SOFTWARE,
 }

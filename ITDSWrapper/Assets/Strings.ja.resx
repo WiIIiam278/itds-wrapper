@@ -113,4 +113,19 @@
     <data name="SettingsVirtualButtonLayoutFull" xml:space="preserve">
         <value>Full</value>
     </data>
+    <data name="SettingsWindowsRenderingMode" xml:space="preserve">
+        <value>Graphics Backend</value>
+    </data>
+    <data name="WindowsRenderingModeAngleEgl" xml:space="preserve">
+        <value>Angle EGL</value>
+    </data>
+    <data name="WindowsRenderingModeVulkan" xml:space="preserve">
+        <value>Vulkan</value>
+    </data>
+    <data name="WindowsRenderingModeWgl" xml:space="preserve">
+        <value>Windows GL</value>
+    </data>
+    <data name="WindowsRenderingModeSoftware" xml:space="preserve">
+        <value>Software</value>
+    </data>
 </root>
