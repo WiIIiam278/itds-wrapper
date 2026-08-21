@@ -53,7 +53,7 @@ public partial class LogInterpreter : IDisposable
 
         if (log.Contains("ARM9: data abort") || log.Contains("ARM9: prefetch abort"))
         {
-            SendWebhookLog("Abort", log).GetAwaiter().GetResult();
+            Task.Run(async () => await SendWebhookLog("Abort", log));
             return -1;
         }
 
@@ -94,7 +94,7 @@ public partial class LogInterpreter : IDisposable
                 break;
 
             case WarningVerb:
-                SendWebhookLog("Warning", logParam).GetAwaiter().GetResult();
+                Task.Run(async () => await SendWebhookLog("Warning", logParam));
                 break;
 
             case SaveTraceVerb:
@@ -122,18 +122,21 @@ public partial class LogInterpreter : IDisposable
         embed.WithTitle(title).WithDescription(description);
         await client.SendMessageAsync(embeds: [embed.Build()]);
 
-        await SendWebhookFile("Log", $"{title}.log", _recentLogs.GetList());
+        await SendWebhookFile("Log", $"{title}.log", _recentLogs.GetList(), client);
     }
 
-    private async Task SendWebhookFile(string text, string filename, List<string> lines)
+    private async Task SendWebhookFile(string text, string filename, List<string> lines, DiscordWebhookClient? client = null)
     {
-        using DiscordWebhookClient client = new(_discordWebhookUri);
+        bool dispose = client is null;
+        client ??= new(_discordWebhookUri);
 
         MemoryStream fileStream = new();
         StreamWriter writer = new(fileStream);
         await writer.WriteAsync(string.Join('\n', lines.Select(l => l.Trim())));
         await writer.FlushAsync();
         await client.SendFileAsync(text: text, filename: filename, stream: fileStream);
+        if (dispose)
+            client.Dispose();
     }
 
     public void Dispose()
