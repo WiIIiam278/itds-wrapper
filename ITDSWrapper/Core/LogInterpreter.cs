@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Rest;
 using Discord.Webhook;
 using ITDSWrapper.Accessibility;
 

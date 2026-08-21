@@ -6,6 +6,7 @@ using System.Text.Json;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using ITDSWrapper.Core;
+using ITDSWrapper.Desktop.Linux;
 #if MACOS
 using AvFoundationBackend;
 #endif
@@ -163,6 +164,8 @@ sealed class Program
                 ((App)b.Instance).AudioBackend = new AvFoundationAudioBackend();
 #elif IS_WINDOWS
                 ((App)b.Instance).AudioBackend = new WasapiAudioBackend();
+#elif IS_LINUX
+                ((App)b.Instance).AudioBackend = new AlsaAudioBackend();
 #endif
                 ipc.SendCommand("GAME_LANGUAGE");
 #if MACOS
