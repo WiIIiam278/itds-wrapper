@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Input;
 using Avalonia;
@@ -102,6 +103,63 @@ public class MainViewModel : ViewModelBase
                 TargetScreenLayoutDesc = new[]
                 {
                     Strings.ScreenLayoutTopBottom, Strings.ScreenLayoutLeftRight, Strings.ScreenLayoutRightLeft
+                }[value];
+            }
+        }
+    }
+
+    [Reactive] public string LinuxRenderingModeDesc { get; set; } = Strings.LinuxRenderingModeGlx;
+
+    public int LinuxRenderingModeIdx
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value >= 0 && value < Enum.GetNames<LinuxRenderingMode>().Length)
+            {
+                LinuxRenderingModeDesc = new[]
+                {
+                    Strings.LinuxRenderingModeGlx, Strings.LinuxRenderingModeEgl,
+                    Strings.LinuxRenderingModeVulkan, Strings.LinuxRenderingModeSoftware,
+                }[value];
+            }
+        }
+    }
+
+    [Reactive] public string MacOsRenderingModeDesc { get; set; } = Strings.MacOsRenderingModeMetal;
+
+    public int MacOsRenderingModeIdx
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value >= 0 && value < Enum.GetNames<MacOsRenderingMode>().Length)
+            {
+                MacOsRenderingModeDesc = new[]
+                {
+                    Strings.MacOsRenderingModeMetal, Strings.MacOsRenderingModeOpenGl,
+                    Strings.MacOsRenderingModeSoftware,
+                }[value];
+            }
+        }
+    }
+
+    [Reactive] public string WindowsRenderingModeDesc { get; set; } = Strings.WindowsRenderingModeAngleEgl;
+
+    public int WindowsRenderingModeIdx
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value >= 0 && value < Enum.GetNames<WindowsRenderingMode>().Length)
+            {
+                WindowsRenderingModeDesc = new[]
+                {
+                    Strings.WindowsRenderingModeAngleEgl, Strings.WindowsRenderingModeVulkan,
+                    Strings.WindowsRenderingModeWgl, Strings.WindowsRenderingModeSoftware,
                 }[value];
             }
         }
@@ -219,6 +277,7 @@ public class MainViewModel : ViewModelBase
 
     public ICommand ChangeWindowingSettingsCommand { get; }
     public ICommand ChangeScreenLayoutCommand { get; }
+    public ICommand ChangeRenderingModeCommand { get; }
     public ICommand ChangeBorderSettingsCommand { get; }
     public ICommand ChangeScreenReaderSettingsCommand { get; }
     public ICommand ChangeControlPadHapticsSettingsCommand { get; }
@@ -247,6 +306,9 @@ public class MainViewModel : ViewModelBase
         WrapperSettings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
         WindowingModeIdx = (int)WrapperSettings.WindowingMode;
         TargetScreenLayoutIdx = IsMobile ? (int)ScreenLayout.TOP_BOTTOM : (int)WrapperSettings.CurrentScreenLayout;
+        LinuxRenderingModeIdx = (int)WrapperSettings.LinuxRenderingMode;
+        MacOsRenderingModeIdx = (int)WrapperSettings.MacOsRenderingMode;
+        WindowsRenderingModeIdx = (int)WrapperSettings.WindowsRenderingMode;
         BordersSettingDesc = WrapperSettings.BordersEnabled
             ? Strings.SettingSwitchEnabled
             : Strings.SettingSwitchDisabled;
@@ -255,7 +317,7 @@ public class MainViewModel : ViewModelBase
         VirtualButtonsHapticsSettingDesc = WrapperSettings.VirtualButtonHaptics
             ? Strings.SettingSwitchOn
             : Strings.SettingSwitchDisabled;
-        IsFullLayout =  WrapperSettings.VirtualButtonFullLayout;
+        IsFullLayout = WrapperSettings.VirtualButtonFullLayout;
         VirtualButtonsLayoutSettingDesc = IsFullLayout
             ? Strings.SettingsVirtualButtonLayoutFull
             : Strings.SettingsVirtualButtonLayoutRecommended;
@@ -338,11 +400,12 @@ public class MainViewModel : ViewModelBase
 
         ChangeWindowingSettingsCommand = ReactiveCommand.Create<bool>(ChangeWindowingSettings);
         ChangeScreenLayoutCommand = ReactiveCommand.Create<bool>(ChangeScreenLayout);
+        ChangeRenderingModeCommand = ReactiveCommand.Create<bool>(ChangeRenderingMode);
         ChangeBorderSettingsCommand = ReactiveCommand.Create(ToggleBorderSettings);
         ChangeScreenReaderSettingsCommand = ReactiveCommand.Create(ToggleScreenReader);
         ChangeVirtualButtonsLayoutSettingsCommand = ReactiveCommand.Create(ToggleVirtualButtonsLayout);
         ChangeControlPadHapticsSettingsCommand = ReactiveCommand.Create(ToggleControlPadHaptics);
-        
+
         SettingsBackCommand = ReactiveCommand.Create(CloseSubMenu);
 
         Wrapper.OnFrame = DisplayFrame;
@@ -463,6 +526,52 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    private void ChangeRenderingMode(bool forward)
+    {
+        if (OperatingSystem.IsLinux())
+        {
+            if (!forward && LinuxRenderingModeIdx == 0)
+            {
+                LinuxRenderingModeIdx = Enum.GetValues<LinuxRenderingMode>().Length - 1;
+            }
+            else
+            {
+                LinuxRenderingModeIdx = (LinuxRenderingModeIdx +
+                                         (forward ? 1 : -1)) % Enum.GetValues<LinuxRenderingMode>().Length;
+            }
+
+            WrapperSettings.LinuxRenderingMode = (LinuxRenderingMode)LinuxRenderingModeIdx;
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            if (!forward && MacOsRenderingModeIdx == 0)
+            {
+                MacOsRenderingModeIdx = Enum.GetValues<MacOsRenderingMode>().Length - 1;
+            }
+            else
+            {
+                MacOsRenderingModeIdx = (MacOsRenderingModeIdx +
+                                         (forward ? 1 : -1)) % Enum.GetValues<MacOsRenderingMode>().Length;
+            }
+
+            WrapperSettings.MacOsRenderingMode = (MacOsRenderingMode)MacOsRenderingModeIdx;
+        }
+        else if (OperatingSystem.IsWindows())
+        {
+            if (!forward && WindowsRenderingModeIdx == 0)
+            {
+                WindowsRenderingModeIdx = Enum.GetValues<WindowsRenderingMode>().Length - 1;
+            }
+            else
+            {
+                WindowsRenderingModeIdx = (WindowsRenderingModeIdx +
+                                           (forward ? 1 : -1)) % Enum.GetValues<WindowsRenderingMode>().Length;
+            }
+
+            WrapperSettings.WindowsRenderingMode = (WindowsRenderingMode)WindowsRenderingModeIdx;
+        }
+    }
+
     private void ToggleBorderSettings()
     {
         if (WrapperSettings.BordersEnabled)
@@ -501,7 +610,7 @@ public class MainViewModel : ViewModelBase
         VirtualButtonsLayoutSettingDesc = WrapperSettings.VirtualButtonFullLayout
             ? Strings.SettingsVirtualButtonLayoutFull
             : Strings.SettingsVirtualButtonLayoutRecommended;
-        IsFullLayout =  WrapperSettings.VirtualButtonFullLayout;
+        IsFullLayout = WrapperSettings.VirtualButtonFullLayout;
     }
 
     private void ToggleControlPadHaptics()
@@ -734,7 +843,8 @@ public class MainViewModel : ViewModelBase
                     }
                     else if (_inputDrivers[CurrentInputDriver].QueryInput(RetroBindings.RETRO_DEVICE_ID_JOYPAD_B))
                     {
-                        if (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || AccessibilitySettingsMenuOpen || LegalMenuOpen)
+                        if (DisplaySettingsMenuOpen || ControllerSettingsMenuOpen || AccessibilitySettingsMenuOpen ||
+                            LegalMenuOpen)
                             CloseSubMenu();
                         else
                             ToggleMenuOverlay();

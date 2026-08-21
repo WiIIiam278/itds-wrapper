@@ -41,7 +41,7 @@ public unsafe partial class DesktopScreenReader : IScreenReader
     public bool Initialize(string language)
     {
 #if IS_LINUX
-        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "espeak-ng-data"), 0) != -1;
+        bool success = Initialize(EspeakAudioOutput.AUDIO_OUTPUT_PLAYBACK, 0, Path.Combine(AppContext.BaseDirectory, "espeak-ng-data"), 0) != -1;
         
         Voice voice = new()
         {
@@ -58,6 +58,10 @@ public unsafe partial class DesktopScreenReader : IScreenReader
 #pragma warning restore CA1416
         return true;
 #endif
+// Unreachable... unless you're on macOS
+#pragma warning disable CS0162 // Unreachable code detected
+        return false;
+#pragma warning restore CS0162 // Unreachable code detected
     }
 
     public void Speak(string text)
@@ -168,20 +172,20 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         AUDIO_OUTPUT_SYNCH_PLAYBACK,
     }
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Initialize", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport("espeak-ng", EntryPoint = "espeak_Initialize", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int Initialize(EspeakAudioOutput output, int bufferLength, string? path, int options);
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_SetVoiceByProperties")]
+    [LibraryImport("espeak-ng", EntryPoint = "espeak_SetVoiceByProperties")]
     private static partial uint SetLanguage(nint properties);
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Synth", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport("espeak-ng", EntryPoint = "espeak_Synth", StringMarshalling = StringMarshalling.Utf8)]
     private static partial uint Synthesize(string text, nint size, uint position, EspeakPositionType type,
         uint endPosition, uint flags, IntPtr uniqueIdentifier, IntPtr userData);
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Cancel")]
+    [LibraryImport("espeak-ng", EntryPoint = "espeak_Cancel")]
     private static partial uint Cancel();
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_IsPlaying")]
+    [LibraryImport("espeak-ng", EntryPoint = "espeak_IsPlaying")]
     private static partial int IsPlaying();
 #endif
 }
