@@ -172,20 +172,20 @@ public unsafe partial class DesktopScreenReader : IScreenReader
         AUDIO_OUTPUT_SYNCH_PLAYBACK,
     }
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Initialize", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport("espeak-ng.so", EntryPoint = "espeak_Initialize", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int Initialize(EspeakAudioOutput output, int bufferLength, string? path, int options);
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_SetVoiceByProperties")]
+    [LibraryImport("espeak-ng.so", EntryPoint = "espeak_SetVoiceByProperties")]
     private static partial uint SetLanguage(nint properties);
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Synth", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport("espeak-ng.so", EntryPoint = "espeak_Synth", StringMarshalling = StringMarshalling.Utf8)]
     private static partial uint Synthesize(string text, nint size, uint position, EspeakPositionType type,
         uint endPosition, uint flags, IntPtr uniqueIdentifier, IntPtr userData);
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_Cancel")]
+    [LibraryImport("espeak-ng.so", EntryPoint = "espeak_Cancel")]
     private static partial uint Cancel();
 
-    [LibraryImport("espeak-ng.so.1", EntryPoint = "espeak_IsPlaying")]
+    [LibraryImport("espeak-ng.so", EntryPoint = "espeak_IsPlaying")]
     private static partial int IsPlaying();
 #endif
 }
