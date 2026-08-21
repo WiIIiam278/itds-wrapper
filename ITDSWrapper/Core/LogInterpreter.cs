@@ -132,7 +132,7 @@ public partial class LogInterpreter : IDisposable
 
         MemoryStream fileStream = new();
         StreamWriter writer = new(fileStream);
-        await writer.WriteAsync(string.Join('\n', lines.SelectMany(l => l.Trim())));
+        await writer.WriteAsync(string.Join('\n', lines.Select(l => l.Trim())));
         await writer.FlushAsync();
         await client.SendFileAsync(text: text, filename: filename, stream: fileStream);
     }
