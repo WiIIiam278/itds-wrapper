@@ -116,6 +116,9 @@ public partial class LogInterpreter : IDisposable
 
     private async Task SendWebhookLog(string title, string description)
     {
+        if (string.IsNullOrEmpty(_discordWebhookUri))
+            return;
+        
         using DiscordWebhookClient client = new(_discordWebhookUri);
 
         EmbedBuilder embed = new();
@@ -127,6 +130,9 @@ public partial class LogInterpreter : IDisposable
 
     private async Task SendWebhookFile(string text, string filename, List<string> lines, DiscordWebhookClient? client = null)
     {
+        if (string.IsNullOrEmpty(_discordWebhookUri))
+            return;
+        
         bool dispose = client is null;
         client ??= new(_discordWebhookUri);
 
