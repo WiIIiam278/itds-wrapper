@@ -5,7 +5,11 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
-
+    
+    <ItemGroup>
+        <AssemblyMetadata Include="DiscordWebhookUri" Value="$(DISCORD_WEBHOOK_URI)" />
+    </ItemGroup>
+    
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
@@ -20,6 +24,7 @@
         <PackageReference Include="Avalonia.Fonts.Inter" />
         <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport" />
+        <PackageReference Include="Discord.Net.Webhook" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Silk.NET.OpenAL" />
         <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />
