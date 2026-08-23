@@ -52,7 +52,7 @@ sealed class Program
             {
                 Win32RenderingMode[] defaultModes =
                 [
-                    Win32RenderingMode.AngleEgl, Win32RenderingMode.Vulkan, Win32RenderingMode.Wgl,
+                    Win32RenderingMode.Wgl, Win32RenderingMode.Vulkan, Win32RenderingMode.AngleEgl,
                     Win32RenderingMode.Software,
                 ];
                 if (!Path.Exists(Path.Combine(AppContext.BaseDirectory, "settings", "settings.json")))
@@ -65,9 +65,9 @@ sealed class Program
                 {
                     RenderingMode = wrapperSettings.WindowsRenderingMode switch
                     {
-                        WindowsRenderingMode.ANGLE_EGL => [Win32RenderingMode.AngleEgl],
-                        WindowsRenderingMode.VULKAN => [Win32RenderingMode.Vulkan],
                         WindowsRenderingMode.WINDOWS_GL => [Win32RenderingMode.Wgl],
+                        WindowsRenderingMode.VULKAN => [Win32RenderingMode.Vulkan],
+                        WindowsRenderingMode.ANGLE_EGL => [Win32RenderingMode.AngleEgl],
                         _ => [Win32RenderingMode.Software],
                     },
                 };
