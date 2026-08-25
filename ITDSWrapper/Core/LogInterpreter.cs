@@ -35,6 +35,8 @@ public partial class LogInterpreter : IDisposable
     private readonly string? _discordWebhookUri;
     private readonly DropOutQueue<string> _recentLogs = new(500);
     private readonly List<string> _saveTrace = [];
+    private readonly string _sessionGuid = Guid.NewGuid().ToString();
+    private ulong _threadId = 0;
 
     public LogInterpreter()
     {
@@ -44,6 +46,16 @@ public partial class LogInterpreter : IDisposable
             {
                 _discordWebhookUri = attr.Value;
             }
+        }
+
+        if (!string.IsNullOrEmpty(_discordWebhookUri))
+        {
+            Task.Run(async () =>
+            {
+                using DiscordWebhookClient client = new(_discordWebhookUri);
+                _threadId = await client.SendMessageAsync(text: "A new session has started!",
+                    threadName: $"Session {_sessionGuid}");
+            });
         }
     }
 
@@ -108,6 +120,7 @@ public partial class LogInterpreter : IDisposable
                 {
                     Task.Run(async () => await SendWebhookFile("Save Trace", $"savetrace.txt", _saveTrace));
                 }
+
                 break;
         }
 
@@ -118,21 +131,22 @@ public partial class LogInterpreter : IDisposable
     {
         if (string.IsNullOrEmpty(_discordWebhookUri))
             return;
-        
+
         using DiscordWebhookClient client = new(_discordWebhookUri);
 
         EmbedBuilder embed = new();
         embed.WithTitle(title).WithDescription(description);
-        await client.SendMessageAsync(embeds: [embed.Build()]);
+        await client.SendMessageAsync(embeds: [embed.Build()], threadId: _threadId);
 
         await SendWebhookFile("Log", $"{title}.log", _recentLogs.GetList(), client);
     }
 
-    private async Task SendWebhookFile(string text, string filename, List<string> lines, DiscordWebhookClient? client = null)
+    private async Task SendWebhookFile(string text, string filename, List<string> lines,
+        DiscordWebhookClient? client = null)
     {
         if (string.IsNullOrEmpty(_discordWebhookUri))
             return;
-        
+
         bool dispose = client is null;
         client ??= new(_discordWebhookUri);
 
@@ -140,7 +154,7 @@ public partial class LogInterpreter : IDisposable
         StreamWriter writer = new(fileStream);
         await writer.WriteAsync(string.Join('\n', lines.Select(l => l.Trim())));
         await writer.FlushAsync();
-        await client.SendFileAsync(text: text, filename: filename, stream: fileStream);
+        await client.SendFileAsync(text: text, filename: filename, stream: fileStream, threadId: _threadId);
         if (dispose)
             client.Dispose();
     }
