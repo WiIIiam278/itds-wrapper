@@ -18,7 +18,7 @@ public class Settings
     
     public WindowingMode WindowingMode { get; set; } = WindowingMode.FULL_SCREEN;
     public ScreenLayout CurrentScreenLayout { get; set; } = ScreenLayout.TOP_BOTTOM;
-    public WindowsRenderingMode WindowsRenderingMode { get; set; } = WindowsRenderingMode.ANGLE_EGL;
+    public WindowsRenderingMode WindowsRenderingMode { get; set; } = WindowsRenderingMode.WINDOWS_GL;
     public MacOsRenderingMode MacOsRenderingMode { get; set; } = MacOsRenderingMode.METAL;
     public LinuxRenderingMode LinuxRenderingMode { get; set; } = LinuxRenderingMode.GLX;
 
@@ -55,9 +55,9 @@ public enum ScreenLayout
 
 public enum WindowsRenderingMode
 {
-    ANGLE_EGL,
-    VULKAN,
     WINDOWS_GL,
+    VULKAN,
+    ANGLE_EGL,
     SOFTWARE,
 }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Input;
 using Avalonia;
@@ -146,7 +145,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    [Reactive] public string WindowsRenderingModeDesc { get; set; } = Strings.WindowsRenderingModeAngleEgl;
+    [Reactive] public string WindowsRenderingModeDesc { get; set; } = Strings.WindowsRenderingModeWgl;
 
     public int WindowsRenderingModeIdx
     {
@@ -158,8 +157,8 @@ public class MainViewModel : ViewModelBase
             {
                 WindowsRenderingModeDesc = new[]
                 {
-                    Strings.WindowsRenderingModeAngleEgl, Strings.WindowsRenderingModeVulkan,
-                    Strings.WindowsRenderingModeWgl, Strings.WindowsRenderingModeSoftware,
+                    Strings.WindowsRenderingModeWgl, Strings.WindowsRenderingModeVulkan,
+                    Strings.WindowsRenderingModeAngleEgl, Strings.WindowsRenderingModeSoftware,
                 }[value];
             }
         }

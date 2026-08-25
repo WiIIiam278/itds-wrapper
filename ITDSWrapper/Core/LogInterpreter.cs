@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Rest;
 using Discord.Webhook;
 using ITDSWrapper.Accessibility;
 
@@ -34,8 +33,10 @@ public partial class LogInterpreter : IDisposable
     public bool LangReceived { get; private set; }
 
     private readonly string? _discordWebhookUri;
-    private readonly DropOutQueue<string> _recentLogs = new(2000);
+    private readonly DropOutQueue<string> _recentLogs = new(500);
     private readonly List<string> _saveTrace = [];
+    private readonly string _sessionGuid = Guid.NewGuid().ToString();
+    private ulong _threadId = 0;
 
     public LogInterpreter()
     {
@@ -46,6 +47,16 @@ public partial class LogInterpreter : IDisposable
                 _discordWebhookUri = attr.Value;
             }
         }
+
+        if (!string.IsNullOrEmpty(_discordWebhookUri))
+        {
+            Task.Run(async () =>
+            {
+                using DiscordWebhookClient client = new(_discordWebhookUri);
+                _threadId = await client.SendMessageAsync(text: "A new session has started!",
+                    threadName: $"Session {_sessionGuid}");
+            });
+        }
     }
 
     public virtual int InterpretLog(string log)
@@ -54,7 +65,7 @@ public partial class LogInterpreter : IDisposable
 
         if (log.Contains("ARM9: data abort") || log.Contains("ARM9: prefetch abort"))
         {
-            SendWebhookLog("Abort", log).GetAwaiter().GetResult();
+            Task.Run(async () => await SendWebhookLog("Abort", log));
             return -1;
         }
 
@@ -95,20 +106,21 @@ public partial class LogInterpreter : IDisposable
                 break;
 
             case WarningVerb:
-                SendWebhookLog("Warning", logParam).GetAwaiter().GetResult();
+                Task.Run(async () => await SendWebhookLog("Warning", logParam));
                 break;
 
             case SaveTraceVerb:
                 if (logParam.StartsWith("SCENE"))
                 {
-                    SendWebhookLog("Crash", $"In scene {logParam}").GetAwaiter().GetResult();
+                    Task.Run(async () => await SendWebhookLog("Crash", $"In scene {logParam}"));
                 }
 
                 _saveTrace.Add(logParam);
                 if (logParam.StartsWith("DONE"))
                 {
-                    SendWebhookFile("Save Trace", $"savetrace.txt", _saveTrace).GetAwaiter().GetResult();
+                    Task.Run(async () => await SendWebhookFile("Save Trace", $"savetrace.txt", _saveTrace));
                 }
+
                 break;
         }
 
@@ -117,24 +129,34 @@ public partial class LogInterpreter : IDisposable
 
     private async Task SendWebhookLog(string title, string description)
     {
+        if (string.IsNullOrEmpty(_discordWebhookUri))
+            return;
+
         using DiscordWebhookClient client = new(_discordWebhookUri);
 
         EmbedBuilder embed = new();
         embed.WithTitle(title).WithDescription(description);
-        await client.SendMessageAsync(embeds: [embed.Build()]);
+        await client.SendMessageAsync(embeds: [embed.Build()], threadId: _threadId);
 
-        await SendWebhookFile("Log", $"{title}.log", _recentLogs.GetList());
+        await SendWebhookFile("Log", $"{title}.log", _recentLogs.GetList(), client);
     }
 
-    private async Task SendWebhookFile(string text, string filename, List<string> lines)
+    private async Task SendWebhookFile(string text, string filename, List<string> lines,
+        DiscordWebhookClient? client = null)
     {
-        using DiscordWebhookClient client = new(_discordWebhookUri);
+        if (string.IsNullOrEmpty(_discordWebhookUri))
+            return;
+
+        bool dispose = client is null;
+        client ??= new(_discordWebhookUri);
 
         MemoryStream fileStream = new();
         StreamWriter writer = new(fileStream);
         await writer.WriteAsync(string.Join('\n', lines.Select(l => l.Trim())));
         await writer.FlushAsync();
-        await client.SendFileAsync(text: text, filename: filename, stream: fileStream);
+        await client.SendFileAsync(text: text, filename: filename, stream: fileStream, threadId: _threadId);
+        if (dispose)
+            client.Dispose();
     }
 
     public void Dispose()
