@@ -13,6 +13,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using DynamicData;
 using ITDSWrapper.Assets;
 using ITDSWrapper.Audio;
 using ITDSWrapper.Core;
@@ -111,6 +112,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    private bool _dontUpdatePositionOnMonitorChange = false;
     public int CurrentMonitor
     {
         get;
@@ -120,8 +122,11 @@ public class MainViewModel : ViewModelBase
                 value < window.Screens.ScreenCount)
             {
                 this.RaiseAndSetIfChanged(ref field, value);
-                PixelRect screenBounds = window.Screens.All[value].Bounds;
-                WindowPosition = new(screenBounds.X, screenBounds.Y);
+                if (!_dontUpdatePositionOnMonitorChange)
+                {
+                    PixelRect screenBounds = window.Screens.All[value].Bounds;
+                    WindowPosition = new(screenBounds.X, screenBounds.Y);
+                }
             }
         }
     }
@@ -457,6 +462,12 @@ public class MainViewModel : ViewModelBase
     {
         WindowPosition = new(WrapperSettings.WindowLocationX, WrapperSettings.WindowLocationY);
         WindowingModeIdx = (int)WrapperSettings.WindowingMode;
+        if (Top is MainWindow window)
+        {
+            _dontUpdatePositionOnMonitorChange = true;
+            CurrentMonitor = window.Screens.All.IndexOf(window.Screens.ScreenFromPoint(WindowPosition));
+            _dontUpdatePositionOnMonitorChange = false;
+        }
     }
 
     private void CloseApplication()
