@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -43,6 +44,7 @@ public class MainViewModel : ViewModelBase
     [Reactive] public bool ExtendClientArea { get; set; }
     [Reactive] public string WindowingModeDesc { get; set; } = Strings.WindowStateFullScreen;
 
+    private bool _ignoreFullScreenReposition = false;
     public int WindowingModeIdx
     {
         get => (int)WrapperSettings.WindowingMode;
@@ -63,7 +65,7 @@ public class MainViewModel : ViewModelBase
                 case WindowingMode.FULL_SCREEN:
                     var window = (MainWindow?)Top;
                     Screen? currentScreen = window?.Screens.ScreenFromWindow(window);
-                    if (currentScreen is not null)
+                    if (currentScreen is not null && !_ignoreFullScreenReposition)
                     {
                         // Keeps us on the right screen when we're full screening
                         window?.Position = new(currentScreen.WorkingArea.X, currentScreen.WorkingArea.Y);
@@ -85,6 +87,41 @@ public class MainViewModel : ViewModelBase
                     Decorations = WindowDecorations.Full;
                     ExtendClientArea = false;
                     break;
+            }
+        }
+    }
+
+    public PixelPoint WindowPosition
+    {
+        get;
+        set
+        {
+            if (Top is MainWindow window)
+            {
+                this.RaiseAndSetIfChanged(ref field, value);
+                int prevWindowingMode = WindowingModeIdx;
+                WindowingModeIdx = (int)WindowingMode.BORDERLESS;
+                window.Position = value;
+                _ignoreFullScreenReposition = true;
+                WindowingModeIdx = prevWindowingMode;
+                _ignoreFullScreenReposition = false;
+                WrapperSettings.WindowLocationX = value.X;
+                WrapperSettings.WindowLocationY = value.Y;
+            }
+        }
+    }
+
+    public int CurrentMonitor
+    {
+        get;
+        set
+        {
+            if (Top is MainWindow window && value >= 0 &&
+                value < window.Screens.ScreenCount)
+            {
+                this.RaiseAndSetIfChanged(ref field, value);
+                PixelRect screenBounds = window.Screens.All[value].Bounds;
+                WindowPosition = new(screenBounds.X, screenBounds.Y);
             }
         }
     }
@@ -275,6 +312,7 @@ public class MainViewModel : ViewModelBase
     public ICommand QuitToDesktopCommand { get; }
 
     public ICommand ChangeWindowingSettingsCommand { get; }
+    public ICommand ChangeCurrentMonitorCommand { get; }
     public ICommand ChangeScreenLayoutCommand { get; }
     public ICommand ChangeRenderingModeCommand { get; }
     public ICommand ChangeBorderSettingsCommand { get; }
@@ -303,7 +341,6 @@ public class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         WrapperSettings = Settings.Load(RetroWrapper.GetDirectoryForPlatform("settings"));
-        WindowingModeIdx = (int)WrapperSettings.WindowingMode;
         TargetScreenLayoutIdx = IsMobile ? (int)ScreenLayout.TOP_BOTTOM : (int)WrapperSettings.CurrentScreenLayout;
         LinuxRenderingModeIdx = (int)WrapperSettings.LinuxRenderingMode;
         MacOsRenderingModeIdx = (int)WrapperSettings.MacOsRenderingMode;
@@ -398,6 +435,7 @@ public class MainViewModel : ViewModelBase
         QuitToDesktopCommand = ReactiveCommand.Create(CloseApplication);
 
         ChangeWindowingSettingsCommand = ReactiveCommand.Create<bool>(ChangeWindowingSettings);
+        ChangeCurrentMonitorCommand = ReactiveCommand.Create<bool>(ChangeCurrentMonitor);
         ChangeScreenLayoutCommand = ReactiveCommand.Create<bool>(ChangeScreenLayout);
         ChangeRenderingModeCommand = ReactiveCommand.Create<bool>(ChangeRenderingMode);
         ChangeBorderSettingsCommand = ReactiveCommand.Create(ToggleBorderSettings);
@@ -413,6 +451,12 @@ public class MainViewModel : ViewModelBase
         _inputSwitcher.SetInputDelegate(new("startup", HandleStartupInput));
         Wrapper.OnRumble = DoRumble;
         ThreadPool.QueueUserWorkItem(_ => Run());
+    }
+
+    public void SetupWindowing()
+    {
+        WindowPosition = new(WrapperSettings.WindowLocationX, WrapperSettings.WindowLocationY);
+        WindowingModeIdx = (int)WrapperSettings.WindowingMode;
     }
 
     private void CloseApplication()
@@ -493,6 +537,21 @@ public class MainViewModel : ViewModelBase
         else
         {
             WindowingModeIdx = (WindowingModeIdx + (forward ? 1 : -1)) % 3;
+        }
+    }
+
+    private void ChangeCurrentMonitor(bool forward)
+    {
+        if (Top is MainWindow window)
+        {
+            if (!forward && CurrentMonitor == 0)
+            {
+                CurrentMonitor = window.Screens.ScreenCount - 1;
+            }
+            else
+            {
+                CurrentMonitor = (CurrentMonitor + (forward ? 1 : -1)) % window.Screens.ScreenCount;
+            }
         }
     }
 
