@@ -46,7 +46,6 @@ public class SilkNetOpenALBackend : IAudioBackend
         Alc = ALContext.GetApi(soft: true);
         Al = AL.GetApi(soft: true);
 
-
         _device = Alc.OpenDevice(DeviceName);
 
         _context = Alc.CreateContext(_device, null);
@@ -115,6 +114,20 @@ public class SilkNetOpenALBackend : IAudioBackend
             //AL.SourcePlay(_alSource);
             Al.SourcePlay(_alSource);
         }
+    }
+
+    public void ChangeOutputDevice(int newDevice)
+    {
+    }
+
+    public string GetOutputDeviceName(int device)
+    {
+        return DeviceName ?? string.Empty;
+    }
+
+    public int GetOutputDeviceCount()
+    {
+        return 1;
     }
 
     private BufferFormat GetBufferFormat(int numChannels)

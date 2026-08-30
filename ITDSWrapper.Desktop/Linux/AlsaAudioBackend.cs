@@ -47,5 +47,19 @@ public class AlsaAudioBackend : IAudioBackend
         _waveProvider?.AddSamples(samples, 0, samples.Length);
 #endif
     }
+
+    public void ChangeOutputDevice(int newDevice)
+    {
+    }
+
+    public string GetOutputDeviceName(int device)
+    {
+        return string.Empty;
+    }
+
+    public int GetOutputDeviceCount()
+    {
+        return 1;
+    }
 }
 #pragma warning restore CA1416

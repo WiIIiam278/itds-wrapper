@@ -45,4 +45,24 @@ public class WasapiAudioBackend : IAudioBackend
         _waveProvider?.AddSamples(samples, 0, samples.Length);
 #endif
     }
+
+    public void ChangeOutputDevice(int newDevice)
+    {
+#if IS_WINDOWS
+#endif
+    }
+
+    public string GetOutputDeviceName(int device)
+    {
+#if IS_WINDOWS
+#endif
+        return string.Empty;
+    }
+
+    public int GetOutputDeviceCount()
+    {
+#if IS_WINDOWS
+#endif
+        return 1;
+    }
 }

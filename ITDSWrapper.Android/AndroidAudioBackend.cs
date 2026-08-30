@@ -112,4 +112,24 @@ public class AndroidAudioBackend : IAudioBackend
             _audioTrack.Write(waveBuffer, 0, waveBuffer.Length);
         }
     }
+
+    public void ChangeOutputDevice(int newDevice)
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(36))
+            _audioTrack?.SetPreferredDevice(_audioTrack?.RoutedDevices[newDevice]);
+    }
+
+    public string GetOutputDeviceName(int device)
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(36))
+            return _audioTrack?.RoutedDevices[device].ProductName ?? string.Empty;
+        return string.Empty;
+    }
+
+    public int GetOutputDeviceCount()
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(36))
+            return _audioTrack?.RoutedDevices.Count ?? 1;
+        return 1;
+    }
 }
